@@ -1,69 +1,130 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" role="img" aria-label="Fliegenmelder Ahlener Osten Logo">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 980" role="img" aria-label="Fliegenmelder Ahlener Osten">
   <defs>
     <linearGradient id="green" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#76b852"/>
+      <stop offset="0" stop-color="#4CAF28"/>
       <stop offset="1" stop-color="#2f8128"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#1b2222"/>
+      <stop offset="1" stop-color="#080c0d"/>
     </linearGradient>
   </defs>
 
-  <rect width="1200" height="1000" fill="#ffffff"/>
+  <rect width="1200" height="980" fill="#ffffff"/>
 
-  <!-- Icon-Kreis -->
-  <circle cx="600" cy="280" r="215" fill="#ffffff" stroke="#2f8128" stroke-width="18"/>
+  <!-- Offener grüner Ring -->
+  <path d="M255 515 A390 390 0 1 1 945 515"
+        fill="none"
+        stroke="#37a120"
+        stroke-width="22"
+        stroke-linecap="round"/>
 
-  <!-- Flügel -->
-  <ellipse cx="515" cy="275" rx="56" ry="132" fill="#ffffff" stroke="#101611" stroke-width="11" transform="rotate(-24 515 275)"/>
-  <ellipse cx="685" cy="275" rx="56" ry="132" fill="#ffffff" stroke="#101611" stroke-width="11" transform="rotate(24 685 275)"/>
+  <!-- Flügel links/rechts: tiefer und näher am Körper -->
+  <ellipse cx="470" cy="410" rx="78" ry="180"
+           fill="#ffffff"
+           stroke="#101611"
+           stroke-width="12"
+           opacity="0.92"
+           transform="rotate(31 470 410)"/>
+  <ellipse cx="730" cy="410" rx="78" ry="180"
+           fill="#ffffff"
+           stroke="#101611"
+           stroke-width="12"
+           opacity="0.92"
+           transform="rotate(-31 730 410)"/>
 
   <!-- Flügeladern reduziert -->
-  <path d="M500 185 L565 380 M532 228 L508 345" fill="none" stroke="#101611" stroke-width="6" opacity=".55" stroke-linecap="round"/>
-  <path d="M700 185 L635 380 M668 228 L692 345" fill="none" stroke="#101611" stroke-width="6" opacity=".55" stroke-linecap="round"/>
+  <path d="M430 305 L545 535 M470 335 L455 505 M405 430 L540 430"
+        fill="none"
+        stroke="#6b6b6b"
+        stroke-width="6"
+        opacity="0.55"
+        stroke-linecap="round"/>
+  <path d="M770 305 L655 535 M730 335 L745 505 M795 430 L660 430"
+        fill="none"
+        stroke="#6b6b6b"
+        stroke-width="6"
+        opacity="0.55"
+        stroke-linecap="round"/>
 
-  <!-- Körper und Kopf -->
-  <ellipse cx="600" cy="315" rx="54" ry="128" fill="#101611"/>
-  <ellipse cx="600" cy="200" rx="58" ry="52" fill="#101611"/>
+  <!-- Beine außen, bleiben oberhalb des Schriftbereichs -->
+  <path d="M535 300 L395 240 M665 300 L805 240
+           M525 380 L360 445 M675 380 L840 445
+           M555 545 L500 640 M645 545 L700 640"
+        fill="none"
+        stroke="#101611"
+        stroke-width="15"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
 
-  <!-- Körperlinien -->
-  <path d="M558 300 C582 320 618 320 642 300" fill="none" stroke="#5a635a" stroke-width="7" opacity=".6"/>
-  <path d="M558 370 C582 390 618 390 642 370" fill="none" stroke="#5a635a" stroke-width="7" opacity=".6"/>
+  <!-- kleine Fußpunkte -->
+  <circle cx="395" cy="240" r="7" fill="#101611"/>
+  <circle cx="805" cy="240" r="7" fill="#101611"/>
+  <circle cx="360" cy="445" r="7" fill="#101611"/>
+  <circle cx="840" cy="445" r="7" fill="#101611"/>
+  <circle cx="500" cy="640" r="7" fill="#101611"/>
+  <circle cx="700" cy="640" r="7" fill="#101611"/>
+
+  <!-- Körper -->
+  <ellipse cx="600" cy="408" rx="70" ry="190" fill="url(#body)"/>
+  <ellipse cx="600" cy="240" rx="78" ry="70" fill="url(#body)"/>
+
+  <!-- Segmentlinien -->
+  <path d="M545 352 C575 380 625 380 655 352"
+        fill="none" stroke="#676767" stroke-width="8" opacity="0.65"/>
+  <path d="M540 455 C575 485 625 485 660 455"
+        fill="none" stroke="#676767" stroke-width="8" opacity="0.65"/>
+  <path d="M555 545 C580 565 620 565 645 545"
+        fill="none" stroke="#676767" stroke-width="7" opacity="0.55"/>
 
   <!-- Augen -->
-  <ellipse cx="568" cy="185" rx="22" ry="33" fill="url(#green)"/>
-  <ellipse cx="632" cy="185" rx="22" ry="33" fill="url(#green)"/>
-  <path d="M560 172 C570 160 584 162 588 180" fill="none" stroke="#ffffff" stroke-width="4" opacity=".75"/>
-  <path d="M624 172 C634 160 648 162 652 180" fill="none" stroke="#ffffff" stroke-width="4" opacity=".75"/>
+  <ellipse cx="555" cy="214" rx="31" ry="50" fill="url(#green)" stroke="#101611" stroke-width="7"/>
+  <ellipse cx="645" cy="214" rx="31" ry="50" fill="url(#green)" stroke="#101611" stroke-width="7"/>
+  <path d="M545 190 C558 172 579 180 584 205"
+        fill="none" stroke="#ffffff" stroke-width="5" opacity="0.7"/>
+  <path d="M635 190 C648 172 669 180 674 205"
+        fill="none" stroke="#ffffff" stroke-width="5" opacity="0.7"/>
 
   <!-- Fühler -->
-  <path d="M570 160 L535 95 M630 160 L665 95" fill="none" stroke="#101611" stroke-width="10" stroke-linecap="round"/>
+  <path d="M562 175 L505 80 M638 175 L695 80"
+        fill="none"
+        stroke="#101611"
+        stroke-width="13"
+        stroke-linecap="round"/>
 
-  <!-- Beine bleiben im Kreis und berühren Text nicht -->
-  <path d="M555 255 L455 220 M645 255 L745 220
-           M552 315 L445 350 M648 315 L755 350
-           M575 425 L545 470 M625 425 L655 470"
-        fill="none" stroke="#101611" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Schrift -->
+  <text x="600" y="735"
+        text-anchor="middle"
+        font-family="Arial Black, Arial, Helvetica, sans-serif"
+        font-size="122"
+        font-weight="900"
+        letter-spacing="3"
+        fill="#111111">FLIEGENMELDER</text>
 
-  <!-- Standort-Pin klein -->
-  <path d="M600 535 C566 500 562 455 600 433 C638 455 634 500 600 535Z" fill="url(#green)"/>
-  <circle cx="600" cy="475" r="17" fill="#ffffff"/>
+  <line x1="145" y1="820" x2="285" y2="820"
+        stroke="#4CAF28" stroke-width="10" stroke-linecap="round"/>
+  <line x1="915" y1="820" x2="1055" y2="820"
+        stroke="#4CAF28" stroke-width="10" stroke-linecap="round"/>
 
-  <!-- Textblock klar getrennt -->
-  <text x="600" y="650" text-anchor="middle"
+  <text x="600" y="850"
+        text-anchor="middle"
         font-family="Arial, Helvetica, sans-serif"
-        font-size="120" font-weight="900" letter-spacing="3"
-        fill="#101611">FLIEGENMELDER</text>
+        font-size="74"
+        font-weight="900"
+        letter-spacing="16"
+        fill="#4CAF28">AHLENER OSTEN</text>
 
-  <line x1="220" y1="725" x2="335" y2="725" stroke="#2f8128" stroke-width="9" stroke-linecap="round"/>
-  <line x1="865" y1="725" x2="980" y2="725" stroke="#2f8128" stroke-width="9" stroke-linecap="round"/>
+  <line x1="360" y1="895" x2="545" y2="895"
+        stroke="#111111" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="600" cy="895" r="12" fill="#4CAF28"/>
+  <line x1="655" y1="895" x2="840" y2="895"
+        stroke="#111111" stroke-width="5" stroke-linecap="round"/>
 
-  <text x="600" y="755" text-anchor="middle"
+  <text x="600" y="945"
+        text-anchor="middle"
         font-family="Arial, Helvetica, sans-serif"
-        font-size="76" font-weight="800" letter-spacing="15"
-        fill="#2f8128">AHLENER OSTEN</text>
-
-  <line x1="360" y1="810" x2="840" y2="810" stroke="#2f8128" stroke-width="4" stroke-linecap="round"/>
-
-  <text x="600" y="885" text-anchor="middle"
-        font-family="Arial, Helvetica, sans-serif"
-        font-size="38" font-weight="700" letter-spacing="10"
-        fill="#101611">GEMEINSAM GEGEN DIE FLIEGENPLAGE</text>
+        font-size="38"
+        font-weight="500"
+        letter-spacing="2"
+        fill="#111111">Gemeinsam gegen die Fliegenplage</text>
 </svg>
