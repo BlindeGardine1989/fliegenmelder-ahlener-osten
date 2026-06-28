@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Fliegenmelder Ahlener Osten Logo">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e7f6df"/><stop offset="1" stop-color="#b9dfa4"/></linearGradient></defs>
+<circle cx="128" cy="128" r="118" fill="url(#bg)" stroke="#1f7a2d" stroke-width="8"/>
+<ellipse cx="94" cy="119" rx="31" ry="58" fill="#fff" opacity=".78" stroke="#14351d" stroke-width="6" transform="rotate(-28 94 119)"/>
+<ellipse cx="162" cy="119" rx="31" ry="58" fill="#fff" opacity=".78" stroke="#14351d" stroke-width="6" transform="rotate(28 162 119)"/>
+<path d="M82 96 L117 154 M174 96 L139 154" stroke="#14351d" stroke-width="3" opacity=".45"/>
+<ellipse cx="128" cy="128" rx="34" ry="61" fill="#111812"/>
+<ellipse cx="128" cy="82" rx="31" ry="29" fill="#111812"/>
+<ellipse cx="109" cy="74" rx="14" ry="18" fill="#63a83a"/><ellipse cx="147" cy="74" rx="14" ry="18" fill="#63a83a"/>
+<path d="M116 60 C109 42 99 33 86 25 M140 60 C147 42 157 33 170 25" fill="none" stroke="#111812" stroke-width="6" stroke-linecap="round"/>
+<path d="M96 120 L55 96 M160 120 L201 96 M96 148 L54 159 M160 148 L202 159 M108 181 L78 216 M148 181 L178 216" stroke="#111812" stroke-width="8" stroke-linecap="round"/>
+<path d="M96 128 C113 138 143 138 160 128 M101 157 C118 167 138 167 155 157 M114 186 C123 191 133 191 142 186" stroke="#2a322a" stroke-width="4" opacity=".5" fill="none"/></svg>

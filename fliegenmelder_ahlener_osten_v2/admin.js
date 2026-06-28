@@ -1,0 +1,1 @@
+document.querySelector('#adminStatus').textContent='Admin-Grundlage geladen. Supabase-Login wird als nächster Schritt eingerichtet.';
