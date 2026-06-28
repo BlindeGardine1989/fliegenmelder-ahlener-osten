@@ -3,7 +3,7 @@
 // Bitte nur noch den Publishable Key einsetzen und IS_CONFIGURED auf true lassen.
 
 export const SUPABASE_URL = "https://jlvfchlbjaviqhfclvva.supabase.co";
-export const SUPABASE_PUBLISHABLE_KEY = "HIER_DEINEN_SB_PUBLISHABLE_KEY_EINTRAGEN";
+export const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Vpur2TPyGCFfIpxg3Prh0g__8s6uzY1";
 
 // Auf true lassen, sobald der Publishable Key eingetragen wurde.
 export const IS_CONFIGURED = true;
