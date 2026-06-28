@@ -1,46 +1,10 @@
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, ORT_LAT, ORT_LNG, START_ZOOM, IS_CONFIGURED } from "./config.js";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-
-export function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-export function formatDate(value) {
-  if (!value) return "–";
-  return new Intl.DateTimeFormat("de-DE", { dateStyle:"short", timeStyle:"short" }).format(new Date(value));
-}
-export async function compressImage(file, maxWidth = 1400, quality = .72) {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, maxWidth / bitmap.width);
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  return await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", quality));
-}
-export function colorClass(severity){ return `s${Number(severity || 1)}`; }
-export function markerIcon(severity) {
-  return L.divIcon({ className:"", html:`<span class="marker-dot ${colorClass(severity)}"></span>`, iconSize:[22,22], iconAnchor:[11,11] });
-}
-export const mapDefaults = { ORT_LAT, ORT_LNG, START_ZOOM, IS_CONFIGURED };
-
-export function demoReports() {
-  return [
-    {public_id:"demo-1", address:"Oststraße", severity:4, since:"Seit einigen Tagen", time_of_day:"Ganztägig", lat:51.7669, lng:7.9321, created_at:new Date().toISOString(), note:"Viele Fliegen im Außenbereich.", status:"approved"},
-    {public_id:"demo-2", address:"Münsterstraße", severity:5, since:"Seit einer Woche", time_of_day:"Nachmittags", lat:51.7722, lng:7.9125, created_at:new Date().toISOString(), note:"Auch im Haus stark bemerkbar.", status:"approved"},
-    {public_id:"demo-3", address:"Im Bereich Ahlener Osten", severity:3, since:"Unklar", time_of_day:"Abends", lat:51.7586, lng:7.9472, created_at:new Date().toISOString(), note:"Mittelstarke Belastung.", status:"approved"},
-    {public_id:"demo-4", address:"Südlich der B63", severity:2, since:"Heute", time_of_day:"Morgens", lat:51.7548, lng:7.9244, created_at:new Date().toISOString(), note:"Einige Fliegen.", status:"approved"}
-  ];
-}
-export async function loadPublicReports() {
-  if (!IS_CONFIGURED) return demoReports();
-  const { data, error } = await supabase.from("reports_public").select("*").order("created_at", { ascending:false });
-  if (error) {
-    console.warn(error);
-    return demoReports();
-  }
-  return data || [];
-}
+export function escapeHtml(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+export function formatDate(value){return value?new Intl.DateTimeFormat("de-DE",{dateStyle:"short",timeStyle:"short"}).format(new Date(value)):"–"}
+export async function compressImage(file,maxWidth=1400,quality=.72){const bitmap=await createImageBitmap(file);const scale=Math.min(1,maxWidth/bitmap.width);const canvas=document.createElement("canvas");canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);return await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",quality))}
+export function markerIcon(severity){return L.divIcon({className:"",html:`<span class="marker-dot s${Number(severity||1)}"></span>`,iconSize:[22,22],iconAnchor:[11,11]})}
+export const mapDefaults={ORT_LAT,ORT_LNG,START_ZOOM,IS_CONFIGURED};
+export function demoReports(){return[{public_id:"demo-1",address:"Oststraße",severity:4,since:"Seit einigen Tagen",time_of_day:"Ganztägig",lat:51.7669,lng:7.9321,created_at:new Date().toISOString(),note:"Viele Fliegen im Außenbereich."},{public_id:"demo-2",address:"Münsterstraße",severity:5,since:"Seit einer Woche",time_of_day:"Nachmittags",lat:51.7722,lng:7.9125,created_at:new Date().toISOString(),note:"Auch im Haus stark bemerkbar."},{public_id:"demo-3",address:"Im Bereich Ahlener Osten",severity:3,since:"Unklar",time_of_day:"Abends",lat:51.7586,lng:7.9472,created_at:new Date().toISOString(),note:"Mittelstarke Belastung."},{public_id:"demo-4",address:"Südlich der B63",severity:2,since:"Heute",time_of_day:"Morgens",lat:51.7548,lng:7.9244,created_at:new Date().toISOString(),note:"Einige Fliegen."}]}
+export async function loadPublicReports(){if(!IS_CONFIGURED||SUPABASE_PUBLISHABLE_KEY.includes("HIER_DEINEN")) return demoReports();const{data,error}=await supabase.from("reports_public").select("*").order("created_at",{ascending:false});if(error){console.warn(error);return demoReports()}return data||[]}

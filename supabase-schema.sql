@@ -20,50 +20,23 @@ create table if not exists public.reports (
 
 create or replace view public.reports_public as
 select
-  id,
-  public_id,
-  address,
-  severity,
-  since,
-  time_of_day,
-  note,
-  lat,
-  lng,
-  photo_path,
-  case
-    when photo_path is not null then
-      concat('https://', current_setting('request.headers', true)::json->>'host', '/storage/v1/object/public/report-photos/', photo_path)
-    else null
-  end as photo_url,
-  created_at,
-  client_timestamp
+  id, public_id, address, severity, since, time_of_day, note, lat, lng, photo_path,
+  case when photo_path is not null then 'https://jlvfchlbjaviqhfclvva.supabase.co/storage/v1/object/public/report-photos/' || photo_path else null end as photo_url,
+  created_at, client_timestamp
 from public.reports
 where visible = true and status = 'approved';
 
 alter table public.reports enable row level security;
 
 drop policy if exists "public can insert pending reports" on public.reports;
-create policy "public can insert pending reports"
-on public.reports
-for insert
-to anon
-with check (
-  status = 'pending'
-  and visible = false
-  and severity between 1 and 5
+create policy "public can insert pending reports" on public.reports
+for insert to anon with check (
+  status = 'pending' and visible = false and severity between 1 and 5
   and char_length(address) between 3 and 140
   and char_length(coalesce(note,'')) <= 800
   and char_length(coalesce(contact_private,'')) <= 160
 );
 
 drop policy if exists "public can read approved reports" on public.reports;
-create policy "public can read approved reports"
-on public.reports
-for select
-to anon
-using (status = 'approved' and visible = true);
-
--- Storage:
--- Bucket erstellen: report-photos
--- Public Bucket: für den Start aktivieren.
--- Max. Dateigröße am besten auf 1–2 MB begrenzen.
+create policy "public can read approved reports" on public.reports
+for select to anon using (status = 'approved' and visible = true);

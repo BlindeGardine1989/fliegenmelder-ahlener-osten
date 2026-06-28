@@ -1,0 +1,1 @@
+document.querySelector("#adminStatus").textContent = "Adminbereich ist vorbereitet. Login und Freigabe-Regeln kommen im nächsten Schritt.";
