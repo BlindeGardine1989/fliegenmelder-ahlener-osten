@@ -4,10 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Interner Bereich | Fliegenmelder Ahlener Osten</title>
+
   <link rel="icon" href="../assets/logo.png" type="image/png">
   <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
+
+<body class="adminPage">
+
 <header class="topbar">
   <a class="brand" href="../index.html">
     <img src="../assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
@@ -22,46 +25,75 @@
   </nav>
 </header>
 
-<main>
+<main class="adminMain">
+
   <section class="box pageHero">
     <p class="eyebrow">Interner Bereich</p>
     <h1>Meldungen prüfen</h1>
-    <p class="lead">Dieser Bereich ist nur für berechtigte Admins zugänglich.</p>
+    <p class="lead">
+      Dieser Bereich ist nur für berechtigte Administratorinnen und Administratoren zugänglich.
+    </p>
   </section>
 
-  <section id="loginBox" class="card loginBox">
-    <h2>Admin-Login</h2>
-    <p>Gib deine Admin-E-Mail ein. Du bekommst einen Login-Link per E-Mail.</p>
+  <section id="loginBox" class="adminLoginCard">
+    <div class="adminLoginHeader">
+      <img src="../assets/logo.png" alt="Logo">
+      <div>
+        <p class="eyebrow">Admin-Login</p>
+        <h2>Einloggen</h2>
+      </div>
+    </div>
 
-    <form id="loginForm">
-      <label>E-Mail-Adresse
-        <input id="loginEmail" type="email" required placeholder="fliegenmelder.ahlen@gmail.com">
-      </label>
+    <p>
+      Gib deine Admin-E-Mail-Adresse ein. Du bekommst anschließend einen Login-Link per E-Mail.
+    </p>
 
-      <button class="button" type="submit">Login-Link senden</button>
-      <p id="loginStatus"></p>
+    <form id="loginForm" class="adminLoginForm">
+      <label for="loginEmail">E-Mail-Adresse</label>
+      <input
+        id="loginEmail"
+        type="email"
+        required
+        placeholder="fliegenmelder.ahlen@gmail.com"
+        autocomplete="email"
+      >
+
+      <button class="button full adminLoginButton" type="submit">
+        Login-Link senden
+      </button>
+
+      <p id="loginStatus" class="adminStatusText"></p>
     </form>
   </section>
 
   <section id="adminBox" class="adminLayout" hidden>
     <aside class="adminMenu box">
-      <a class="active" href="index.html">Meldungen</a>
+      <p class="eyebrow">Verwaltung</p>
+      <a class="active" href="index.html">Meldungen prüfen</a>
       <a href="../karte.html">Karte ansehen</a>
       <a href="../neuigkeiten.html">Neuigkeiten</a>
       <a href="../termine.html">Termine</a>
       <a href="../dokumente.html">Dokumente</a>
-      <button id="logoutBtn" class="button secondary" type="button">Abmelden</button>
+      <button id="logoutBtn" class="button secondary full" type="button">Abmelden</button>
     </aside>
 
     <section class="adminPanel">
-      <div class="actions">
-        <button id="exportCsv" class="button" type="button">CSV exportieren</button>
+      <div class="adminPanelHead">
+        <div>
+          <p class="eyebrow">Eingereichte Meldungen</p>
+          <h2>Prüfen, freigeben oder ausblenden</h2>
+        </div>
+
+        <button id="exportCsv" class="button" type="button">
+          CSV exportieren
+        </button>
       </div>
 
-      <p id="adminStatus"></p>
+      <p id="adminStatus" class="adminStatusText"></p>
       <div id="adminList" class="adminList"></div>
     </section>
   </section>
+
 </main>
 
 <footer>

@@ -76,7 +76,7 @@ async function loadReports() {
 
   if (error) {
     console.error(error);
-    status.textContent = "Kein Zugriff. Bitte Admin-Login und Supabase-Regeln prüfen.";
+    status.textContent = "Kein Zugriff. Bitte Admin-Rechte und Supabase-Regeln prüfen.";
     return;
   }
 
@@ -106,12 +106,15 @@ function renderReports(reports) {
     card.className = "adminCard";
 
     card.innerHTML = `
-      <h2>Meldung ${escapeHtml((r.public_id || r.id || "").slice(0, 8))}</h2>
-
-      <p>
-        <span class="badge ${statusClass}">${escapeHtml(r.status || "pending")}</span>
-        · öffentlich sichtbar: <strong>${r.visible ? "ja" : "nein"}</strong>
-      </p>
+      <div class="adminCardHeader">
+        <div>
+          <h2>Meldung ${escapeHtml((r.public_id || r.id || "").slice(0, 8))}</h2>
+          <p>
+            <span class="badge ${statusClass}">${escapeHtml(r.status || "pending")}</span>
+            · öffentlich sichtbar: <strong>${r.visible ? "ja" : "nein"}</strong>
+          </p>
+        </div>
+      </div>
 
       <p>
         <strong>Datum:</strong> ${formatDate(r.client_timestamp || r.created_at)}<br>
