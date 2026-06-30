@@ -1,97 +1,101 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interner Bereich | Fliegenmelder Ahlener Osten</title>
+  <link rel="icon" href="../assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="adminPage">
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <img src="../assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+    <div>
+      <strong>Fliegenmelder<br>Ahlener Osten</strong>
+      <span>Interner Bereich</span>
+    </div>
+  </a>
+  <nav class="nav"><a href="../index.html">Zur Webseite</a></nav>
+</header>
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-let currentReports = [];
+<main class="adminMain">
+  <section class="box pageHero">
+    <p class="eyebrow">Interner Bereich</p>
+    <h1>Admin-Dashboard</h1>
+    <p class="lead">Meldungen prüfen, freigeben, ausblenden, löschen und als CSV exportieren.</p>
+  </section>
 
-async function loadReports() {
-  const status = document.querySelector("#adminStatus");
-  status.textContent = "Meldungen werden geladen ...";
-
-  const { data, error } = await supabase
-    .from("reports")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.warn(error);
-    status.textContent = "Admin-Zugriff noch nicht eingerichtet. Bitte Supabase Auth/RLS einrichten oder direkt in Supabase prüfen.";
-    currentReports = [];
-    render([]);
-    return;
-  }
-
-  currentReports = data || [];
-  status.textContent = `${currentReports.length} Meldungen gefunden.`;
-  render(currentReports);
-}
-
-function render(reports) {
-  const root = document.querySelector("#adminList");
-  root.innerHTML = "";
-
-  for (const r of reports) {
-    const photoUrl = r.photo_path ? `${SUPABASE_URL}/storage/v1/object/public/report-photos/${r.photo_path}` : "";
-    const card = document.createElement("article");
-    card.className = "adminCard";
-    card.innerHTML = `
-      <h2>Meldung ${escapeHtml((r.public_id || r.id).slice(0,8))}</h2>
-      <p><strong>Status:</strong> ${escapeHtml(r.status)} · <strong>Sichtbar:</strong> ${r.visible ? "ja" : "nein"}</p>
-      <p><strong>Datum:</strong> ${escapeHtml(r.client_timestamp || r.created_at || "–")}</p>
-      <p><strong>Ort:</strong> ${escapeHtml(r.address || "–")}<br>${r.lat}, ${r.lng}</p>
-      <p><strong>Belastung:</strong> ${escapeHtml(r.severity)}/5 · <strong>Seit:</strong> ${escapeHtml(r.since || "–")} · <strong>Tageszeit:</strong> ${escapeHtml(r.time_of_day || "–")}</p>
-      <p><strong>Bemerkung:</strong> ${escapeHtml(r.note || "–")}</p>
-      <p><strong>Kontakt intern:</strong> ${escapeHtml(r.contact_private || "–")}</p>
-      ${photoUrl ? `<a href="${photoUrl}" target="_blank"><img src="${photoUrl}" alt="Foto"></a>` : "<p>Kein Foto</p>"}
-      <div class="adminControls">
-        <button data-action="approve" data-id="${r.id}">Freigeben</button>
-        <button class="danger" data-action="hide" data-id="${r.id}">Ausblenden</button>
+  <section id="loginBox" class="adminLoginCard">
+    <div class="adminLoginHeader">
+      <img src="../assets/logo.png" alt="Logo">
+      <div>
+        <p class="eyebrow">Admin-Login</p>
+        <h2>Einloggen</h2>
       </div>
-    `;
-    root.appendChild(card);
-  }
+    </div>
+    <p>Gib deine Admin-E-Mail-Adresse ein. Du bekommst anschließend einen Login-Link per E-Mail.</p>
+    <form id="loginForm" class="adminLoginForm">
+      <label for="loginEmail">E-Mail-Adresse</label>
+      <input id="loginEmail" type="email" required placeholder="fliegenmelder.ahlen@gmail.com" autocomplete="email">
+      <button class="button full adminLoginButton" type="submit">Login-Link senden</button>
+      <p id="loginStatus" class="adminStatusText"></p>
+    </form>
+  </section>
 
-  root.querySelectorAll("button[data-action]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const patch = btn.dataset.action === "approve"
-        ? { status: "approved", visible: true }
-        : { status: "hidden", visible: false };
+  <section id="adminBox" class="adminLayout" hidden>
+    <aside class="adminMenu box">
+      <p class="eyebrow">Verwaltung</p>
+      <a class="active" href="index.html">Dashboard</a>
+      <a href="../karte.html">Karte ansehen</a>
+      <a href="../neuigkeiten.html">Neuigkeiten</a>
+      <a href="../termine.html">Termine</a>
+      <a href="../dokumente.html">Dokumente</a>
+      <button id="logoutBtn" class="button secondary full" type="button">Abmelden</button>
+    </aside>
 
-      const { error } = await supabase.from("reports").update(patch).eq("id", btn.dataset.id);
-      if (error) {
-        alert("Änderung fehlgeschlagen. Bitte Admin-Policies/Auth einrichten.");
-        console.error(error);
-        return;
-      }
-      await loadReports();
-    });
-  });
-}
+    <section class="adminPanel">
+      <div class="adminStats">
+        <article class="stat"><strong id="adminTotal">0</strong><span>Gesamt</span></article>
+        <article class="stat"><strong id="adminPending">0</strong><span>Offen</span></article>
+        <article class="stat"><strong id="adminApproved">0</strong><span>Freigegeben</span></article>
+        <article class="stat"><strong id="adminHidden">0</strong><span>Ausgeblendet</span></article>
+      </div>
 
-document.querySelector("#exportCsv")?.addEventListener("click", () => {
-  const rows = [["Meldungsnummer","Status","Sichtbar","Datum","Adresse","Belastung","Seit wann","Tageszeit","Bemerkung","Kontakt intern","Latitude","Longitude","Foto"]];
-  for (const r of currentReports) {
-    rows.push([
-      r.public_id || r.id, r.status || "", r.visible ? "ja" : "nein",
-      r.client_timestamp || r.created_at || "", r.address || "", r.severity || "",
-      r.since || "", r.time_of_day || "", r.note || "", r.contact_private || "",
-      r.lat || "", r.lng || "", r.photo_path ? `${SUPABASE_URL}/storage/v1/object/public/report-photos/${r.photo_path}` : ""
-    ]);
-  }
-  const csv = rows.map(row => row.map(csvCell).join(";")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `fliegenmelder-export-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
+      <div class="adminPanelHead">
+        <div>
+          <p class="eyebrow">Eingereichte Meldungen</p>
+          <h2>Prüfen, freigeben oder ausblenden</h2>
+        </div>
+        <button id="exportCsv" class="button" type="button">CSV exportieren</button>
+      </div>
 
-function csvCell(value) { return `"${String(value ?? "").replaceAll('"','""')}"`; }
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-loadReports();
+      <div class="adminToolbar">
+        <label>Suche
+          <input id="adminSearch" type="search" placeholder="Ort, Bemerkung oder Kontakt suchen ...">
+        </label>
+        <label>Status
+          <select id="adminFilter">
+            <option value="all">Alle Meldungen</option>
+            <option value="pending">Nur offene Meldungen</option>
+            <option value="approved">Nur freigegebene Meldungen</option>
+            <option value="hidden">Nur ausgeblendete Meldungen</option>
+          </select>
+        </label>
+      </div>
+
+      <p id="adminStatus" class="adminStatusText"></p>
+      <div id="adminList" class="adminList"></div>
+    </section>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 Fliegenmelder Ahlener Osten · Bürgerinitiative Ahlen</span>
+  <a href="../impressum.html">Impressum</a>
+  <a href="../datenschutz.html">Datenschutz</a>
+  <a href="../kontakt.html">Kontakt</a>
+</footer>
+<script type="module" src="admin.js"></script>
+</body>
+</html>
