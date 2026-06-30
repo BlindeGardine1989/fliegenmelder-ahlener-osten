@@ -1,162 +1,17 @@
-<!doctype html>
-<html lang="de">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fliegenmelder Ahlener Osten</title>
-  <link rel="icon" href="assets/logo.png" type="image/png">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-</head>
-<body>
-<header class="topbar">
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fliegenmelder Ahlener Osten</title><link rel="icon" href="assets/logo.png" type="image/png"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></head><body><header class="topbar">
   <a class="brand" href="index.html">
     <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
-    <div>
-      <strong>Fliegenmelder<br>Ahlener Osten</strong>
-      <span>Bürgerinitiative Ahlen</span>
-    </div>
+    <div><strong>Fliegenmelder<br>Ahlener Osten</strong><span>Bürgerinitiative Ahlen</span></div>
   </a>
-
   <nav class="nav">
-    <a href="index.html">Startseite</a>
-    <a href="melden.html">Meldungen</a>
-    <a href="karte.html">Karte</a>
-    <a href="neuigkeiten.html">Neuigkeiten</a>
-    <a href="termine.html">Termine</a>
-    <a href="dokumente.html">Dokumente</a>
-    <a href="ueber-uns.html">Über uns</a>
-    <a href="kontakt.html">Kontakt</a>
-    <a class="buttonLink" href="melden.html">Meldung einreichen</a>
+    <a href="index.html">Startseite</a><a href="melden.html">Meldungen</a><a href="karte.html">Karte</a><a href="neuigkeiten.html">Neuigkeiten</a><a href="termine.html">Termine</a><a href="dokumente.html">Dokumente</a><a href="ueber-uns.html">Über uns</a><a href="kontakt.html">Kontakt</a><a class="buttonLink" href="melden.html">Meldung einreichen</a>
   </nav>
 </header>
-
 <main>
-  <section class="hero">
-    <div class="box heroText">
-      <p class="eyebrow">Dokumentieren. Informieren. Gemeinsam handeln.</p>
-      <h1>Gemeinsam gegen die Fliegenplage im Ahlener Osten</h1>
-      <p class="lead">Jede Meldung hilft dabei, Veränderungen sichtbar zu machen.</p>
-
-      <div class="actions">
-        <a class="button" href="melden.html">Jetzt Meldung einreichen</a>
-        <a class="button ghost" href="karte.html">Meldungskarte ansehen</a>
-      </div>
-    </div>
-
-    <div class="box logoHero">
-      <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
-    </div>
-  </section>
-
-  <section class="box infoSection">
-    <p class="eyebrow">Warum gibt es diese Homepage?</p>
-    <h2>Informationen bündeln, Meldungen dokumentieren und transparent informieren.</h2>
-    <p>
-      Seit Jahren leiden viele Anwohnerinnen und Anwohner im Ahlener Osten unter einer
-      erheblichen Fliegenbelastung. Mit dieser Homepage möchten wir Informationen bündeln,
-      Meldungen dokumentieren und transparent über den aktuellen Stand informieren.
-    </p>
-    <p>
-      Gemeinsam schaffen wir eine sachliche Grundlage für den weiteren Austausch mit Stadt,
-      Politik und Behörden.
-    </p>
-  </section>
-
-  <section class="stats">
-    <article class="stat"><strong id="statTotal">0</strong><span>Meldungen öffentlich</span></article>
-    <article class="stat"><strong id="statMonth">0</strong><span>diesen Monat</span></article>
-    <article class="stat"><strong id="statAvg">–</strong><span>Ø Belastung</span></article>
-    <article class="stat"><strong id="statHotspots">0</strong><span>starke Hotspots</span></article>
-  </section>
-
-  <section class="layout">
-    <section class="panel mapPanel">
-      <div class="mapHead">
-        <div>
-          <p class="eyebrow">Öffentliche Übersicht</p>
-          <h2>Öffentliche Meldungskarte</h2>
-        </div>
-
-        <select id="severityFilter">
-          <option value="all">Alle Meldungen</option>
-          <option value="4plus">Nur stark / sehr stark</option>
-          <option value="1">1 sehr gering</option>
-          <option value="2">2 gering</option>
-          <option value="3">3 mittel</option>
-          <option value="4">4 stark</option>
-          <option value="5">5 sehr stark</option>
-        </select>
-      </div>
-
-      <div id="map" class="map"></div>
-
-      <div class="legend">
-        <strong>Belastung</strong>
-        <span><i class="dot s1"></i>1</span>
-        <span><i class="dot s2"></i>2</span>
-        <span><i class="dot s3"></i>3</span>
-        <span><i class="dot s4"></i>4</span>
-        <span><i class="dot s5"></i>5</span>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Neueste Meldungen</h2>
-      <p>Hier erscheinen die zuletzt veröffentlichten Meldungen der Bürgerinitiative.</p>
-      <div id="latestReports" class="list"></div>
-    </section>
-  </section>
-
-  <section class="cards">
-    <article class="card">
-      <h2>📰 Neuigkeiten</h2>
-      <p>Aktuelle Informationen, Entwicklungen und Neuigkeiten rund um die Fliegenbelastung im Ahlener Osten.</p>
-      <a href="neuigkeiten.html">Neuigkeiten lesen →</a>
-    </article>
-
-    <article class="card">
-      <h2>📅 Termine</h2>
-      <p>Treffen der Bürgerinitiative, öffentliche Veranstaltungen und wichtige Termine auf einen Blick.</p>
-      <a href="termine.html">Termine ansehen →</a>
-    </article>
-
-    <article class="card">
-      <h2>📄 Dokumente</h2>
-      <p>Schreiben, Stellungnahmen, Antworten der Behörden und weitere wichtige Unterlagen.</p>
-      <a href="dokumente.html">Dokumente öffnen →</a>
-    </article>
-
-    <article class="card">
-      <h2>🔒 Datenschutz</h2>
-      <p>Ihre Daten werden vertraulich behandelt.</p>
-      <a href="datenschutz.html">Mehr erfahren →</a>
-    </article>
-  </section>
-
-  <section class="box infoSection">
-    <p class="eyebrow">Gemeinsam können wir etwas bewegen</p>
-    <h2>Jede Meldung zählt.</h2>
-    <p>
-      Jede Meldung trägt dazu bei, die Fliegenbelastung im Ahlener Osten besser zu dokumentieren.
-      Je mehr Bürgerinnen und Bürger mitmachen, desto aussagekräftiger werden die gesammelten Informationen.
-    </p>
-
-    <div class="actions">
-      <a class="button" href="melden.html">Jetzt Meldung einreichen</a>
-      <a class="button ghost" href="karte.html">Meldungskarte ansehen</a>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <span>© 2026 Fliegenmelder Ahlener Osten · Bürgerinitiative Ahlen</span>
-  <a href="impressum.html">Impressum</a>
-  <a href="datenschutz.html">Datenschutz</a>
-  <a href="kontakt.html">Kontakt</a>
-  <a class="adminAccess" href="admin/">Interner Bereich</a>
-</footer>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script type="module" src="js/home.js"></script>
-</body>
-</html>
+<section class="hero"><div class="box heroText"><p class="eyebrow">Dokumentieren. Informieren. Gemeinsam handeln.</p><h1>Gemeinsam gegen die Fliegenplage im Ahlener Osten</h1><p class="lead">Jede Meldung hilft dabei, Veränderungen sichtbar zu machen.</p><div class="actions"><a class="button" href="melden.html">Jetzt Meldung einreichen</a><a class="button ghost" href="karte.html">Meldungskarte ansehen</a></div></div><div class="box logoHero"><img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten"></div></section>
+<section class="box infoSection"><p class="eyebrow">Warum gibt es diese Homepage?</p><h2>Informationen bündeln, Meldungen dokumentieren und transparent informieren.</h2><p>Seit Jahren leiden viele Anwohnerinnen und Anwohner im Ahlener Osten unter einer erheblichen Fliegenbelastung. Mit dieser Homepage möchten wir Informationen bündeln, Meldungen dokumentieren und transparent über den aktuellen Stand informieren.</p><p>Gemeinsam schaffen wir eine sachliche Grundlage für den weiteren Austausch mit Stadt, Politik und Behörden.</p></section>
+<section class="stats"><article class="stat"><strong id="statTotal">0</strong><span>Meldungen öffentlich</span></article><article class="stat"><strong id="statMonth">0</strong><span>diesen Monat</span></article><article class="stat"><strong id="statAvg">–</strong><span>Ø Belastung</span></article><article class="stat"><strong id="statHotspots">0</strong><span>starke Hotspots</span></article></section>
+<section class="layout"><section class="panel mapPanel"><div class="mapHead"><div><p class="eyebrow">Öffentliche Übersicht</p><h2>Öffentliche Meldungskarte</h2></div><select id="severityFilter"><option value="all">Alle Meldungen</option><option value="4plus">Nur stark / sehr stark</option><option value="1">1 sehr gering</option><option value="2">2 gering</option><option value="3">3 mittel</option><option value="4">4 stark</option><option value="5">5 sehr stark</option></select></div><div id="map" class="map"></div><div class="legend"><strong>Belastung</strong><span><i class="dot s1"></i>1</span><span><i class="dot s2"></i>2</span><span><i class="dot s3"></i>3</span><span><i class="dot s4"></i>4</span><span><i class="dot s5"></i>5</span></div></section><section class="panel"><h2>Neueste Meldungen</h2><p>Hier erscheinen die zuletzt veröffentlichten Meldungen der Bürgerinitiative.</p><div id="latestReports" class="list"></div></section></section>
+<section class="cards"><article class="card"><h2>📰 Neuigkeiten</h2><p>Aktuelle Informationen, Entwicklungen und Neuigkeiten rund um die Fliegenbelastung im Ahlener Osten.</p><a href="neuigkeiten.html">Neuigkeiten lesen →</a></article><article class="card"><h2>📅 Termine</h2><p>Treffen der Bürgerinitiative, öffentliche Veranstaltungen und wichtige Termine auf einen Blick.</p><a href="termine.html">Termine ansehen →</a></article><article class="card"><h2>📄 Dokumente</h2><p>Schreiben, Stellungnahmen, Antworten der Behörden und weitere wichtige Unterlagen.</p><a href="dokumente.html">Dokumente öffnen →</a></article><article class="card"><h2>🔒 Datenschutz</h2><p>Ihre Daten werden vertraulich behandelt.</p><a href="datenschutz.html">Mehr erfahren →</a></article></section>
+<section class="box infoSection"><p class="eyebrow">Gemeinsam können wir etwas bewegen</p><h2>Jede Meldung zählt.</h2><p>Jede Meldung trägt dazu bei, die Fliegenbelastung im Ahlener Osten besser zu dokumentieren. Je mehr Bürgerinnen und Bürger mitmachen, desto aussagekräftiger werden die gesammelten Informationen.</p><div class="actions"><a class="button" href="melden.html">Jetzt Meldung einreichen</a><a class="button ghost" href="karte.html">Meldungskarte ansehen</a></div></section>
+</main><footer><span>© 2026 Fliegenmelder Ahlener Osten · Bürgerinitiative Ahlen</span><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a><a href="kontakt.html">Kontakt</a><a class="adminAccess" href="admin/">Interner Bereich</a></footer><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script type="module" src="js/home.js"></script></body></html>
