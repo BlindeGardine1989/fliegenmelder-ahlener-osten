@@ -526,3 +526,12 @@ footer{
   font-size:14px;
   text-align:center;
 }
+footer span{
+  width:100%;
+  font-weight:700;
+}
+
+footer a{
+  color:white;
+  font-weight:700;
+}
