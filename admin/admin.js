@@ -140,7 +140,7 @@ function renderReports(reports) {
     card.innerHTML = `
       <div class="adminCardHeader">
         <div>
-          <h2>Meldung ${escapeHtml((r.public_id || r.id || "").slice(0, 8))}</h2>
+          <h2>Meldung ${escapeHtml((r.public_id || r.uuid || "").slice(0, 8))}</h2>
           <p><span class="badge ${statusClass}">${escapeHtml(statusValue)}</span> · öffentlich sichtbar: <strong>${r.visible ? "ja" : "nein"}</strong></p>
         </div>
       </div>
@@ -160,10 +160,10 @@ function renderReports(reports) {
       ${photoUrl ? `<p><a href="${photoUrl}" target="_blank" rel="noopener">Foto öffnen</a></p><img src="${photoUrl}" alt="Foto zur Meldung">` : `<p><em>Kein Foto vorhanden.</em></p>`}
 
       <div class="adminControls">
-        <button class="button" data-action="approve" data-id="${r.id}">Freigeben</button>
-        <button class="button secondary" data-action="pending" data-id="${r.id}">Zurück auf Prüfung</button>
-        <button class="button danger" data-action="hide" data-id="${r.id}">Ausblenden</button>
-        <button class="button danger" data-action="delete" data-id="${r.id}">Löschen</button>
+        <button class="button" data-action="approve" data-id="${r.uuid}">Freigeben</button>
+        <button class="button secondary" data-action="pending" data-id="${r.uuid}">Zurück auf Prüfung</button>
+        <button class="button danger" data-action="hide" data-id="${r.uuid}">Ausblenden</button>
+        <button class="button danger" data-action="delete" data-id="${r.uuid}">Löschen</button>
       </div>
     `;
 
@@ -177,7 +177,7 @@ function renderReports(reports) {
 
       if (action === "delete") {
         if (!confirm("Diese Meldung wirklich endgültig löschen?")) return;
-        const { error } = await supabase.from("reports").delete().eq("id", id);
+        const { error } = await supabase.from("reports").delete().eq("uuid", id);
         if (error) {
           console.error(error);
           alert("Löschen nicht möglich. Bitte Supabase-Delete-Regel prüfen.");
@@ -214,7 +214,7 @@ exportBtn?.addEventListener("click", () => {
 
   for (const r of allReports) {
     rows.push([
-      r.public_id || r.id || "",
+      r.public_id || r.uuid || "",
       r.status || "",
       r.visible ? "ja" : "nein",
       r.client_timestamp || r.created_at || "",
