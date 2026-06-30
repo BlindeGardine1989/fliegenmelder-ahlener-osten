@@ -856,3 +856,47 @@ footer a{
 .danger{background:#9b1c1c!important;border-color:#9b1c1c!important}
 .danger:hover{background:#741313!important}
 @media(max-width:900px){.adminLayout,.adminStats,.adminToolbar,.adminReportGrid{grid-template-columns:1fr}.adminPanelHead{align-items:flex-start;flex-direction:column}}
+/* Feinschliff: Buttons, Karten, Navigation */
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  box-shadow:0 8px 24px rgba(14,76,27,.08);
+}
+
+.button,
+.nav .buttonLink{
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  box-shadow:0 10px 24px rgba(47,129,40,.18);
+}
+
+.button:hover,
+.nav .buttonLink:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 30px rgba(47,129,40,.24);
+}
+
+.card,
+.panel,
+.stat,
+.box{
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.card:hover,
+.panel:hover,
+.stat:hover{
+  transform:translateY(-3px);
+  box-shadow:0 22px 48px rgba(14,76,27,.14);
+  border-color:#c8e3c2;
+}
+
+.nav a{
+  transition:color .18s ease, background .18s ease;
+}
+
+.nav a:hover{
+  color:var(--green);
+  text-decoration:none;
+}
