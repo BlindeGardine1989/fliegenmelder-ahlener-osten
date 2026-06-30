@@ -513,3 +513,16 @@ footer a{color:white}
 
   .logoHero img{width:min(320px,85%)}
 }
+footer{
+  margin-top:26px;
+  background:linear-gradient(90deg,var(--green-dark),var(--green));
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:18px;
+  flex-wrap:wrap;
+  padding:18px 24px;
+  font-size:14px;
+  text-align:center;
+}
