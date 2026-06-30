@@ -193,7 +193,7 @@ function renderReports(reports) {
           ? { status: "hidden", visible: false }
           : { status: "pending", visible: false };
 
-      const { error } = await supabase.from("reports").update(patch).eq("id", id);
+      const { error } = await supabase.from("reports").update(patch).eq("uuid", id);
       if (error) {
         console.error(error);
         alert("Änderung nicht möglich. Bitte Admin-Rechte prüfen.");
