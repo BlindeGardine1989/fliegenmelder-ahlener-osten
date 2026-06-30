@@ -1,3 +1,4 @@
+\
 :root{
   --green:#2f8128;
   --green-dark:#0b3f18;
@@ -13,21 +14,14 @@
 }
 
 *{box-sizing:border-box}
-
 html{scroll-behavior:smooth}
-
 body{
   margin:0;
   font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:var(--bg);
   color:var(--dark);
 }
-
-a{
-  color:var(--green);
-  text-decoration:none;
-}
-
+a{color:var(--green);text-decoration:none}
 a:hover{text-decoration:underline}
 
 .topbar{
@@ -84,10 +78,7 @@ a:hover{text-decoration:underline}
   justify-content:flex-end;
 }
 
-.nav a{
-  color:var(--dark);
-  font-weight:800;
-}
+.nav a{color:var(--dark);font-weight:800}
 
 .nav .buttonLink{
   background:var(--green);
@@ -102,11 +93,9 @@ main{
   padding:24px;
 }
 
-.container{
-  max-width:1040px;
-}
+.container{max-width:1040px}
 
-.box,.panel,.card,.stat{
+.box,.panel,.card,.stat,.adminPanel{
   background:var(--paper);
   border:1px solid var(--line);
   border-radius:24px;
@@ -200,6 +189,8 @@ h2{
   color:var(--green)!important;
   border:1px solid var(--green);
 }
+
+.button.full{width:100%;text-align:center}
 
 .infoSection{
   margin:18px 0;
@@ -321,13 +312,8 @@ h2{
   margin-top:18px;
 }
 
-.card{
-  min-height:210px;
-}
-
-.card p, .panel p{
-  line-height:1.6;
-}
+.card{min-height:210px}
+.card p,.panel p{line-height:1.6}
 
 .pageHero{
   padding:34px;
@@ -337,9 +323,7 @@ h2{
     #fff;
 }
 
-.pageHero h1{
-  font-size:42px;
-}
+.pageHero h1{font-size:42px}
 
 label{
   display:block;
@@ -382,6 +366,12 @@ input,select,textarea{
   margin-top:5px;
 }
 
+#status,#adminStatus,#loginStatus{
+  font-weight:900;
+  min-height:24px;
+  color:var(--green);
+}
+
 .list{
   display:grid;
   gap:12px;
@@ -421,14 +411,99 @@ footer{
   color:white;
   display:flex;
   justify-content:center;
-  gap:24px;
+  align-items:center;
+  gap:18px;
   flex-wrap:wrap;
-  padding:20px;
+  padding:18px 24px;
+  font-size:14px;
+  text-align:center;
 }
 
-footer a{color:white}
+footer span{
+  width:100%;
+  font-weight:700;
+}
+
+footer a{
+  color:white;
+  font-weight:700;
+}
 
 .adminAccess{opacity:.88}
+
+.adminLayout{
+  display:grid;
+  grid-template-columns:270px 1fr;
+  gap:18px;
+  align-items:start;
+}
+
+.adminMenu{
+  padding:18px;
+}
+
+.adminMenu a,.adminMenu button{
+  display:block;
+  width:100%;
+  text-align:left;
+  margin:0 0 8px;
+}
+
+.adminMenu a{
+  padding:12px;
+  border-radius:12px;
+  color:var(--dark);
+  font-weight:850;
+}
+
+.adminMenu a.active,.adminMenu a:hover{
+  background:var(--green-soft);
+  color:var(--green);
+  text-decoration:none;
+}
+
+.adminPanel{padding:22px}
+
+.adminCard{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  background:white;
+  margin-bottom:14px;
+}
+
+.adminCard img{
+  width:180px;
+  height:130px;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+.adminControls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.badge{
+  display:inline-block;
+  border-radius:99px;
+  padding:4px 9px;
+  font-size:12px;
+  font-weight:900;
+  background:#e8f5e3;
+  color:var(--green);
+}
+
+.badge.warn{background:#fff1dd;color:var(--warn)}
+.badge.red{background:#ffe7e9;color:var(--danger)}
+.danger{background:#9b1c1c}
+.danger:hover{background:#741313}
+
+.loginBox{
+  max-width:640px;
+  margin:auto;
+}
 
 @media(max-width:1120px){
   .topbar{
@@ -436,7 +511,7 @@ footer a{color:white}
     flex-direction:column;
   }
 
-  .hero,.layout{
+  .hero,.layout,.adminLayout{
     grid-template-columns:1fr;
   }
 
@@ -445,15 +520,12 @@ footer a{color:white}
   }
 
   .map{height:560px}
-
   .nav{justify-content:flex-start}
-
   .logoHero img{width:min(430px,86%)}
 }
 
 @media(max-width:680px){
   main{padding:12px}
-
   .topbar{padding:11px 13px}
 
   .brand img{
@@ -462,7 +534,6 @@ footer a{color:white}
   }
 
   .brand strong{font-size:18px}
-
   .brand span{font-size:11px}
 
   .nav{
@@ -471,23 +542,15 @@ footer a{color:white}
   }
 
   .nav a{padding:5px 0}
-
   .nav .buttonLink{padding:8px 10px}
 
   h1{font-size:34px}
-
   .pageHero h1{font-size:31px}
-
   .lead{font-size:16px}
-
   .heroText{padding:26px}
 
-  .stats,.cards{
-    grid-template-columns:1fr;
-  }
-
+  .stats,.cards{grid-template-columns:1fr}
   .twoCols{grid-template-columns:1fr}
-
   .map{height:420px}
 
   .legend{
@@ -497,12 +560,10 @@ footer a{color:white}
   }
 
   .mapHead{flex-direction:column}
-
   .mapHead select{max-width:none}
-
   .stat strong{font-size:31px}
-
   .card{min-height:auto}
+  .adminControls .button{width:100%;text-align:center}
 
   footer{
     font-size:14px;
@@ -510,28 +571,5 @@ footer a{color:white}
   }
 
   .logoHero{padding:12px}
-
   .logoHero img{width:min(320px,85%)}
-}
-footer{
-  margin-top:26px;
-  background:linear-gradient(90deg,var(--green-dark),var(--green));
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:18px;
-  flex-wrap:wrap;
-  padding:18px 24px;
-  font-size:14px;
-  text-align:center;
-}
-footer span{
-  width:100%;
-  font-weight:700;
-}
-
-footer a{
-  color:white;
-  font-weight:700;
 }

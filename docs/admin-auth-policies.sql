@@ -1,6 +1,9 @@
 -- Adminbereich absichern mit Supabase Auth.
--- Nur diese E-Mail darf alle Meldungen lesen und bearbeiten.
--- Falls eine andere Admin-Mail genutzt werden soll, E-Mail-Adresse ersetzen.
+-- Aktuell erlaubte Admin-E-Mail:
+-- fliegenmelder.ahlen@gmail.com
+--
+-- Wenn ihr weitere Admins ergänzen wollt, tragt die E-Mail-Adressen unten
+-- zusätzlich in die Listen ein.
 
 drop policy if exists "temporary admin can read reports" on public.reports;
 drop policy if exists "temporary admin can update reports" on public.reports;
@@ -11,7 +14,9 @@ on public.reports
 for select
 to authenticated
 using (
-  auth.jwt() ->> 'email' = 'sarahstefanowitz@yahoo.de'
+  lower(auth.jwt() ->> 'email') in (
+    'fliegenmelder.ahlen@gmail.com'
+  )
 );
 
 drop policy if exists "admin can update reports" on public.reports;
@@ -20,8 +25,12 @@ on public.reports
 for update
 to authenticated
 using (
-  auth.jwt() ->> 'email' = 'sarahstefanowitz@yahoo.de'
+  lower(auth.jwt() ->> 'email') in (
+    'fliegenmelder.ahlen@gmail.com'
+  )
 )
 with check (
-  auth.jwt() ->> 'email' = 'sarahstefanowitz@yahoo.de'
+  lower(auth.jwt() ->> 'email') in (
+    'fliegenmelder.ahlen@gmail.com'
+  )
 );
