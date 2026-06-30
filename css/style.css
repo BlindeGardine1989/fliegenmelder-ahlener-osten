@@ -747,3 +747,44 @@ footer a{
     flex-direction: column;
   }
 }
+/* FIX: Buttons sichtbar machen */
+.button,
+.nav .buttonLink {
+  background: #2f8128 !important;
+  color: #ffffff !important;
+  border: 2px solid #2f8128 !important;
+  border-radius: 14px !important;
+  padding: 14px 18px !important;
+  font-weight: 900 !important;
+  display: inline-block !important;
+  text-align: center !important;
+}
+
+.button:hover,
+.nav .buttonLink:hover {
+  background: #0b3f18 !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+.button.ghost {
+  background: #ffffff !important;
+  color: #2f8128 !important;
+  border: 2px solid #2f8128 !important;
+}
+
+/* Handy-Menü sauberer */
+@media (max-width: 680px) {
+  .nav .buttonLink {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions .button {
+    width: 100%;
+  }
+}
