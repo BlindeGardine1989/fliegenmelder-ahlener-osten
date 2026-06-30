@@ -84,3 +84,10 @@ footer a{color:white}
   #map{height:430px}
   .legend{position:static;transform:none;margin:10px}
 }
+.heroLogo{
+  width:70%;
+  max-width:420px;
+  height:auto;
+  display:block;
+  margin:auto;
+}
