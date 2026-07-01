@@ -24,9 +24,10 @@ html{scroll-behavior:smooth}
 body{
   margin:0;
   font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:radial-gradient(circle at top left,rgba(119,185,74,.14),transparent 32%),
-             radial-gradient(circle at top right,rgba(47,129,40,.08),transparent 28%),
-             var(--bg);
+  background:
+    radial-gradient(circle at top left,rgba(119,185,74,.14),transparent 32%),
+    radial-gradient(circle at top right,rgba(47,129,40,.08),transparent 28%),
+    var(--bg);
   color:var(--dark);
 }
 
@@ -37,7 +38,7 @@ a:hover{text-decoration:none}
   position:sticky;
   top:0;
   z-index:1000;
-  background:rgba(255,255,255,.92);
+  background:rgba(255,255,255,.94);
   backdrop-filter:blur(18px);
   border-bottom:1px solid var(--line);
   box-shadow:0 10px 26px rgba(14,76,27,.07);
@@ -100,7 +101,8 @@ a:hover{text-decoration:none}
   transition:.18s ease;
 }
 
-.nav a:hover{
+.nav a:hover,
+.nav a[aria-current="page"]{
   color:var(--green);
   background:var(--soft);
   transform:translateY(-1px);
@@ -114,7 +116,7 @@ main{
 
 .container{max-width:1080px}
 
-.box,.panel,.card,.stat,.adminPanel,.adminLoginCard{
+.box,.panel,.card,.stat{
   background:rgba(255,255,255,.96);
   border:1px solid var(--line);
   border-radius:26px;
@@ -192,7 +194,8 @@ button.button:hover,
 
 .button.full{width:100%}
 
-.button.danger,.danger{
+.button.danger,
+.danger{
   background:linear-gradient(135deg,#b42318,#741313)!important;
   border-color:#9b1c1c!important;
   color:#fff!important;
@@ -229,14 +232,26 @@ button.button:hover,
   border:1px solid rgba(255,255,255,.9);
   border-radius:28px;
   display:flex;
+  flex-direction:column;
+  gap:18px;
   align-items:center;
   justify-content:center;
+  text-align:center;
 }
 
 .logoHero img{
-  width:min(500px,90%);
+  width:min(460px,88%);
   height:auto;
   filter:drop-shadow(0 20px 28px rgba(14,76,27,.12));
+}
+
+.heroTagline{
+  color:var(--green);
+  background:var(--soft);
+  border:1px solid #cbe8c2;
+  border-radius:999px;
+  padding:10px 16px;
+  font-weight:950;
 }
 
 .actions{
@@ -336,6 +351,24 @@ button.button:hover,
 }
 
 .card p,.panel p{color:var(--text)}
+
+.timeline{
+  display:grid;
+  gap:14px;
+}
+
+.timelineItem{
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:#fff;
+}
+
+.docGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
 
 .pageHero{
   padding:44px;
@@ -471,6 +504,15 @@ footer{
   text-align:center;
 }
 
+footer::before{
+  content:"Fliegenmelder Ahlener Osten";
+  width:100%;
+  display:block;
+  font-size:22px;
+  font-weight:950;
+  letter-spacing:-.04em;
+}
+
 footer span{
   width:100%;
   font-weight:850;
@@ -510,36 +552,16 @@ footer a:hover{background:rgba(255,255,255,.14)}
   transition:transform .2s ease, opacity .2s ease;
 }
 
-.adminMain{max-width:1180px}
-.adminLoginCard{max-width:620px;margin:24px auto;padding:32px}
-.adminLayout{display:grid;grid-template-columns:270px 1fr;gap:18px;align-items:start}
-.adminMenu{padding:18px}
-.adminMenu a,.adminMenu button{display:block;width:100%;text-align:left;margin:0 0 8px}
-.adminMenu a{padding:12px;border-radius:13px;color:var(--dark);font-weight:850}
-.adminMenu a.active,.adminMenu a:hover{background:var(--soft);color:var(--green)}
-.adminPanel{padding:24px}
-.adminStats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
-.adminPanelHead{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px}
-.adminToolbar{display:grid;grid-template-columns:1fr 260px;gap:14px;margin-bottom:16px}
-.adminToolbar label{margin:0}
-.adminCard{border:1px solid var(--line);border-radius:18px;padding:18px;background:white;margin-bottom:14px}
-.adminReportGrid{display:grid;grid-template-columns:1.4fr .9fr;gap:14px}
-.adminControls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.badge{display:inline-block;border-radius:99px;padding:4px 9px;font-size:12px;font-weight:900;background:#e8f5e3;color:var(--green)}
-.badge.warn{background:#fff1dd;color:var(--warn)}
-.badge.red{background:#ffe7e9;color:var(--danger)}
-
 @media(max-width:1120px){
   .topbar{align-items:flex-start;flex-direction:column}
-  .hero,.layout,.adminLayout{grid-template-columns:1fr}
-  .cards{grid-template-columns:repeat(2,1fr)}
+  .hero,.layout{grid-template-columns:1fr}
+  .cards,.docGrid{grid-template-columns:repeat(2,1fr)}
   .map{height:560px}
   .nav{justify-content:flex-start}
 }
 
 @media(max-width:900px){
-  .stats,.adminStats,.adminToolbar,.adminReportGrid{grid-template-columns:1fr}
-  .adminPanelHead{align-items:flex-start;flex-direction:column}
+  .stats{grid-template-columns:1fr}
 }
 
 @media(max-width:760px){
@@ -625,206 +647,11 @@ footer a:hover{background:rgba(255,255,255,.14)}
   .lead{font-size:16px}
   .actions{flex-direction:column}
   .actions .button{width:100%}
-  .cards{grid-template-columns:1fr}
+  .cards,.docGrid{grid-template-columns:1fr}
   .map{height:420px}
   .legend{position:static;transform:none;margin:10px 0 0}
   .mapHead{flex-direction:column}
   .mapHead select{max-width:none}
   .card{min-height:auto}
   footer{font-size:14px;gap:12px}
-}
-
-
-
-/* =========================================================
-   Version 8 – Premium-Feinschliff
-   ========================================================= */
-
-body{
-  background:
-    radial-gradient(circle at 8% 0%,rgba(119,185,74,.16),transparent 30%),
-    radial-gradient(circle at 100% 10%,rgba(47,129,40,.10),transparent 28%),
-    linear-gradient(180deg,#f9fcf7 0%,#f1f8ee 100%);
-}
-
-.topbar{
-  border-bottom:1px solid rgba(223,233,223,.85);
-}
-
-.nav a[aria-current="page"],
-.nav a.active{
-  background:var(--soft);
-  color:var(--green);
-}
-
-.hero{
-  background:
-    radial-gradient(circle at 20% 15%,rgba(255,255,255,.75),transparent 26%),
-    linear-gradient(135deg,#f2fbef 0%,#d8f2ce 100%);
-  border-color:#d2ebcc;
-}
-
-.heroText,
-.logoHero,
-.pageHero,
-.card,
-.panel{
-  backdrop-filter:blur(10px);
-}
-
-.heroText{
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95);
-}
-
-.logoHero{
-  position:relative;
-}
-
-.logoHero::before{
-  content:"Bürgerinitiative Ahlener Osten";
-  position:absolute;
-  left:24px;
-  right:24px;
-  bottom:22px;
-  padding:10px 14px;
-  color:var(--green);
-  background:rgba(238,248,235,.92);
-  border:1px solid rgba(203,232,194,.9);
-  border-radius:999px;
-  font-weight:950;
-  font-size:14px;
-}
-
-.cards .card h2{
-  font-size:26px;
-}
-
-.card a{
-  display:inline-flex;
-  margin-top:8px;
-  font-weight:950;
-}
-
-.card a::after{
-  content:"";
-  width:0;
-  transition:width .18s ease;
-}
-
-.card:hover a::after{
-  width:6px;
-}
-
-.infoSection{
-  border-radius:30px;
-}
-
-.pageHero{
-  position:relative;
-  overflow:hidden;
-}
-
-.pageHero::after{
-  content:"";
-  position:absolute;
-  width:220px;
-  height:220px;
-  right:-70px;
-  top:-80px;
-  background:rgba(255,255,255,.35);
-  border-radius:50%;
-}
-
-.pageHero > *{
-  position:relative;
-  z-index:1;
-}
-
-footer{
-  margin-top:46px;
-  padding:34px 24px;
-}
-
-footer::before{
-  content:"Fliegenmelder Ahlener Osten";
-  width:100%;
-  display:block;
-  font-size:22px;
-  font-weight:950;
-  letter-spacing:-.04em;
-}
-
-.menuToggle{
-  transition:transform .18s ease,box-shadow .18s ease;
-}
-
-.menuToggle:hover{
-  transform:translateY(-1px);
-  box-shadow:0 16px 32px rgba(14,76,27,.16);
-}
-
-@media(max-width:760px){
-  .topbar{
-    padding:16px;
-  }
-
-  .brand{
-    gap:12px;
-  }
-
-  .brand img{
-    width:54px;
-    height:54px;
-  }
-
-  .brand strong{
-    font-size:20px;
-  }
-
-  .menuToggle{
-    width:56px;
-    height:56px;
-    border-radius:18px;
-  }
-
-  .nav{
-    padding:16px;
-  }
-
-  .nav a{
-    font-size:18px;
-    font-weight:950;
-  }
-
-  .hero{
-    background:linear-gradient(135deg,#edf9eb 0%,#daf3d1 100%);
-    border-radius:30px;
-  }
-
-  .heroText{
-    border-radius:26px;
-  }
-
-  .hero h1{
-    font-size:42px;
-    line-height:1.08;
-  }
-
-  .logoHero::before{
-    position:static;
-    margin-top:18px;
-    display:block;
-  }
-
-  .cards .card{
-    padding:28px;
-  }
-
-  .cards .card h2{
-    font-size:28px;
-  }
-
-  footer::before{
-    font-size:20px;
-  }
 }
