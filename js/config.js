@@ -1,14 +1,3 @@
-// Supabase ist vorbereitet.
-// Die Project URL ist bereits eingetragen.
-// Bitte nur noch den Publishable Key einsetzen und IS_CONFIGURED auf true lassen.
-
-export const SUPABASE_URL = "https://jlvfchlbjaviqhfclvva.supabase.co";
-export const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Vpur2TPyGCFfIpxg3Prh0g__8s6uzY1";
-
-// Auf true lassen, sobald der Publishable Key eingetragen wurde.
-export const IS_CONFIGURED = true;
-
-// Karten-Mittelpunkt: Ahlener Osten
-export const ORT_LAT = 51.7658;
-export const ORT_LNG = 7.9198;
-export const START_ZOOM = 13;
+export const SUPABASE_URL = "HIER_DEINE_SUPABASE_URL";
+export const SUPABASE_PUBLISHABLE_KEY = "HIER_DEINEN_SUPABASE_KEY_EINTRAGEN";
+export const IS_CONFIGURED = SUPABASE_URL.startsWith("https://") && !SUPABASE_PUBLISHABLE_KEY.includes("HIER_DEINEN");
