@@ -92,4 +92,109 @@ footer span{width:100%;font-weight:850}footer a{color:white;font-weight:800;padd
   h1{font-size:36px}.pageHero{padding:30px;border-radius:24px}.pageHero h1{font-size:32px}.lead{font-size:16px}
   .actions{flex-direction:column}.actions .button{width:100%}.cards{grid-template-columns:1fr}.twoCols{grid-template-columns:1fr}.map{height:420px}
   .legend{position:static;transform:none;margin:10px 0 0}.mapHead{flex-direction:column}.mapHead select{max-width:none}.card{min-height:auto}footer{font-size:14px;gap:12px}
+}/* =========================================================
+   Mobiles Hamburger-Menü
+   Diese Ergänzung ganz unten in css/style.css einfügen
+   ========================================================= */
+
+.menuToggle{
+  display:none;
+  width:48px;
+  height:48px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#ffffff;
+  box-shadow:0 10px 24px rgba(14,76,27,.10);
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:6px;
+  margin-left:auto;
+}
+
+.menuToggle span{
+  display:block;
+  width:24px;
+  height:3px;
+  border-radius:99px;
+  background:var(--deep);
+  transition:transform .2s ease, opacity .2s ease;
+}
+
+@media(max-width:760px){
+  .topbar{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:center;
+    gap:12px;
+  }
+
+  .brand{
+    min-width:0;
+  }
+
+  .menuToggle{
+    display:flex;
+  }
+
+  .nav{
+    grid-column:1 / -1;
+    width:100%;
+    display:none;
+    flex-direction:column;
+    align-items:stretch;
+    gap:8px;
+    padding:14px;
+    margin-top:4px;
+    background:#ffffff;
+    border:1px solid var(--line);
+    border-radius:22px;
+    box-shadow:0 18px 45px rgba(14,76,27,.14);
+  }
+
+  .topbar.menuOpen .nav{
+    display:flex;
+    animation:menuSlide .18s ease both;
+  }
+
+  .nav a{
+    width:100%;
+    padding:14px 16px;
+    font-size:17px;
+    border-radius:14px;
+    background:#f8fcf6;
+  }
+
+  .nav .buttonLink{
+    margin-left:0;
+    margin-top:6px;
+    text-align:center;
+    justify-content:center;
+    font-size:18px;
+    padding:16px 18px;
+  }
+
+  .topbar.menuOpen .menuToggle span:nth-child(1){
+    transform:translateY(9px) rotate(45deg);
+  }
+
+  .topbar.menuOpen .menuToggle span:nth-child(2){
+    opacity:0;
+  }
+
+  .topbar.menuOpen .menuToggle span:nth-child(3){
+    transform:translateY(-9px) rotate(-45deg);
+  }
+}
+
+@keyframes menuSlide{
+  from{
+    opacity:0;
+    transform:translateY(-8px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
 }
