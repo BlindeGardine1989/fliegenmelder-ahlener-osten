@@ -739,4 +739,25 @@ footer a:hover{
   .logoHero{
     min-height:auto;
   }
-}}
+  /* Hero sichtbar stärker machen */
+
+.hero{
+  background:#d7f1c9 !important;
+  border:3px solid #8fcf78 !important;
+  padding:26px !important;
+  gap:26px !important;
+}
+
+.heroText,
+.logoHero{
+  background:#ffffff !important;
+  border:2px solid #c9e8bf !important;
+}
+
+.logoHero img{
+  width:min(560px,96%) !important;
+}
+
+.hero h1{
+  font-size:62px !important;
+}
