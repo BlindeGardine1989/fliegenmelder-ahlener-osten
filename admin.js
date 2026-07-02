@@ -1,4 +1,21 @@
-import { supabase, escapeHtml, formatDate } from "./app.js";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.js";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatDate(value) {
+  if (!value) return "–";
+  return new Date(value).toLocaleString("de-DE");
+}
 
 const status = document.querySelector("#adminStatus");
 const list = document.querySelector("#adminList");
