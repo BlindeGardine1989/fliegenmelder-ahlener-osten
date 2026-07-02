@@ -41,15 +41,16 @@ if (form) {
     const f = new FormData(form);
 
     const payload = {
-      address: f.get("address"),
-      severity: Number(f.get("severity")),
-      since: f.get("since"),
-      time_of_day: f.get("time_of_day"),
-      note: f.get("note"),
-      contact_private: f.get("contact_private"),
-      status: "pending",
-      visible: false
-    };
+  public_id: crypto.randomUUID(),
+  address: f.get("address"),
+  severity: Number(f.get("severity")),
+  since: f.get("since"),
+  time_of_day: f.get("time_of_day"),
+  note: f.get("note"),
+  contact_private: f.get("contact_private"),
+  status: "pending",
+  visible: false
+};
 
     const { error } = await supabase.from("reports").insert(payload);
 
