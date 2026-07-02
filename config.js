@@ -1,6 +1,6 @@
 // Supabase → Project Settings → API
-export const SUPABASE_URL = "HIER_EINTRAGEN";
-export const SUPABASE_ANON_KEY = "HIER_EINTRAGEN";
+export const SUPABASE_URL = "https://jlvfchlbjaviqhfclvva.supabase.co";
+export const SUPABASE_ANON_KEY = "sb_publishable_Vpur2TPyGCFfIpxg3Prh0g__8s6uzY1";
 
 // Ahlener Osten grob voreingestellt.
 // Kann später exakt angepasst werden.
