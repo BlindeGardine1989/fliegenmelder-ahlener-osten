@@ -1,7 +1,65 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, IS_CONFIGURED } from "./config.js";
+
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-export function escapeHtml(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
-export function formatDate(value){if(!value)return"–";try{return new Intl.DateTimeFormat("de-DE",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value))}catch{return value}}
-const form=document.querySelector("#reportForm");const status=document.querySelector("#status");
-if(form){form.addEventListener("submit",async e=>{e.preventDefault();if(!IS_CONFIGURED){status.textContent="Supabase ist noch nicht verbunden.";return}status.textContent="Meldung wird gesendet ...";const f=new FormData(form);const payload={address:f.get("address"),severity: Number(formData.get("severity")),since:f.get("since"),time_of_day:f.get("time_of_day"),note:f.get("note"),contact_private:f.get("contact_private"),status:"pending",visible:false};const {error}=await supabase.from("reports").insert(payload);if(error){console.error(error);status.textContent="Meldung konnte nicht gesendet werden: "+error.message;return}form.reset();status.textContent="Danke. Deine Meldung wurde eingereicht und wird geprüft."})}
+
+export function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+export function formatDate(value) {
+  if (!value) return "–";
+  try {
+    return new Intl.DateTimeFormat("de-DE", {
+      dateStyle: "medium",
+      timeStyle: "short"
+    }).format(new Date(value));
+  } catch {
+    return value;
+  }
+}
+
+const form = document.querySelector("#reportForm");
+const status = document.querySelector("#status");
+
+if (form) {
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!IS_CONFIGURED) {
+      status.textContent = "Supabase ist noch nicht verbunden.";
+      return;
+    }
+
+    status.textContent = "Meldung wird gesendet ...";
+
+    const f = new FormData(form);
+
+    const payload = {
+      address: f.get("address"),
+      severity: Number(f.get("severity")),
+      since: f.get("since"),
+      time_of_day: f.get("time_of_day"),
+      note: f.get("note"),
+      contact_private: f.get("contact_private"),
+      status: "pending",
+      visible: false
+    };
+
+    const { error } = await supabase.from("reports").insert(payload);
+
+    if (error) {
+      console.error(error);
+      status.textContent = "Meldung konnte nicht gesendet werden: " + error.message;
+      return;
+    }
+
+    form.reset();
+    status.textContent = "Danke. Deine Meldung wurde eingereicht und wird geprüft.";
+  });
+}
