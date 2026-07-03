@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin – Fliegenmelder Ahlener Osten</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin | Fliegenmelder Ahlener Osten</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header class="siteHeader">
+<header class="topbar">
   <a class="brand" href="index.html">
-    <img src="assets/logo.svg" alt="" />
+    <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
     <div>
       <strong>Fliegenmelder<br>Ahlener Osten</strong>
       <span>Admin-Bereich</span>
@@ -20,14 +20,31 @@
   </nav>
 </header>
 
-<main>
-  <section class="adminPanel">
-    <h1>Meldungen prüfen</h1>
-    <p class="hint">
-      Für den echten Betrieb sollte dieser Bereich mit Supabase Auth geschützt werden.
-      Bis dahin können Meldungen auch direkt in Supabase freigegeben werden.
-    </p>
-    <button id="exportCsv" type="button">CSV exportieren</button>
+<main class="container">
+  <section id="loginBox" class="card">
+    <h1>Admin-Login</h1>
+    <p class="hint">Bitte mit dem Fliegenmelder-Account anmelden.</p>
+
+    <label>E-Mail</label>
+    <input id="loginEmail" type="email" placeholder="fliegenmelder.ahlen@gmail.com">
+
+    <label>Passwort</label>
+    <input id="loginPassword" type="password" placeholder="Passwort">
+
+    <button id="loginButton" class="button">Einloggen</button>
+    <p id="loginStatus"></p>
+  </section>
+
+  <section id="adminPanel" class="adminPanel" hidden>
+    <div class="panelHead">
+      <div>
+        <p class="eyebrow">Adminbereich</p>
+        <h1>Meldungen prüfen</h1>
+      </div>
+      <button id="logoutButton" class="button secondary">Logout</button>
+    </div>
+
+    <button id="exportCsv" class="button">CSV exportieren</button>
     <p id="adminStatus"></p>
     <div id="adminList" class="adminList"></div>
   </section>
