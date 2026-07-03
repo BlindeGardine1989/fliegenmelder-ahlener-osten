@@ -14,6 +14,15 @@ const logoutButton = document.querySelector("#logoutButton");
 const status = document.querySelector("#adminStatus");
 const list = document.querySelector("#adminList");
 const exportButton = document.querySelector("#exportCsv");
+const searchInput = document.querySelector("#adminSearch");
+const filterSelect = document.querySelector("#adminFilter");
+
+const statTotal = document.querySelector("#statTotal");
+const statApproved = document.querySelector("#statApproved");
+const statPending = document.querySelector("#statPending");
+const statAvg = document.querySelector("#statAvg");
+
+let allReports = [];
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -27,6 +36,12 @@ function escapeHtml(value) {
 function formatDate(value) {
   if (!value) return "–";
   return new Date(value).toLocaleString("de-DE");
+}
+
+function statusLabel(value) {
+  if (value === "approved") return "Freigegeben";
+  if (value === "hidden") return "Ausgeblendet";
+  return "In Prüfung";
 }
 
 async function checkSession() {
@@ -66,6 +81,9 @@ logoutButton?.addEventListener("click", async () => {
   await checkSession();
 });
 
+searchInput?.addEventListener("input", renderCurrentView);
+filterSelect?.addEventListener("change", renderCurrentView);
+
 async function loadReports() {
   status.textContent = "Meldungen werden geladen ...";
 
@@ -80,38 +98,106 @@ async function loadReports() {
     return;
   }
 
-  renderReports(data || []);
+  allReports = data || [];
+  updateStats(allReports);
+  renderCurrentView();
+}
+
+function updateStats(reports) {
+  const total = reports.length;
+  const approved = reports.filter(r => r.visible === true || r.status === "approved").length;
+  const pending = reports.filter(r => !r.visible && (r.status || "pending") === "pending").length;
+
+  const severities = reports
+    .map(r => Number(r.severity))
+    .filter(n => Number.isFinite(n));
+
+  const avg = severities.length
+    ? (severities.reduce((a, b) => a + b, 0) / severities.length).toFixed(1)
+    : "0";
+
+  statTotal.textContent = total;
+  statApproved.textContent = approved;
+  statPending.textContent = pending;
+  statAvg.textContent = avg;
+}
+
+function getFilteredReports() {
+  const query = (searchInput?.value || "").trim().toLowerCase();
+  const filter = filterSelect?.value || "all";
+
+  return allReports.filter(r => {
+    const reportStatus = r.status || "pending";
+
+    if (filter !== "all" && reportStatus !== filter) {
+      return false;
+    }
+
+    if (!query) return true;
+
+    const haystack = [
+      r.address,
+      r.note,
+      r.contact_private,
+      r.since,
+      r.time_of_day,
+      r.status
+    ].join(" ").toLowerCase();
+
+    return haystack.includes(query);
+  });
+}
+
+function renderCurrentView() {
+  renderReports(getFilteredReports());
+}
+
+function severityBar(value) {
+  const s = Number(value);
+  const filled = Number.isFinite(s) ? Math.max(0, Math.min(5, s)) : 0;
+  return "●".repeat(filled) + "○".repeat(5 - filled);
 }
 
 function renderReports(reports) {
   list.innerHTML = "";
 
   if (!reports.length) {
-    list.innerHTML = `<article class="adminCard"><p>Keine Meldungen vorhanden.</p></article>`;
-    status.textContent = "Keine Meldungen vorhanden.";
+    list.innerHTML = `<article class="adminCard"><p>Keine passenden Meldungen vorhanden.</p></article>`;
+    status.textContent = "Keine passenden Meldungen vorhanden.";
     return;
   }
 
-  status.textContent = `${reports.length} Meldung(en) gefunden.`;
+  status.textContent = `${reports.length} Meldung(en) angezeigt.`;
 
   reports.forEach(r => {
     const id = r.id;
     const title = r.public_id || r.id || "Meldung";
+    const currentStatus = r.status || "pending";
 
     const card = document.createElement("article");
-    card.className = "adminCard";
+    card.className = `adminCard status-${currentStatus}`;
 
     card.innerHTML = `
-      <h2>Meldung ${escapeHtml(String(title).slice(0, 8))}</h2>
+      <div class="adminCardHead">
+        <div>
+          <p class="eyebrow">${statusLabel(currentStatus)}</p>
+          <h2>Meldung ${escapeHtml(String(title).slice(0, 8))}</h2>
+        </div>
+        <span class="statusBadge ${currentStatus}">
+          ${escapeHtml(statusLabel(currentStatus))}
+        </span>
+      </div>
+
       <p>
-        <strong>Status:</strong> ${escapeHtml(r.status || "pending")}<br>
         <strong>Sichtbar:</strong> ${r.visible ? "ja" : "nein"}<br>
         <strong>Datum:</strong> ${formatDate(r.created_at)}<br>
         <strong>Ort:</strong> ${escapeHtml(r.address || "–")}<br>
-        <strong>Belastung:</strong> ${escapeHtml(r.severity || "–")}/5<br>
+        <strong>Belastung:</strong> ${escapeHtml(r.severity || "–")}/5
+        <span class="severityBar">${severityBar(r.severity)}</span><br>
         <strong>Seit:</strong> ${escapeHtml(r.since || "–")}<br>
         <strong>Tageszeit:</strong> ${escapeHtml(r.time_of_day || "–")}
       </p>
+
       <p><strong>Bemerkung:</strong><br>${escapeHtml(r.note || "–")}</p>
       <p><strong>Kontakt intern:</strong><br>${escapeHtml(r.contact_private || "–")}</p>
 
@@ -171,18 +257,9 @@ async function handleAction(button) {
   await loadReports();
 }
 
-exportButton?.addEventListener("click", async () => {
-  const { data, error } = await supabase
-    .from("reports")
-    .select("*")
-    .order("created_at", { ascending: false });
+exportButton?.addEventListener("click", () => {
+  const rows = getFilteredReports();
 
-  if (error) {
-    alert("CSV konnte nicht erstellt werden.");
-    return;
-  }
-
-  const rows = data || [];
   const header = [
     "Datum",
     "Status",
