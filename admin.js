@@ -8,8 +8,32 @@ const adminPanel = document.querySelector("#adminPanel");
 const loginEmail = document.querySelector("#loginEmail");
 const loginPassword = document.querySelector("#loginPassword");
 const loginButton = document.querySelector("#loginButton");
+const forgotPasswordButton = document.querySelector("#forgotPasswordButton");
 const loginStatus = document.querySelector("#loginStatus");
 const logoutButton = document.querySelector("#logoutButton");
+
+forgotPasswordButton?.addEventListener("click", async () => {
+  const email = loginEmail.value.trim();
+
+  if (!email) {
+    loginStatus.textContent = "Bitte zuerst die E-Mail-Adresse eintragen.";
+    return;
+  }
+
+  loginStatus.textContent = "E-Mail zum Zurücksetzen wird gesendet ...";
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: "https://fliegenmelder-ahlener-osten.pages.dev/reset-password.html"
+  });
+
+  if (error) {
+    console.error(error);
+    loginStatus.textContent = "E-Mail konnte nicht gesendet werden.";
+    return;
+  }
+
+  loginStatus.textContent = "E-Mail wurde gesendet. Bitte Postfach prüfen.";
+});
 
 const status = document.querySelector("#adminStatus");
 const list = document.querySelector("#adminList");
