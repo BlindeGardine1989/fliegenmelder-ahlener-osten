@@ -36,17 +36,47 @@
   </section>
 
   <section id="adminPanel" class="adminPanel" hidden>
-    <div class="panelHead">
-      <div>
-        <p class="eyebrow">Adminbereich</p>
-        <h1>Meldungen prüfen</h1>
-      </div>
-      <button id="logoutButton" class="button secondary">Logout</button>
+  <div class="panelHead">
+    <div>
+      <p class="eyebrow">Adminbereich</p>
+      <h1>Meldungen prüfen</h1>
     </div>
+    <button id="logoutButton" class="button secondary">Logout</button>
+  </div>
 
+  <div class="adminStats">
+    <article>
+      <strong id="statTotal">0</strong>
+      <span>Meldungen gesamt</span>
+    </article>
+    <article>
+      <strong id="statApproved">0</strong>
+      <span>Freigegeben</span>
+    </article>
+    <article>
+      <strong id="statPending">0</strong>
+      <span>In Prüfung</span>
+    </article>
+    <article>
+      <strong id="statAvg">0</strong>
+      <span>Ø Belastung</span>
+    </article>
+  </div>
+
+  <div class="adminToolbar">
+    <input id="adminSearch" type="search" placeholder="Straße oder Bemerkung suchen">
+    <select id="adminFilter">
+      <option value="all">Alle Meldungen</option>
+      <option value="pending">Nur Prüfung</option>
+      <option value="approved">Nur freigegeben</option>
+      <option value="hidden">Nur ausgeblendet</option>
+    </select>
     <button id="exportCsv" class="button">CSV exportieren</button>
-    <p id="adminStatus"></p>
-    <div id="adminList" class="adminList"></div>
+  </div>
+
+  <p id="adminStatus"></p>
+  <div id="adminList" class="adminList"></div>
+
   </section>
 </main>
 
