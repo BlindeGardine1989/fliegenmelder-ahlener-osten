@@ -61,8 +61,8 @@ async function loadMap() {
   reports.forEach(r => {
     if (!r.lat || !r.lng) return;
 
-const lat = Number(r.lat);
-const lng = Number(r.lng);
+    const lat = Number(r.lat);
+    const lng = Number(r.lng);
 
     const marker = L.marker([lat, lng], {
       icon: markerIcon(r.severity)
