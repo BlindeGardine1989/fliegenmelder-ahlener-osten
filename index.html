@@ -1,19 +1,145 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fliegenmelder Ahlener Osten</title><link rel="icon" href="assets/logo.png" type="image/png"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></head><body><header class="topbar"><a class="brand" href="index.html"><img src="assets/logo.png" alt="Logo"><div><strong>Fliegenmelder<br>Ahlener Osten</strong><span>Melden. Dokumentieren. Gemeinsam etwas bewegen.</span></div></a><nav class="nav">
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fliegenmelder Ahlener Osten</title>
+  <meta name="description" content="Fliegenmelder Ahlener Osten: Meldungen zur Fliegenbelastung einreichen, Meldungskarte ansehen und aktuelle Entwicklungen verfolgen.">
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+    <div>
+      <strong>Fliegenmelder<br>Ahlener Osten</strong>
+      <span>Melden. Dokumentieren. Transparent informieren.</span>
+    </div>
+  </a>
+  <nav class="nav">
     <a href="index.html" aria-current="page">Startseite</a>
-    <a href="melden.html">Meldungen</a>
-    <a href="karte.html">Karte</a>
+    <a href="melden.html">Fliegen melden</a>
+    <a href="karte.html">Meldungskarte</a>
     <a href="neuigkeiten.html">Neuigkeiten</a>
-    <a href="termine.html">Termine</a>
+    <a href="chronik.html">Chronik</a>
     <a href="dokumente.html">Dokumente</a>
+    <a href="termine.html">Termine</a>
     <a href="ueber-uns.html">Über uns</a>
     <a href="kontakt.html">Kontakt</a>
-    <a href="chronik.html">Chronik</a>
     <a class="buttonLink" href="melden.html">+ Meldung einreichen</a>
-  </nav></header><main>
-<section class="hero"><div class="box heroText"><p class="eyebrow">Informationsplattform</p><h1>Fliegenmelder Ahlener Osten</h1><p class="lead">Die Informationsplattform der Bürgerinitiative Ahlener Osten.</p><div class="actions"><a class="button" href="melden.html">Jetzt Fliegen melden</a><a class="button ghost" href="karte.html">Meldungskarte ansehen</a></div></div><div class="box logoHero"><img src="assets/logo.png" alt="Logo"><div class="heroTagline">Melden. Dokumentieren. Gemeinsam etwas bewegen.</div></div></section>
-<section class="box infoSection introBox"><div class="introIcon">💚</div><p>Diese Homepage wird vollständig ehrenamtlich von der Bürgerinitiative Ahlener Osten betrieben.</p></section>
-<section class="stats"><article class="stat"><strong id="statTotal">0</strong><span>Meldungen öffentlich</span></article><article class="stat"><strong id="statMonth">0</strong><span>diesen Monat</span></article><article class="stat"><strong id="statAvg">–</strong><span>Ø Belastung</span></article><article class="stat"><strong id="statHotspots">0</strong><span>starke Belastungen</span></article></section>
-<section class="cards"><article class="card"><h2>🪰 Meldung</h2><p>Fliegenbelastung schnell und unkompliziert melden.</p><a href="melden.html">Jetzt melden →</a></article><article class="card"><h2>🗺️ Karte</h2><p>Freigegebene Meldungen auf der Übersichtskarte ansehen.</p><a href="karte.html">Karte ansehen →</a></article><article class="card"><h2>📰 Neuigkeiten</h2><p>Aktuelle Entwicklungen und Hinweise verfolgen.</p><a href="neuigkeiten.html">Neuigkeiten lesen →</a></article><article class="card"><h2>📅 Termine</h2><p>Bürgerdialoge, Sitzungen und wichtige Termine finden.</p><a href="termine.html">Termine ansehen →</a></article></section>
-<section class="layout"><section class="panel mapPanel"><div class="mapHead"><div><p class="eyebrow">Öffentliche Übersicht</p><h2>Meldungskarte</h2></div><select id="severityFilter"><option value="all">Alle Meldungen</option><option value="4plus">Nur stark / sehr stark</option><option value="1">1 sehr gering</option><option value="2">2 gering</option><option value="3">3 mittel</option><option value="4">4 stark</option><option value="5">5 sehr stark</option></select></div><div id="map" class="map"></div><div class="legend"><strong>Belastung</strong><span><i class="dot s1"></i>1</span><span><i class="dot s2"></i>2</span><span><i class="dot s3"></i>3</span><span><i class="dot s4"></i>4</span><span><i class="dot s5"></i>5</span></div></section><section class="panel"><h2>Neueste Meldungen</h2><p>Die zuletzt freigegebenen Meldungen im Überblick.</p><div id="latestReports" class="list"></div></section></section>
-<section class="newsPreview"><article class="card"><p class="eyebrow">Aktuell</p><h2>Homepage veröffentlicht</h2><p>Die zentrale Informationsplattform ist online.</p><a href="neuigkeiten.html">Mehr erfahren →</a></article><article class="card"><p class="eyebrow">Chronik</p><h2>Verlauf ansehen</h2><p>Die Chronik zeigt wichtige Schritte und Entwicklungen.</p><a href="chronik.html">Chronik öffnen →</a></article><article class="card"><p class="eyebrow">Dokumente</p><h2>Unterlagen</h2><p>Schreiben und Unterlagen werden übersichtlich gesammelt.</p><a href="dokumente.html">Dokumente ansehen →</a></article></section>
-</main><footer class="siteFooter"><h2>Fliegenmelder Ahlener Osten</h2><p><strong>Die Informationsplattform der Bürgerinitiative Ahlener Osten.</strong></p><p>Gemeinsam gegen die Fliegenplage.</p><p>Für eine lebenswerte Zukunft im Ahlener Osten.</p><nav><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a><a href="kontakt.html">Kontakt</a><a href="admin.html">Interner Bereich</a></nav></footer><script src="js/menu.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script type="module" src="js/home.js"></script></body></html>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="box heroText">
+      <h1>Fliegenmelder Ahlener Osten</h1>
+      <h2>Gemeinsam gegen die Fliegenplage.</h2>
+      <p class="lead">Der Fliegenmelder dokumentiert die Fliegenbelastung im Ahlener Osten und informiert transparent über aktuelle Entwicklungen.</p>
+      <p class="muted">Ein ehrenamtliches Projekt der Bürgerinitiative Ahlener Osten.</p>
+      <div class="actions">
+        <a class="button" href="melden.html">Jetzt Fliegen melden</a>
+        <a class="button ghost" href="karte.html">Meldungskarte ansehen</a>
+      </div>
+    </div>
+
+    <div class="box logoHero">
+      <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+    </div>
+  </section>
+
+  <section class="stats">
+    <article class="stat"><strong id="statTotal">0</strong><span>Meldungen öffentlich</span></article>
+    <article class="stat"><strong id="statMonth">0</strong><span>diesen Monat</span></article>
+    <article class="stat"><strong id="statAvg">–</strong><span>Ø Belastung</span></article>
+    <article class="stat"><strong id="statHotspots">0</strong><span>starke Belastungen</span></article>
+  </section>
+
+  <section class="cards">
+    <article class="card">
+      <h2>🪰 Fliegen melden</h2>
+      <p>Fliegenbelastung schnell und unkompliziert melden.</p>
+      <a href="melden.html">Jetzt melden →</a>
+    </article>
+    <article class="card">
+      <h2>🗺️ Meldungskarte</h2>
+      <p>Freigegebene Meldungen auf der Übersichtskarte ansehen.</p>
+      <a href="karte.html">Karte ansehen →</a>
+    </article>
+    <article class="card">
+      <h2>📰 Neuigkeiten</h2>
+      <p>Aktuelle Entwicklungen und Hinweise verfolgen.</p>
+      <a href="neuigkeiten.html">Neuigkeiten lesen →</a>
+    </article>
+    <article class="card">
+      <h2>📅 Termine</h2>
+      <p>Bürgerdialoge, Sitzungen und wichtige Termine finden.</p>
+      <a href="termine.html">Termine ansehen →</a>
+    </article>
+  </section>
+
+  <section class="layout">
+    <section class="panel mapPanel">
+      <div class="mapHead">
+        <div>
+          <p class="eyebrow">Öffentliche Übersicht</p>
+          <h2>Meldungskarte</h2>
+        </div>
+        <select id="severityFilter">
+          <option value="all">Alle Meldungen</option>
+          <option value="4plus">Nur stark / sehr stark</option>
+          <option value="1">1 sehr gering</option>
+          <option value="2">2 gering</option>
+          <option value="3">3 mittel</option>
+          <option value="4">4 stark</option>
+          <option value="5">5 sehr stark</option>
+        </select>
+      </div>
+      <div id="map" class="map"></div>
+      <div class="legend">
+        <strong>Belastung</strong>
+        <span><i class="dot s1"></i>1</span>
+        <span><i class="dot s2"></i>2</span>
+        <span><i class="dot s3"></i>3</span>
+        <span><i class="dot s4"></i>4</span>
+        <span><i class="dot s5"></i>5</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Neueste Meldungen</h2>
+      <p>Die zuletzt freigegebenen Meldungen im Überblick.</p>
+      <div id="latestReports" class="list"></div>
+    </section>
+  </section>
+
+  <section class="newsPreview">
+    <article class="card">
+      <p class="eyebrow">Neueste Entwicklung</p>
+      <h2>Aktuelle Entwicklung</h2>
+      <p>Neue Informationen und Entwicklungen zur Fliegenbelastung werden hier zusammengefasst veröffentlicht.</p>
+      <a href="neuigkeiten.html">Aktuelle Informationen ansehen →</a>
+    </article>
+  </section>
+</main>
+
+<footer class="siteFooter">
+  <h2>Fliegenmelder Ahlener Osten</h2>
+  <p>Gemeinsam gegen die Fliegenplage.</p>
+  <p><strong>Die Informationsplattform für die Fliegenplage im Ahlener Osten.</strong></p>
+  <p><em>Ein ehrenamtliches Projekt der Bürgerinitiative Ahlener Osten.</em></p>
+  <p>Für eine lebenswerte Zukunft im Ahlener Osten.</p>
+  <nav>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="kontakt.html">Kontakt</a>
+    <a href="admin.html">Interner Bereich</a>
+  </nav>
+</footer>
+<script src="js/menu.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="js/home.js"></script>
+</body>
+</html>

@@ -1,12 +1,91 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Meldung einreichen | Fliegenmelder Ahlener Osten</title><link rel="icon" href="assets/logo.png" type="image/png"><link rel="stylesheet" href="css/style.css"></head><body><header class="topbar"><a class="brand" href="index.html"><img src="assets/logo.png" alt="Logo"><div><strong>Fliegenmelder<br>Ahlener Osten</strong><span>Melden. Dokumentieren. Gemeinsam etwas bewegen.</span></div></a><nav class="nav">
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fliegen melden | Fliegenmelder Ahlener Osten</title>
+  <meta name="description" content="Fliegenmelder Ahlener Osten">
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+  
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+    <div>
+      <strong>Fliegenmelder<br>Ahlener Osten</strong>
+      <span>Melden. Dokumentieren. Transparent informieren.</span>
+    </div>
+  </a>
+  <nav class="nav">
     <a href="index.html">Startseite</a>
-    <a href="melden.html" aria-current="page">Meldungen</a>
-    <a href="karte.html">Karte</a>
+    <a href="melden.html" aria-current="page">Fliegen melden</a>
+    <a href="karte.html">Meldungskarte</a>
     <a href="neuigkeiten.html">Neuigkeiten</a>
-    <a href="termine.html">Termine</a>
+    <a href="chronik.html">Chronik</a>
     <a href="dokumente.html">Dokumente</a>
+    <a href="termine.html">Termine</a>
     <a href="ueber-uns.html">Über uns</a>
     <a href="kontakt.html">Kontakt</a>
-    <a href="chronik.html">Chronik</a>
     <a class="buttonLink" href="melden.html">+ Meldung einreichen</a>
-  </nav></header><main class='container'><section class='box pageHero'><p class='eyebrow'>Meldung einreichen</p><h1>Fliegenbelastung melden</h1><p class='lead'>Trage deine Beobachtung ein. Die Meldung wird geprüft, bevor sie öffentlich sichtbar wird.</p></section><section class='card'><form id='reportForm'><label>Ort / Straße<input name='address' required placeholder='z. B. Bergstraße, Ahlener Osten'></label><label>Belastung<select name='severity' required><option value='1'>1 sehr gering</option><option value='2'>2 gering</option><option value='3' selected>3 mittel</option><option value='4'>4 stark</option><option value='5'>5 sehr stark</option></select></label><label>Seit wann?<input name='since' placeholder='z. B. seit einigen Tagen'></label><label>Tageszeit<input name='time_of_day' placeholder='z. B. morgens, mittags, abends'></label><label>Bemerkung<textarea name='note' rows='5' placeholder='Was wurde beobachtet?'></textarea></label><label>Kontakt für Rückfragen, freiwillig<input name='contact_private' placeholder='E-Mail oder Telefonnummer'></label><button class='button' type='submit'>Meldung absenden</button><p id='status'></p></form></section></main><footer class="siteFooter"><h2>Fliegenmelder Ahlener Osten</h2><p><strong>Die Informationsplattform der Bürgerinitiative Ahlener Osten.</strong></p><p>Gemeinsam gegen die Fliegenplage.</p><p>Für eine lebenswerte Zukunft im Ahlener Osten.</p><nav><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a><a href="kontakt.html">Kontakt</a><a href="admin.html">Interner Bereich</a></nav></footer><script src="js/menu.js"></script><script type="module" src="js/app.js"></script></body></html>
+  </nav>
+</header>
+
+<main class="container">
+  <section class="box pageHero">
+    <p class="eyebrow">Meldung einreichen</p>
+    <h1>Fliegenbelastung melden</h1>
+    <p class="lead">Vielen Dank für Ihre Unterstützung.</p>
+    <p>Jede Meldung hilft dabei, die Entwicklung der Fliegenbelastung nachvollziehbar zu dokumentieren und dient als Grundlage für den weiteren Austausch mit Stadt, Politik und Behörden.</p>
+  </section>
+
+  <section class="card">
+    <form id="reportForm">
+      <label>Straße und Hausnummer
+        <input name="address" required placeholder="z. B. Bergstraße 148">
+      </label>
+      <label>Wie stark ist die Fliegenbelastung?
+        <select name="severity" required>
+          <option value="1">1 sehr gering</option>
+          <option value="2">2 gering</option>
+          <option value="3" selected>3 mittel</option>
+          <option value="4">4 stark</option>
+          <option value="5">5 sehr stark</option>
+        </select>
+      </label>
+      <label>Seit wann?
+        <input name="since" placeholder="z. B. seit einigen Tagen">
+      </label>
+      <label>Tageszeit
+        <input name="time_of_day" placeholder="z. B. morgens, mittags, abends">
+      </label>
+      <label>Weitere Hinweise (optional)
+        <textarea name="note" rows="5" placeholder="z. B. besonders stark im Garten, an Fenstern oder auf der Terrasse"></textarea>
+      </label>
+      <label>Kontakt für Rückfragen, freiwillig
+        <input name="contact_private" placeholder="E-Mail oder Telefonnummer">
+      </label>
+      <button class="button" type="submit">Meldung absenden</button>
+      <p id="status"></p>
+    </form>
+  </section>
+</main>
+
+<footer class="siteFooter">
+  <h2>Fliegenmelder Ahlener Osten</h2>
+  <p>Gemeinsam gegen die Fliegenplage.</p>
+  <p><strong>Die Informationsplattform für die Fliegenplage im Ahlener Osten.</strong></p>
+  <p><em>Ein ehrenamtliches Projekt der Bürgerinitiative Ahlener Osten.</em></p>
+  <p>Für eine lebenswerte Zukunft im Ahlener Osten.</p>
+  <nav>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="kontakt.html">Kontakt</a>
+    <a href="admin.html">Interner Bereich</a>
+  </nav>
+</footer>
+<script src="js/menu.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
