@@ -65,3 +65,5 @@ label{display:block;font-weight:900;margin:16px 0}input,select,textarea{width:10
 
 .cmsPublicLoading{padding:22px;color:var(--muted);font-weight:900}
 .card details{margin-top:12px}.card summary{cursor:pointer;font-weight:900;color:var(--green)}
+
+.cmsForm textarea{resize:vertical}.cmsForm #settingsStatus{font-weight:900;color:var(--green)}
