@@ -27,3 +27,10 @@ label{display:block;font-weight:900;margin:16px 0}input,select,textarea{width:10
 .newsPreview{max-width:1220px;margin:42px auto 0}
 .newsPreview .card{min-height:auto}
 .sectionGrid{margin-bottom:16px}
+
+/* Version 1.0.1 Technik-Fix: Koordinaten im Admin */
+.coordBox{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:18px;background:#f8fcf6}
+.coordBox p{margin-top:0}
+.coordGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.coordGrid label{margin:0}
+@media(max-width:680px){.coordGrid{grid-template-columns:1fr}}
