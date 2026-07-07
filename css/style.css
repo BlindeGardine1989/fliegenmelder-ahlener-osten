@@ -67,3 +67,29 @@ label{display:block;font-weight:900;margin:16px 0}input,select,textarea{width:10
 .card details{margin-top:12px}.card summary{cursor:pointer;font-weight:900;color:var(--green)}
 
 .cmsForm textarea{resize:vertical}.cmsForm #settingsStatus{font-weight:900;color:var(--green)}
+
+
+/* Version 2.0d Admin Feinschliff */
+.cmsBody{background:linear-gradient(135deg,#f7faf5,#eef8eb)}
+.cmsSidebar{box-shadow:18px 0 45px rgba(11,63,24,.16)}
+.cmsBrand{padding:10px 8px 18px;border-bottom:1px solid rgba(255,255,255,.2)}
+.cmsBrand img{background:rgba(255,255,255,.94);border-radius:16px;padding:5px}
+.cmsNavTitle{margin:16px 4px 6px;color:rgba(255,255,255,.72);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.12em}
+.cmsNav button{font-size:15px;transition:.16s ease}
+.cmsNav button:hover{transform:translateX(3px)}
+.cmsMain{background:radial-gradient(circle at top right,rgba(119,185,74,.14),transparent 30%),#f7faf5}
+.cmsTopbar{background:#fff;border:1px solid var(--line);border-radius:26px;padding:22px 26px;box-shadow:var(--shadow)}
+.cmsView{animation:cmsFade .18s ease both}
+@keyframes cmsFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.cmsHint{background:linear-gradient(135deg,#fff,#f8fcf6)}
+.adminStats article{border-radius:26px;transition:.18s ease}
+.adminStats article:hover{transform:translateY(-3px);box-shadow:var(--shadow2)}
+.adminStats article strong{font-size:38px}
+.cmsEditorGrid{gap:26px}
+.cmsForm{position:sticky;top:24px}
+.cmsList .adminCard,.adminList .adminCard{transition:.18s ease}
+.cmsList .adminCard:hover,.adminList .adminCard:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
+.coordBox{background:linear-gradient(135deg,#f8fcf6,#fff)}
+.cmsSidebarFoot{border-top:1px solid rgba(255,255,255,.18);padding-top:18px}
+.cmsSidebarFoot .button{width:100%}
+@media(max-width:900px){.cmsForm{position:static}.cmsTopbar{border-radius:20px}.cmsSidebar{box-shadow:none}}
