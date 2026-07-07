@@ -34,3 +34,31 @@ label{display:block;font-weight:900;margin:16px 0}input,select,textarea{width:10
 .coordGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .coordGrid label{margin:0}
 @media(max-width:680px){.coordGrid{grid-template-columns:1fr}}
+
+
+.cmsBody{background:#f4f8f1}
+.cmsShell{max-width:none;padding:0;margin:0}
+.cmsLogin{max-width:760px;margin:60px auto}
+.cmsApp{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}
+.cmsSidebar{background:linear-gradient(180deg,#0b3f18,#2f8128);color:#fff;padding:22px;display:flex;flex-direction:column;gap:20px}
+.cmsBrand{display:flex;align-items:center;gap:12px;color:#fff}
+.cmsBrand img{width:54px;height:54px;object-fit:contain}
+.cmsBrand strong{display:block;font-size:20px}
+.cmsBrand span{font-size:13px;opacity:.85}
+.cmsNav{display:grid;gap:8px}
+.cmsNav button{border:0;background:rgba(255,255,255,.1);color:#fff;text-align:left;border-radius:14px;padding:13px 14px;font-weight:900;cursor:pointer}
+.cmsNav button.active,.cmsNav button:hover{background:#fff;color:#2f8128}
+.cmsSidebarFoot{margin-top:auto;display:grid;gap:12px}
+.cmsSidebarFoot a{color:#fff;font-weight:900}
+.cmsMain{padding:28px;overflow:auto}
+.cmsTopbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.cmsView[hidden]{display:none!important}
+.cmsEditorGrid{display:grid;grid-template-columns:minmax(320px,420px) minmax(0,1fr);gap:22px;align-items:start}
+.cmsForm .button{margin-right:8px;margin-top:8px}
+.cmsList{display:grid;gap:14px}
+.cmsHint{padding:28px}
+.coordBox{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:18px;background:#f8fcf6}
+.coordBox p{margin-top:0}
+.coordGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.coordGrid label{margin:0}
+@media(max-width:900px){.cmsApp{grid-template-columns:1fr}.cmsSidebar{position:static}.cmsEditorGrid{grid-template-columns:1fr}.coordGrid{grid-template-columns:1fr}}
