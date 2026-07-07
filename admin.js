@@ -13,6 +13,9 @@ const forgotPasswordButton = document.querySelector("#forgotPasswordButton");
 const loginStatus = document.querySelector("#loginStatus");
 const logoutButton = document.querySelector("#logoutButton");
 
+const cmsTitle = document.querySelector("#cmsTitle");
+const navButtons = document.querySelectorAll(".cmsNav button");
+
 const status = document.querySelector("#adminStatus");
 const list = document.querySelector("#adminList");
 const exportButton = document.querySelector("#exportCsv");
@@ -47,13 +50,41 @@ function statusLabel(value) {
 }
 
 function hasCoords(report) {
-  return report.lat !== null &&
-    report.lat !== undefined &&
-    report.lng !== null &&
-    report.lng !== undefined &&
-    String(report.lat).trim() !== "" &&
-    String(report.lng).trim() !== "";
+  return report.lat !== null && report.lat !== undefined &&
+    report.lng !== null && report.lng !== undefined &&
+    String(report.lat).trim() !== "" && String(report.lng).trim() !== "";
 }
+
+function showView(name) {
+  document.querySelectorAll(".cmsView").forEach(view => {
+    view.hidden = view.id !== `view-${name}`;
+  });
+
+  navButtons.forEach(button => {
+    button.classList.toggle("active", button.dataset.view === name);
+  });
+
+  const labels = {
+    dashboard: "Dashboard",
+    reports: "Meldungen",
+    news: "Neuigkeiten",
+    timeline: "Chronik",
+    faq: "FAQ",
+    documents: "Dokumente",
+    events: "Termine"
+  };
+
+  cmsTitle.textContent = labels[name] || "CMS";
+
+  if (name === "reports") renderCurrentView();
+  if (name === "news") loadCmsTable("news");
+  if (name === "timeline") loadCmsTable("timeline");
+  if (name === "faq") loadCmsTable("faq");
+}
+
+navButtons.forEach(button => {
+  button.addEventListener("click", () => showView(button.dataset.view));
+});
 
 async function checkSession() {
   const { data } = await supabase.auth.getSession();
@@ -62,6 +93,10 @@ async function checkSession() {
     loginBox.hidden = true;
     adminPanel.hidden = false;
     await loadReports();
+    await loadCmsTable("news");
+    await loadCmsTable("timeline");
+    await loadCmsTable("faq");
+    showView("dashboard");
   } else {
     loginBox.hidden = false;
     adminPanel.hidden = true;
@@ -119,7 +154,7 @@ searchInput?.addEventListener("input", renderCurrentView);
 filterSelect?.addEventListener("change", renderCurrentView);
 
 async function loadReports() {
-  status.textContent = "Meldungen werden geladen ...";
+  if (status) status.textContent = "Meldungen werden geladen ...";
 
   const { data, error } = await supabase
     .from("reports")
@@ -128,7 +163,7 @@ async function loadReports() {
 
   if (error) {
     console.error(error);
-    status.textContent = "Meldungen konnten nicht geladen werden.";
+    if (status) status.textContent = "Meldungen konnten nicht geladen werden.";
     return;
   }
 
@@ -173,6 +208,7 @@ function getFilteredReports() {
 }
 
 function renderCurrentView() {
+  if (!list) return;
   renderReports(getFilteredReports());
 }
 
@@ -190,18 +226,11 @@ function mapsUrl(report) {
 async function geocodeAddress(report) {
   const address = `${report.address || ""}, Ahlen, Nordrhein-Westfalen, Deutschland`;
   const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q=${encodeURIComponent(address)}`;
-
   const response = await fetch(url, { headers: { "Accept": "application/json" } });
-
   if (!response.ok) throw new Error("Geocoding fehlgeschlagen.");
-
   const results = await response.json();
   if (!results || !results.length) throw new Error("Adresse nicht gefunden.");
-
-  return {
-    lat: Number(results[0].lat),
-    lng: Number(results[0].lon)
-  };
+  return { lat: Number(results[0].lat), lng: Number(results[0].lon) };
 }
 
 function renderReports(reports) {
@@ -209,11 +238,11 @@ function renderReports(reports) {
 
   if (!reports.length) {
     list.innerHTML = `<article class="adminCard"><p>Keine passenden Meldungen vorhanden.</p></article>`;
-    status.textContent = "Keine passenden Meldungen vorhanden.";
+    if (status) status.textContent = "Keine passenden Meldungen vorhanden.";
     return;
   }
 
-  status.textContent = `${reports.length} Meldung(en) angezeigt.`;
+  if (status) status.textContent = `${reports.length} Meldung(en) angezeigt.`;
 
   reports.forEach(report => {
     const id = report.id;
@@ -293,18 +322,11 @@ async function handleAction(button) {
     }
 
     try {
-      status.textContent = "Koordinaten werden ermittelt ...";
-
+      if (status) status.textContent = "Koordinaten werden ermittelt ...";
       const coords = await geocodeAddress(report);
-
-      const { error } = await supabase
-        .from("reports")
-        .update({ lat: coords.lat, lng: coords.lng })
-        .eq("id", id);
-
+      const { error } = await supabase.from("reports").update({ lat: coords.lat, lng: coords.lng }).eq("id", id);
       if (error) throw error;
-
-      status.textContent = `Koordinaten gespeichert: ${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`;
+      if (status) status.textContent = `Koordinaten gespeichert: ${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`;
       await loadReports();
     } catch (error) {
       console.error(error);
@@ -317,7 +339,6 @@ async function handleAction(button) {
   if (action === "saveCoords") {
     const latInput = list.querySelector(`input[data-lat="${CSS.escape(id)}"]`);
     const lngInput = list.querySelector(`input[data-lng="${CSS.escape(id)}"]`);
-
     const lat = Number(String(latInput?.value || "").replace(",", "."));
     const lng = Number(String(lngInput?.value || "").replace(",", "."));
 
@@ -326,10 +347,7 @@ async function handleAction(button) {
       return;
     }
 
-    const { error } = await supabase
-      .from("reports")
-      .update({ lat, lng })
-      .eq("id", id);
+    const { error } = await supabase.from("reports").update({ lat, lng }).eq("id", id);
 
     if (error) {
       console.error(error);
@@ -337,33 +355,28 @@ async function handleAction(button) {
       return;
     }
 
-    status.textContent = "Koordinaten gespeichert.";
+    if (status) status.textContent = "Koordinaten gespeichert.";
     await loadReports();
     return;
   }
 
   if (action === "delete") {
     if (!confirm("Diese Meldung wirklich löschen?")) return;
-
     const { error } = await supabase.from("reports").delete().eq("id", id);
-
     if (error) {
       console.error(error);
       alert("Löschen nicht möglich.");
       return;
     }
-
     await loadReports();
     return;
   }
 
   let patch = { status: "pending", visible: false };
-
   if (action === "approve") patch = { status: "approved", visible: true };
   if (action === "hide") patch = { status: "hidden", visible: false };
 
   const { error } = await supabase.from("reports").update(patch).eq("id", id);
-
   if (error) {
     console.error(error);
     alert("Änderung nicht möglich.");
@@ -375,27 +388,16 @@ async function handleAction(button) {
 
 exportButton?.addEventListener("click", () => {
   const rows = getFilteredReports();
-
-  const header = [
-    "Datum","Status","Sichtbar","Ort","Belastung","Seit","Tageszeit","Bemerkung","Kontakt","Lat","Lng"
-  ];
+  const header = ["Datum","Status","Sichtbar","Ort","Belastung","Seit","Tageszeit","Bemerkung","Kontakt","Lat","Lng"];
 
   const csv = [
     header.join(";"),
     ...rows.map(r => [
-      formatDate(r.created_at),
-      r.status || "",
-      r.visible ? "ja" : "nein",
-      r.address || "",
-      r.severity || "",
-      r.since || "",
-      r.time_of_day || "",
-      r.note || "",
-      r.contact_private || "",
-      r.lat || "",
-      r.lng || ""
+      formatDate(r.created_at), r.status || "", r.visible ? "ja" : "nein",
+      r.address || "", r.severity || "", r.since || "", r.time_of_day || "",
+      r.note || "", r.contact_private || "", r.lat || "", r.lng || ""
     ].map(value => `"${String(value).replaceAll('"', '""')}"`).join(";"))
-  ].join("\n");
+  ].join("\\n");
 
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -404,6 +406,162 @@ exportButton?.addEventListener("click", () => {
   a.download = "fliegenmelder-meldungen.csv";
   a.click();
   URL.revokeObjectURL(url);
+});
+
+function resetForm(form) {
+  form.reset();
+  form.querySelector('[name="id"]').value = "";
+}
+
+document.querySelectorAll("[data-reset-form]").forEach(button => {
+  button.addEventListener("click", () => resetForm(document.querySelector(`#${button.dataset.resetForm}`)));
+});
+
+async function loadCmsTable(type) {
+  const config = cmsConfig[type];
+  if (!config) return;
+
+  const { data, error } = await supabase
+    .from(config.table)
+    .select("*")
+    .order(config.order, { ascending: false });
+
+  if (error) {
+    console.error(error);
+    config.list.innerHTML = `<article class="adminCard"><p>Konnte nicht geladen werden.</p></article>`;
+    return;
+  }
+
+  renderCmsList(type, data || []);
+}
+
+const cmsConfig = {
+  news: {
+    table: "news",
+    form: document.querySelector("#newsForm"),
+    list: document.querySelector("#newsList"),
+    order: "date",
+    titleField: "title"
+  },
+  timeline: {
+    table: "timeline",
+    form: document.querySelector("#timelineForm"),
+    list: document.querySelector("#timelineList"),
+    order: "date",
+    titleField: "title"
+  },
+  faq: {
+    table: "faq",
+    form: document.querySelector("#faqForm"),
+    list: document.querySelector("#faqList"),
+    order: "sort_order",
+    titleField: "question"
+  }
+};
+
+function renderCmsList(type, rows) {
+  const config = cmsConfig[type];
+  config.list.innerHTML = "";
+
+  if (!rows.length) {
+    config.list.innerHTML = `<article class="adminCard"><p>Noch keine Einträge vorhanden.</p></article>`;
+    return;
+  }
+
+  rows.forEach(row => {
+    const card = document.createElement("article");
+    card.className = "adminCard";
+
+    const meta = row.date || row.created_at || "";
+
+    card.innerHTML = `
+      <div class="adminCardHead">
+        <div>
+          <p class="eyebrow">${row.visible ? "Sichtbar" : "Ausgeblendet"}</p>
+          <h2>${escapeHtml(row[config.titleField] || "Eintrag")}</h2>
+          <p>${escapeHtml(meta ? String(meta).slice(0, 10) : "")}</p>
+        </div>
+      </div>
+      <p>${escapeHtml(row.summary || row.description || row.answer || "")}</p>
+      <div class="adminControls">
+        <button class="button secondary" data-cms-edit="${type}" data-id="${row.id}">Bearbeiten</button>
+        <button class="button danger" data-cms-delete="${type}" data-id="${row.id}">Löschen</button>
+      </div>
+    `;
+
+    config.list.appendChild(card);
+  });
+
+  config.list.querySelectorAll("[data-cms-edit]").forEach(button => {
+    button.addEventListener("click", () => editCmsItem(button.dataset.cmsEdit, button.dataset.id, rows));
+  });
+
+  config.list.querySelectorAll("[data-cms-delete]").forEach(button => {
+    button.addEventListener("click", () => deleteCmsItem(button.dataset.cmsDelete, button.dataset.id));
+  });
+}
+
+function editCmsItem(type, id, rows) {
+  const row = rows.find(item => String(item.id) === String(id));
+  const form = cmsConfig[type].form;
+  if (!row || !form) return;
+
+  Object.keys(row).forEach(key => {
+    if (form.elements[key]) {
+      if (form.elements[key].type === "checkbox") {
+        form.elements[key].checked = Boolean(row[key]);
+      } else {
+        form.elements[key].value = row[key] ?? "";
+      }
+    }
+  });
+
+  showView(type);
+}
+
+async function deleteCmsItem(type, id) {
+  if (!confirm("Eintrag wirklich löschen?")) return;
+
+  const config = cmsConfig[type];
+  const { error } = await supabase.from(config.table).delete().eq("id", id);
+
+  if (error) {
+    console.error(error);
+    alert("Löschen nicht möglich.");
+    return;
+  }
+
+  await loadCmsTable(type);
+}
+
+Object.entries(cmsConfig).forEach(([type, config]) => {
+  config.form?.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const form = config.form;
+    const data = Object.fromEntries(new FormData(form).entries());
+    data.visible = form.elements.visible.checked;
+
+    const id = data.id;
+    delete data.id;
+
+    let result;
+
+    if (id) {
+      result = await supabase.from(config.table).update(data).eq("id", id);
+    } else {
+      result = await supabase.from(config.table).insert(data);
+    }
+
+    if (result.error) {
+      console.error(result.error);
+      alert("Speichern nicht möglich.");
+      return;
+    }
+
+    resetForm(form);
+    await loadCmsTable(type);
+  });
 });
 
 checkSession();

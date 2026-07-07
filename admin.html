@@ -1,1 +1,170 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin | Fliegenmelder Ahlener Osten</title><link rel="stylesheet" href="css/style.css"></head><body><header class="topbar"><a class="brand" href="index.html"><img src="assets/logo.png" alt="Logo"><div><strong>Fliegenmelder<br>Ahlener Osten</strong><span>Admin-Bereich</span></div></a><nav class="nav"><a href="index.html">Zur Webseite</a></nav></header><main class="container"><section id="loginBox" class="card"><p class="eyebrow">Adminbereich</p><h1>Admin-Login</h1><p>Bitte mit dem Fliegenmelder-Account anmelden.</p><label>E-Mail</label><input id="loginEmail" type="email" placeholder="fliegenmelder.ahlen@gmail.com"><label>Passwort</label><input id="loginPassword" type="password" placeholder="Passwort"><div class="actions"><button id="loginButton" class="button">Einloggen</button><button id="forgotPasswordButton" class="button secondary" type="button">Passwort vergessen?</button></div><p id="loginStatus"></p></section><section id="adminPanel" class="adminPanel" hidden><div class="panelHead"><div><p class="eyebrow">Adminbereich</p><h1>Meldungen prüfen</h1></div><button id="logoutButton" class="button secondary">Logout</button></div><div class="adminStats"><article><strong id="statTotal">0</strong><span>Meldungen gesamt</span></article><article><strong id="statApproved">0</strong><span>Freigegeben</span></article><article><strong id="statPending">0</strong><span>In Prüfung</span></article><article><strong id="statAvg">0</strong><span>Ø Belastung</span></article></div><div class="adminToolbar"><input id="adminSearch" type="search" placeholder="Straße oder Bemerkung suchen"><select id="adminFilter"><option value="all">Alle Meldungen</option><option value="pending">Nur Prüfung</option><option value="approved">Nur freigegeben</option><option value="hidden">Nur ausgeblendet</option></select><button id="exportCsv" class="button">CSV exportieren</button></div><p id="adminStatus"></p><div id="adminList" class="adminList"></div></section></main><script type="module" src="admin.js"></script></body></html>
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fliegenmelder CMS</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="cmsBody">
+
+<main class="cmsShell">
+  <section id="loginBox" class="cmsLogin card">
+    <p class="eyebrow">Fliegenmelder CMS</p>
+    <h1>Admin-Login</h1>
+    <p>Bitte mit dem Fliegenmelder-Account anmelden.</p>
+
+    <label>E-Mail</label>
+    <input id="loginEmail" type="email" placeholder="fliegenmelder.ahlen@gmail.com">
+
+    <label>Passwort</label>
+    <input id="loginPassword" type="password" placeholder="Passwort">
+
+    <div class="actions">
+      <button id="loginButton" class="button">Einloggen</button>
+      <button id="forgotPasswordButton" class="button secondary" type="button">Passwort vergessen?</button>
+    </div>
+
+    <p id="loginStatus"></p>
+  </section>
+
+  <section id="adminPanel" class="cmsApp" hidden>
+    <aside class="cmsSidebar">
+      <a class="cmsBrand" href="index.html">
+        <img src="assets/logo.png" alt="Logo">
+        <div>
+          <strong>Fliegenmelder CMS</strong>
+          <span>Version 2.0</span>
+        </div>
+      </a>
+
+      <nav class="cmsNav">
+        <button class="active" data-view="dashboard">📊 Dashboard</button>
+        <button data-view="reports">🪰 Meldungen</button>
+        <button data-view="news">📰 Neuigkeiten</button>
+        <button data-view="timeline">🕒 Chronik</button>
+        <button data-view="faq">❓ FAQ</button>
+        <button data-view="documents">📄 Dokumente</button>
+        <button data-view="events">📅 Termine</button>
+      </nav>
+
+      <div class="cmsSidebarFoot">
+        <a href="index.html">Zur Webseite</a>
+        <button id="logoutButton" class="button secondary">Logout</button>
+      </div>
+    </aside>
+
+    <section class="cmsMain">
+      <header class="cmsTopbar">
+        <div>
+          <p class="eyebrow">Verwaltungszentrale</p>
+          <h1 id="cmsTitle">Dashboard</h1>
+        </div>
+      </header>
+
+      <section id="view-dashboard" class="cmsView">
+        <div class="adminStats">
+          <article><strong id="statTotal">0</strong><span>Meldungen gesamt</span></article>
+          <article><strong id="statApproved">0</strong><span>Freigegeben</span></article>
+          <article><strong id="statPending">0</strong><span>In Prüfung</span></article>
+          <article><strong id="statAvg">0</strong><span>Ø Belastung</span></article>
+        </div>
+
+        <section class="cmsHint card">
+          <h2>Fliegenmelder CMS</h2>
+          <p>Hier verwaltest du künftig die Inhalte der Webseite. Meldungen, Neuigkeiten, Chronik und FAQ sind bereits vorbereitet.</p>
+        </section>
+      </section>
+
+      <section id="view-reports" class="cmsView" hidden>
+        <div class="adminToolbar">
+          <input id="adminSearch" type="search" placeholder="Straße oder Bemerkung suchen">
+          <select id="adminFilter">
+            <option value="all">Alle Meldungen</option>
+            <option value="pending">Nur Prüfung</option>
+            <option value="approved">Nur freigegeben</option>
+            <option value="hidden">Nur ausgeblendet</option>
+          </select>
+          <button id="exportCsv" class="button">CSV exportieren</button>
+        </div>
+        <p id="adminStatus"></p>
+        <div id="adminList" class="adminList"></div>
+      </section>
+
+      <section id="view-news" class="cmsView" hidden>
+        <div class="cmsEditorGrid">
+          <form id="newsForm" class="card cmsForm">
+            <h2>Neuigkeit anlegen</h2>
+            <input type="hidden" name="id">
+            <label>Titel<input name="title" required></label>
+            <label>Datum<input name="date" type="date"></label>
+            <label>Kurzbeschreibung<textarea name="summary" rows="3"></textarea></label>
+            <label>Text<textarea name="body" rows="6"></textarea></label>
+            <label><input name="visible" type="checkbox" checked> Sichtbar</label>
+            <button class="button" type="submit">Neuigkeit speichern</button>
+            <button class="button secondary" type="button" data-reset-form="newsForm">Formular leeren</button>
+          </form>
+          <div>
+            <h2>Vorhandene Neuigkeiten</h2>
+            <div id="newsList" class="cmsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-timeline" class="cmsView" hidden>
+        <div class="cmsEditorGrid">
+          <form id="timelineForm" class="card cmsForm">
+            <h2>Chronik-Eintrag anlegen</h2>
+            <input type="hidden" name="id">
+            <label>Titel<input name="title" required></label>
+            <label>Datum<input name="date" type="date"></label>
+            <label>Beschreibung<textarea name="description" rows="5"></textarea></label>
+            <label><input name="visible" type="checkbox" checked> Sichtbar</label>
+            <button class="button" type="submit">Chronik speichern</button>
+            <button class="button secondary" type="button" data-reset-form="timelineForm">Formular leeren</button>
+          </form>
+          <div>
+            <h2>Chronik</h2>
+            <div id="timelineList" class="cmsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-faq" class="cmsView" hidden>
+        <div class="cmsEditorGrid">
+          <form id="faqForm" class="card cmsForm">
+            <h2>FAQ anlegen</h2>
+            <input type="hidden" name="id">
+            <label>Frage<input name="question" required></label>
+            <label>Antwort<textarea name="answer" rows="5"></textarea></label>
+            <label><input name="visible" type="checkbox" checked> Sichtbar</label>
+            <button class="button" type="submit">FAQ speichern</button>
+            <button class="button secondary" type="button" data-reset-form="faqForm">Formular leeren</button>
+          </form>
+          <div>
+            <h2>FAQ</h2>
+            <div id="faqList" class="cmsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-documents" class="cmsView" hidden>
+        <section class="card">
+          <h2>Dokumente</h2>
+          <p>Dokumente sind vorbereitet. In Version 2.0b ergänzen wir PDF-Links und später Uploads.</p>
+        </section>
+      </section>
+
+      <section id="view-events" class="cmsView" hidden>
+        <section class="card">
+          <h2>Termine</h2>
+          <p>Termine sind vorbereitet. In Version 2.0b ergänzen wir die Terminverwaltung.</p>
+        </section>
+      </section>
+    </section>
+  </section>
+</main>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
