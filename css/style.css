@@ -62,3 +62,6 @@ label{display:block;font-weight:900;margin:16px 0}input,select,textarea{width:10
 .coordGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .coordGrid label{margin:0}
 @media(max-width:900px){.cmsApp{grid-template-columns:1fr}.cmsSidebar{position:static}.cmsEditorGrid{grid-template-columns:1fr}.coordGrid{grid-template-columns:1fr}}
+
+.cmsPublicLoading{padding:22px;color:var(--muted);font-weight:900}
+.card details{margin-top:12px}.card summary{cursor:pointer;font-weight:900;color:var(--green)}
