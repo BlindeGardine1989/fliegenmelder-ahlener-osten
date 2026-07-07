@@ -66,6 +66,7 @@ function showView(name) {
 
   const labels = {
     dashboard: "Dashboard",
+    website: "Website",
     reports: "Meldungen",
     news: "Neuigkeiten",
     timeline: "Chronik",
@@ -76,6 +77,7 @@ function showView(name) {
 
   cmsTitle.textContent = labels[name] || "CMS";
 
+  if (name === "website") loadSettings();
   if (name === "reports") renderCurrentView();
   if (name === "news") loadCmsTable("news");
   if (name === "timeline") loadCmsTable("timeline");
@@ -97,6 +99,7 @@ async function checkSession() {
     await loadReports();
     await loadCmsTable("news");
     await loadCmsTable("timeline");
+    await loadSettings();
     await loadCmsTable("faq");
     await loadCmsTable("documents");
     await loadCmsTable("events");
@@ -581,5 +584,57 @@ Object.entries(cmsConfig).forEach(([type, config]) => {
     await loadCmsTable(type);
   });
 });
+
+const settingsForm = document.querySelector("#settingsForm");
+const settingsStatus = document.querySelector("#settingsStatus");
+
+async function loadSettings() {
+  if (!settingsForm) return;
+
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("*");
+
+  if (error) {
+    console.error(error);
+    if (settingsStatus) settingsStatus.textContent = "Website-Texte konnten nicht geladen werden.";
+    return;
+  }
+
+  const settings = {};
+  (data || []).forEach(row => {
+    settings[row.key] = row.value || "";
+  });
+
+  Array.from(settingsForm.elements).forEach(element => {
+    if (element.name && settings[element.name] !== undefined) {
+      element.value = settings[element.name];
+    }
+  });
+}
+
+settingsForm?.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const entries = Array.from(new FormData(settingsForm).entries())
+    .map(([key, value]) => ({
+      key,
+      value,
+      updated_at: new Date().toISOString()
+    }));
+
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert(entries, { onConflict: "key" });
+
+  if (error) {
+    console.error(error);
+    settingsStatus.textContent = "Speichern nicht möglich.";
+    return;
+  }
+
+  settingsStatus.textContent = "Website-Texte gespeichert.";
+});
+
 
 checkSession();

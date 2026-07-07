@@ -40,6 +40,7 @@
 
       <nav class="cmsNav">
         <button class="active" data-view="dashboard">📊 Dashboard</button>
+        <button data-view="website">🌐 Website</button>
         <button data-view="reports">🪰 Meldungen</button>
         <button data-view="news">📰 Neuigkeiten</button>
         <button data-view="timeline">🕒 Chronik</button>
@@ -75,6 +76,64 @@
           <p>Hier verwaltest du künftig die Inhalte der Webseite. Meldungen, Neuigkeiten, Chronik und FAQ sind bereits vorbereitet.</p>
         </section>
       </section>
+
+
+      <section id="view-website" class="cmsView" hidden>
+        <div class="cmsEditorGrid">
+          <form id="settingsForm" class="card cmsForm">
+            <h2>Website-Texte bearbeiten</h2>
+
+            <label>Startseite: Überschrift
+              <input name="home_headline" placeholder="Fliegenmelder Ahlener Osten">
+            </label>
+
+            <label>Startseite: Leitsatz
+              <input name="home_subheadline" placeholder="Gemeinsam gegen die Fliegenplage.">
+            </label>
+
+            <label>Startseite: Beschreibung
+              <textarea name="home_intro" rows="4" placeholder="Der Fliegenmelder dokumentiert ..."></textarea>
+            </label>
+
+            <label>Projekt-Hinweis
+              <input name="project_line" placeholder="Ein ehrenamtliches Projekt ...">
+            </label>
+
+            <label>Über uns: Einleitung
+              <textarea name="about_intro" rows="4"></textarea>
+            </label>
+
+            <label>Kontakt: Einleitung
+              <textarea name="contact_intro" rows="3"></textarea>
+            </label>
+
+            <label>Kontakt: Hinweis
+              <input name="contact_note" placeholder="Wir bemühen uns, Anfragen zeitnah zu beantworten.">
+            </label>
+
+            <label>Footer: Satz 1
+              <input name="footer_line_1" placeholder="Gemeinsam gegen die Fliegenplage.">
+            </label>
+
+            <label>Footer: Satz 2
+              <input name="footer_line_2" placeholder="Die Informationsplattform für die Fliegenplage im Ahlener Osten.">
+            </label>
+
+            <label>Footer: Satz 3
+              <input name="footer_line_3" placeholder="Für eine lebenswerte Zukunft im Ahlener Osten.">
+            </label>
+
+            <button class="button" type="submit">Website-Texte speichern</button>
+            <p id="settingsStatus"></p>
+          </form>
+
+          <section class="card">
+            <h2>Hinweis</h2>
+            <p>Diese Texte werden auf der öffentlichen Webseite automatisch geladen. Wenn ein Feld leer bleibt, nutzt die Webseite den fest eingebauten Standardtext.</p>
+          </section>
+        </div>
+      </section>
+
 
       <section id="view-reports" class="cmsView" hidden>
         <div class="adminToolbar">
