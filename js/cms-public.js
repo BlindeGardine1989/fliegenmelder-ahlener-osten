@@ -185,6 +185,34 @@ async function loadDocuments() {
   `;
 }
 
+async function loadSettings() {
+  const nodes = document.querySelectorAll("[data-setting]");
+  if (!nodes.length) return;
+
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("*");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const settings = {};
+  (data || []).forEach(row => {
+    settings[row.key] = row.value || "";
+  });
+
+  nodes.forEach(node => {
+    const key = node.dataset.setting;
+    if (settings[key] && String(settings[key]).trim()) {
+      node.textContent = settings[key];
+    }
+  });
+}
+
+
+loadSettings();
 loadNews();
 loadTimeline();
 loadFaq();
