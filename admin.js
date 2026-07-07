@@ -1,1 +1,127 @@
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";import{SUPABASE_URL,SUPABASE_ANON_KEY}from"./config.js";const supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY),loginBox=document.querySelector("#loginBox"),adminPanel=document.querySelector("#adminPanel"),loginEmail=document.querySelector("#loginEmail"),loginPassword=document.querySelector("#loginPassword"),loginButton=document.querySelector("#loginButton"),forgotPasswordButton=document.querySelector("#forgotPasswordButton"),loginStatus=document.querySelector("#loginStatus"),logoutButton=document.querySelector("#logoutButton"),status=document.querySelector("#adminStatus"),list=document.querySelector("#adminList"),exportButton=document.querySelector("#exportCsv"),searchInput=document.querySelector("#adminSearch"),filterSelect=document.querySelector("#adminFilter"),statTotal=document.querySelector("#statTotal"),statApproved=document.querySelector("#statApproved"),statPending=document.querySelector("#statPending"),statAvg=document.querySelector("#statAvg");let allReports=[];function escapeHtml(e){return String(e??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function formatDate(e){return e?new Date(e).toLocaleString("de-DE"):"–"}function statusLabel(e){return"approved"===e?"Freigegeben":"hidden"===e?"Ausgeblendet":"In Prüfung"}async function checkSession(){const{data:e}=await supabase.auth.getSession();e.session?(loginBox.hidden=!0,adminPanel.hidden=!1,await loadReports()):(loginBox.hidden=!1,adminPanel.hidden=!0)}loginButton?.addEventListener("click",async()=>{loginStatus.textContent="Login wird geprüft ...";const{error:e}=await supabase.auth.signInWithPassword({email:loginEmail.value.trim(),password:loginPassword.value});e?(console.error(e),loginStatus.textContent="Login fehlgeschlagen."):(loginPassword.value="",loginStatus.textContent="",await checkSession())});forgotPasswordButton?.addEventListener("click",async()=>{const e=loginEmail.value.trim();if(!e)return void(loginStatus.textContent="Bitte zuerst die E-Mail-Adresse eintragen.");loginStatus.textContent="E-Mail zum Zurücksetzen wird gesendet ...";const{error:t}=await supabase.auth.resetPasswordForEmail(e,{redirectTo:"https://fliegenmelder-ahlener-osten.pages.dev/reset-password.html"});t?(console.error(t),loginStatus.textContent="E-Mail konnte nicht gesendet werden."):loginStatus.textContent="E-Mail wurde gesendet. Bitte Postfach prüfen."});logoutButton?.addEventListener("click",async()=>{await supabase.auth.signOut(),await checkSession()});searchInput?.addEventListener("input",renderCurrentView);filterSelect?.addEventListener("change",renderCurrentView);async function loadReports(){status.textContent="Meldungen werden geladen ...";const{data:e,error:t}=await supabase.from("reports").select("*").order("created_at",{ascending:!1});if(t)return console.error(t),void(status.textContent="Meldungen konnten nicht geladen werden.");allReports=e||[],updateStats(allReports),renderCurrentView()}function updateStats(e){const t=e.length,n=e.filter(e=>!0===e.visible||"approved"===e.status).length,r=e.filter(e=>!e.visible&&"pending"===(e.status||"pending")).length,a=e.map(e=>Number(e.severity)).filter(e=>Number.isFinite(e)),i=a.length?(a.reduce((e,t)=>e+t,0)/a.length).toFixed(1):"0";statTotal.textContent=t,statApproved.textContent=n,statPending.textContent=r,statAvg.textContent=i}function getFilteredReports(){const e=(searchInput?.value||"").trim().toLowerCase(),t=filterSelect?.value||"all";return allReports.filter(n=>{const r=n.status||"pending";return!("all"!==t&&r!==t)&&(!e||[n.address,n.note,n.contact_private,n.since,n.time_of_day,n.status].join(" ").toLowerCase().includes(e))})}function renderCurrentView(){renderReports(getFilteredReports())}function severityBar(e){const t=Number(e),n=Number.isFinite(t)?Math.max(0,Math.min(5,t)):0;return"●".repeat(n)+"○".repeat(5-n)}function renderReports(e){if(list.innerHTML="",!e.length)return list.innerHTML='<article class="adminCard"><p>Keine passenden Meldungen vorhanden.</p></article>',void(status.textContent="Keine passenden Meldungen vorhanden.");status.textContent=`${e.length} Meldung(en) angezeigt.`,e.forEach(e=>{const t=e.id,n=e.public_id||e.id||"Meldung",r=e.status||"pending",a=document.createElement("article");a.className=`adminCard status-${r}`,a.innerHTML=`<div class="adminCardHead"><div><p class="eyebrow">${statusLabel(r)}</p><h2>Meldung ${escapeHtml(String(n).slice(0,8))}</h2></div><span class="statusBadge ${r}">${escapeHtml(statusLabel(r))}</span></div><p><strong>Sichtbar:</strong> ${e.visible?"ja":"nein"}<br><strong>Datum:</strong> ${formatDate(e.created_at)}<br><strong>Ort:</strong> ${escapeHtml(e.address||"–")}<br><strong>Belastung:</strong> ${escapeHtml(e.severity||"–")}/5 <span class="severityBar">${severityBar(e.severity)}</span><br><strong>Seit:</strong> ${escapeHtml(e.since||"–")}<br><strong>Tageszeit:</strong> ${escapeHtml(e.time_of_day||"–")}</p><p><strong>Bemerkung:</strong><br>${escapeHtml(e.note||"–")}</p><p><strong>Kontakt intern:</strong><br>${escapeHtml(e.contact_private||"–")}</p><div class="adminControls"><button class="button" data-action="approve" data-id="${t}">Freigeben</button><button class="button secondary" data-action="pending" data-id="${t}">Zurück auf Prüfung</button><button class="button danger" data-action="hide" data-id="${t}">Ausblenden</button><button class="button danger" data-action="delete" data-id="${t}">Löschen</button></div>`,list.appendChild(a)}),list.querySelectorAll("button[data-action]").forEach(e=>{e.addEventListener("click",()=>handleAction(e))})}async function handleAction(e){const t=e.dataset.id,n=e.dataset.action;if("delete"===n){if(!confirm("Diese Meldung wirklich löschen?"))return;const{error:e}=await supabase.from("reports").delete().eq("id",t);return e?(console.error(e),void alert("Löschen nicht möglich.")):void await loadReports()}let r={status:"pending",visible:!1};"approve"===n&&(r={status:"approved",visible:!0}),"hide"===n&&(r={status:"hidden",visible:!1});const{error:a}=await supabase.from("reports").update(r).eq("id",t);a?(console.error(a),alert("Änderung nicht möglich.")):await loadReports()}exportButton?.addEventListener("click",()=>{const e=getFilteredReports(),t=["Datum","Status","Sichtbar","Ort","Belastung","Seit","Tageszeit","Bemerkung","Kontakt"],n=[t.join(";"),...e.map(e=>[formatDate(e.created_at),e.status||"",e.visible?"ja":"nein",e.address||"",e.severity||"",e.since||"",e.time_of_day||"",e.note||"",e.contact_private||""].map(e=>`"${String(e).replaceAll('"','""')}"`).join(";"))].join("\n"),r=new Blob([n],{type:"text/csv;charset=utf-8"}),a=URL.createObjectURL(r),i=document.createElement("a");i.href=a,i.download="fliegenmelder-meldungen.csv",i.click(),URL.revokeObjectURL(a)});checkSession();
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = s => document.querySelector(s);
+const loginBox = $("#loginBox"), adminPanel = $("#adminPanel"), loginEmail = $("#loginEmail"), loginPassword = $("#loginPassword"), loginButton = $("#loginButton"), forgotPasswordButton = $("#forgotPasswordButton"), loginStatus = $("#loginStatus"), logoutButton = $("#logoutButton"), status = $("#adminStatus"), list = $("#adminList"), exportButton = $("#exportCsv"), searchInput = $("#adminSearch"), filterSelect = $("#adminFilter"), statTotal = $("#statTotal"), statApproved = $("#statApproved"), statPending = $("#statPending"), statAvg = $("#statAvg");
+let allReports = [];
+
+function escapeHtml(value) { return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+function formatDate(value) { return value ? new Date(value).toLocaleString("de-DE") : "–"; }
+function statusLabel(value) { return value === "approved" ? "Freigegeben" : value === "hidden" ? "Ausgeblendet" : "In Prüfung"; }
+function hasCoords(report) { return report.lat !== null && report.lat !== undefined && report.lng !== null && report.lng !== undefined && String(report.lat).trim() !== "" && String(report.lng).trim() !== ""; }
+function severityBar(value) { const n = Number(value); const amount = Number.isFinite(n) ? Math.max(0, Math.min(5, n)) : 0; return "●".repeat(amount) + "○".repeat(5 - amount); }
+function mapsUrl(report) { return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((report.address || "") + " Ahlen")}`; }
+
+async function checkSession() {
+  const { data } = await supabase.auth.getSession();
+  loginBox.hidden = !!data.session;
+  adminPanel.hidden = !data.session;
+  if (data.session) await loadReports();
+}
+
+loginButton?.addEventListener("click", async () => {
+  loginStatus.textContent = "Login wird geprüft ...";
+  const { error } = await supabase.auth.signInWithPassword({ email: loginEmail.value.trim(), password: loginPassword.value });
+  if (error) { console.error(error); loginStatus.textContent = "Login fehlgeschlagen."; return; }
+  loginPassword.value = ""; loginStatus.textContent = ""; await checkSession();
+});
+
+forgotPasswordButton?.addEventListener("click", async () => {
+  const email = loginEmail.value.trim();
+  if (!email) { loginStatus.textContent = "Bitte zuerst die E-Mail-Adresse eintragen."; return; }
+  loginStatus.textContent = "E-Mail zum Zurücksetzen wird gesendet ...";
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: "https://fliegenmelder-ahlener-osten.pages.dev/reset-password.html" });
+  if (error) { console.error(error); loginStatus.textContent = "E-Mail konnte nicht gesendet werden."; return; }
+  loginStatus.textContent = "E-Mail wurde gesendet. Bitte Postfach prüfen.";
+});
+
+logoutButton?.addEventListener("click", async () => { await supabase.auth.signOut(); await checkSession(); });
+searchInput?.addEventListener("input", renderCurrentView);
+filterSelect?.addEventListener("change", renderCurrentView);
+
+async function loadReports() {
+  status.textContent = "Meldungen werden geladen ...";
+  const { data, error } = await supabase.from("reports").select("*").order("created_at", { ascending: false });
+  if (error) { console.error(error); status.textContent = "Meldungen konnten nicht geladen werden."; return; }
+  allReports = data || [];
+  updateStats(allReports);
+  renderCurrentView();
+}
+
+function updateStats(reports) {
+  const severities = reports.map(r => Number(r.severity)).filter(Number.isFinite);
+  statTotal.textContent = reports.length;
+  statApproved.textContent = reports.filter(r => r.visible === true || r.status === "approved").length;
+  statPending.textContent = reports.filter(r => !r.visible && (r.status || "pending") === "pending").length;
+  statAvg.textContent = severities.length ? (severities.reduce((a,b)=>a+b,0) / severities.length).toFixed(1) : "0";
+}
+
+function getFilteredReports() {
+  const search = (searchInput?.value || "").trim().toLowerCase();
+  const filter = filterSelect?.value || "all";
+  return allReports.filter(r => {
+    const reportStatus = r.status || "pending";
+    if (filter !== "all" && reportStatus !== filter) return false;
+    if (!search) return true;
+    return [r.address, r.note, r.contact_private, r.since, r.time_of_day, r.status].join(" ").toLowerCase().includes(search);
+  });
+}
+function renderCurrentView() { renderReports(getFilteredReports()); }
+
+function renderReports(reports) {
+  list.innerHTML = "";
+  if (!reports.length) { list.innerHTML = `<article class="adminCard"><p>Keine passenden Meldungen vorhanden.</p></article>`; status.textContent = "Keine passenden Meldungen vorhanden."; return; }
+  status.textContent = `${reports.length} Meldung(en) angezeigt.`;
+  reports.forEach(report => {
+    const id = report.id, title = report.public_id || report.id || "Meldung", reportStatus = report.status || "pending";
+    const card = document.createElement("article");
+    card.className = `adminCard status-${reportStatus}`;
+    card.dataset.id = id;
+    card.innerHTML = `
+      <div class="adminCardHead"><div><p class="eyebrow">${statusLabel(reportStatus)}</p><h2>Meldung ${escapeHtml(String(title).slice(0,8))}</h2></div><span class="statusBadge ${reportStatus}">${escapeHtml(statusLabel(reportStatus))}</span></div>
+      <p><strong>Sichtbar:</strong> ${report.visible ? "ja" : "nein"}<br><strong>Datum:</strong> ${formatDate(report.created_at)}<br><strong>Straße/Hausnummer:</strong> ${escapeHtml(report.address || "–")}<br><strong>Belastung:</strong> ${escapeHtml(report.severity || "–")}/5 <span class="severityBar">${severityBar(report.severity)}</span><br><strong>Seit:</strong> ${escapeHtml(report.since || "–")}<br><strong>Tageszeit:</strong> ${escapeHtml(report.time_of_day || "–")}</p>
+      <p><strong>Bemerkung:</strong><br>${escapeHtml(report.note || "–")}</p>
+      <p><strong>Kontakt intern:</strong><br>${escapeHtml(report.contact_private || "–")}</p>
+      <div class="coordBox"><p><strong>Kartenposition:</strong> ${hasCoords(report) ? "Koordinaten vorhanden." : "Noch keine Koordinaten gespeichert – ohne Koordinaten erscheint kein Pin auf der Karte."}</p><div class="coordGrid"><label>Breitengrad lat<input data-field="lat" type="number" step="any" inputmode="decimal" value="${escapeHtml(report.lat ?? "")}"></label><label>Längengrad lng<input data-field="lng" type="number" step="any" inputmode="decimal" value="${escapeHtml(report.lng ?? "")}"></label></div><div class="adminControls"><a class="button secondary" href="${mapsUrl(report)}" target="_blank" rel="noopener">Position in Google Maps öffnen</a><button class="button secondary" data-action="saveCoords" data-id="${id}">Koordinaten speichern</button></div></div>
+      <div class="adminControls"><button class="button" data-action="approve" data-id="${id}">Freigeben</button><button class="button secondary" data-action="pending" data-id="${id}">Zurück auf Prüfung</button><button class="button danger" data-action="hide" data-id="${id}">Ausblenden</button><button class="button danger" data-action="delete" data-id="${id}">Löschen</button></div>`;
+    list.appendChild(card);
+  });
+  list.querySelectorAll("button[data-action]").forEach(button => button.addEventListener("click", () => handleAction(button)));
+}
+
+async function handleAction(button) {
+  const id = button.dataset.id, action = button.dataset.action;
+  if (action === "saveCoords") {
+    const card = button.closest(".adminCard");
+    const lat = Number(String(card.querySelector('[data-field="lat"]').value || "").replace(",", "."));
+    const lng = Number(String(card.querySelector('[data-field="lng"]').value || "").replace(",", "."));
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) { alert("Bitte gültige Zahlen für lat und lng eintragen."); return; }
+    const { error } = await supabase.from("reports").update({ lat, lng }).eq("id", id);
+    if (error) { console.error(error); alert("Koordinaten konnten nicht gespeichert werden."); return; }
+    status.textContent = "Koordinaten gespeichert."; await loadReports(); return;
+  }
+  if (action === "delete") {
+    if (!confirm("Diese Meldung wirklich löschen?")) return;
+    const { error } = await supabase.from("reports").delete().eq("id", id);
+    if (error) { console.error(error); alert("Löschen nicht möglich."); return; }
+    await loadReports(); return;
+  }
+  let patch = { status: "pending", visible: false };
+  if (action === "approve") patch = { status: "approved", visible: true };
+  if (action === "hide") patch = { status: "hidden", visible: false };
+  const { error } = await supabase.from("reports").update(patch).eq("id", id);
+  if (error) { console.error(error); alert("Änderung nicht möglich."); return; }
+  await loadReports();
+}
+
+exportButton?.addEventListener("click", () => {
+  const rows = getFilteredReports();
+  const header = ["Datum","Status","Sichtbar","Ort","Belastung","Seit","Tageszeit","Bemerkung","Kontakt","Lat","Lng"];
+  const csv = [header.join(";"), ...rows.map(r => [formatDate(r.created_at), r.status || "", r.visible ? "ja" : "nein", r.address || "", r.severity || "", r.since || "", r.time_of_day || "", r.note || "", r.contact_private || "", r.lat || "", r.lng || ""].map(v => `"${String(v).replaceAll('"','""')}"`).join(";"))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = "fliegenmelder-meldungen.csv"; a.click(); URL.revokeObjectURL(url);
+});
+
+checkSession();
