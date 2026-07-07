@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Termine | Fliegenmelder Ahlener Osten</title>
-  <meta name="description" content="Fliegenmelder Ahlener Osten">
   <link rel="icon" href="assets/logo.png" type="image/png">
   <link rel="stylesheet" href="css/style.css">
   
@@ -33,17 +32,8 @@
 </header>
 
 <main class="container">
-  <section class="box pageHero">
-    <p class="eyebrow">Termine</p>
-    <h1>Termine und Veranstaltungen</h1>
-    <p class="lead">Bürgerdialoge, Sitzungen und wichtige öffentliche Termine.</p>
-  </section>
-
-  <section class="card">
-    <p class="eyebrow">Demnächst</p>
-    <h2>Zurzeit sind keine öffentlichen Termine angekündigt</h2>
-    <p>Neue Termine werden hier veröffentlicht, sobald sie feststehen.</p>
-  </section>
+  <section class="box pageHero"><p class="eyebrow">Termine</p><h1>Termine und Veranstaltungen</h1><p class="lead">Bürgerdialoge, Sitzungen und wichtige öffentliche Termine.</p></section>
+  <section id="cmsEventsList" class="sectionGrid"></section>
 </main>
 
 <footer class="siteFooter">
@@ -53,6 +43,7 @@
   <p><em>Ein ehrenamtliches Projekt der Bürgerinitiative Ahlener Osten.</em></p>
   <p>Für eine lebenswerte Zukunft im Ahlener Osten.</p>
   <nav>
+    <a href="faq.html">FAQ</a>
     <a href="impressum.html">Impressum</a>
     <a href="datenschutz.html">Datenschutz</a>
     <a href="kontakt.html">Kontakt</a>
@@ -60,6 +51,6 @@
   </nav>
 </footer>
 <script src="js/menu.js"></script>
-
+<script type="module" src="js/cms-public.js"></script>
 </body>
 </html>

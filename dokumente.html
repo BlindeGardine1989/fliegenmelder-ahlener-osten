@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dokumente | Fliegenmelder Ahlener Osten</title>
-  <meta name="description" content="Fliegenmelder Ahlener Osten">
   <link rel="icon" href="assets/logo.png" type="image/png">
   <link rel="stylesheet" href="css/style.css">
   
@@ -33,26 +32,8 @@
 </header>
 
 <main class="container">
-  <section class="box pageHero">
-    <p class="eyebrow">Dokumente</p>
-    <h1>Dokumente und Unterlagen</h1>
-    <p class="lead">Alle wichtigen Schreiben, Stellungnahmen und Dokumente rund um die Fliegenbelastung im Ahlener Osten werden hier übersichtlich veröffentlicht.</p>
-  </section>
-
-  <section class="docGrid">
-    <article class="card">
-      <h2>Bürgerantrag</h2>
-      <p class="docMeta">📅 29.05.2026</p>
-      <p>Der Bürgerantrag fasst das Anliegen der Bürgerinitiative zusammen und wurde an den zuständigen Ausschuss eingereicht.</p>
-      <a class="button secondary" href="#">PDF öffnen</a>
-    </article>
-    <article class="card">
-      <h2>Stellungnahme der Stadt</h2>
-      <p class="docMeta">📅 Datum wird ergänzt</p>
-      <p>Antworten und Stellungnahmen werden hier übersichtlich bereitgestellt.</p>
-      <a class="button secondary" href="#">PDF öffnen</a>
-    </article>
-  </section>
+  <section class="box pageHero"><p class="eyebrow">Dokumente</p><h1>Dokumente und Unterlagen</h1><p class="lead">Alle wichtigen Schreiben, Stellungnahmen und Dokumente rund um die Fliegenbelastung im Ahlener Osten werden hier übersichtlich veröffentlicht.</p></section>
+  <section id="cmsDocumentsList" class="docGrid"></section>
 </main>
 
 <footer class="siteFooter">
@@ -62,6 +43,7 @@
   <p><em>Ein ehrenamtliches Projekt der Bürgerinitiative Ahlener Osten.</em></p>
   <p>Für eine lebenswerte Zukunft im Ahlener Osten.</p>
   <nav>
+    <a href="faq.html">FAQ</a>
     <a href="impressum.html">Impressum</a>
     <a href="datenschutz.html">Datenschutz</a>
     <a href="kontakt.html">Kontakt</a>
@@ -69,6 +51,6 @@
   </nav>
 </footer>
 <script src="js/menu.js"></script>
-
+<script type="module" src="js/cms-public.js"></script>
 </body>
 </html>

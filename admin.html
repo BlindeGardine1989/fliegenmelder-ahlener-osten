@@ -149,17 +149,43 @@
       </section>
 
       <section id="view-documents" class="cmsView" hidden>
-        <section class="card">
-          <h2>Dokumente</h2>
-          <p>Dokumente sind vorbereitet. In Version 2.0b ergänzen wir PDF-Links und später Uploads.</p>
-        </section>
+        <div class="cmsEditorGrid">
+          <form id="documentsForm" class="card cmsForm">
+            <h2>Dokument anlegen</h2>
+            <input type="hidden" name="id">
+            <label>Titel<input name="title" required></label>
+            <label>Datum<input name="document_date" type="date"></label>
+            <label>Beschreibung<textarea name="description" rows="4"></textarea></label>
+            <label>PDF-Link<input name="file_url" placeholder="https://..."></label>
+            <label><input name="visible" type="checkbox" checked> Sichtbar</label>
+            <button class="button" type="submit">Dokument speichern</button>
+            <button class="button secondary" type="button" data-reset-form="documentsForm">Formular leeren</button>
+          </form>
+          <div>
+            <h2>Dokumente</h2>
+            <div id="documentsList" class="cmsList"></div>
+          </div>
+        </div>
       </section>
 
       <section id="view-events" class="cmsView" hidden>
-        <section class="card">
-          <h2>Termine</h2>
-          <p>Termine sind vorbereitet. In Version 2.0b ergänzen wir die Terminverwaltung.</p>
-        </section>
+        <div class="cmsEditorGrid">
+          <form id="eventsForm" class="card cmsForm">
+            <h2>Termin anlegen</h2>
+            <input type="hidden" name="id">
+            <label>Titel<input name="title" required></label>
+            <label>Datum und Uhrzeit<input name="event_date" type="datetime-local"></label>
+            <label>Ort<input name="location"></label>
+            <label>Beschreibung<textarea name="description" rows="4"></textarea></label>
+            <label><input name="visible" type="checkbox" checked> Sichtbar</label>
+            <button class="button" type="submit">Termin speichern</button>
+            <button class="button secondary" type="button" data-reset-form="eventsForm">Formular leeren</button>
+          </form>
+          <div>
+            <h2>Termine</h2>
+            <div id="eventsList" class="cmsList"></div>
+          </div>
+        </div>
       </section>
     </section>
   </section>

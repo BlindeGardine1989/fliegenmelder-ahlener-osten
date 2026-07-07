@@ -80,6 +80,8 @@ function showView(name) {
   if (name === "news") loadCmsTable("news");
   if (name === "timeline") loadCmsTable("timeline");
   if (name === "faq") loadCmsTable("faq");
+  if (name === "documents") loadCmsTable("documents");
+  if (name === "events") loadCmsTable("events");
 }
 
 navButtons.forEach(button => {
@@ -96,6 +98,8 @@ async function checkSession() {
     await loadCmsTable("news");
     await loadCmsTable("timeline");
     await loadCmsTable("faq");
+    await loadCmsTable("documents");
+    await loadCmsTable("events");
     showView("dashboard");
   } else {
     loginBox.hidden = false;
@@ -456,6 +460,20 @@ const cmsConfig = {
     list: document.querySelector("#faqList"),
     order: "sort_order",
     titleField: "question"
+  },
+  documents: {
+    table: "documents",
+    form: document.querySelector("#documentsForm"),
+    list: document.querySelector("#documentsList"),
+    order: "document_date",
+    titleField: "title"
+  },
+  events: {
+    table: "events",
+    form: document.querySelector("#eventsForm"),
+    list: document.querySelector("#eventsList"),
+    order: "event_date",
+    titleField: "title"
   }
 };
 
@@ -482,7 +500,7 @@ function renderCmsList(type, rows) {
           <p>${escapeHtml(meta ? String(meta).slice(0, 10) : "")}</p>
         </div>
       </div>
-      <p>${escapeHtml(row.summary || row.description || row.answer || "")}</p>
+      <p>${escapeHtml(row.summary || row.description || row.answer || row.location || "")}</p>
       <div class="adminControls">
         <button class="button secondary" data-cms-edit="${type}" data-id="${row.id}">Bearbeiten</button>
         <button class="button danger" data-cms-delete="${type}" data-id="${row.id}">Löschen</button>
