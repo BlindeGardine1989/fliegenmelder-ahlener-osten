@@ -93,3 +93,10 @@ label{display:block;font-weight:900;margin:16px 0}input,select,textarea{width:10
 .cmsSidebarFoot{border-top:1px solid rgba(255,255,255,.18);padding-top:18px}
 .cmsSidebarFoot .button{width:100%}
 @media(max-width:900px){.cmsForm{position:static}.cmsTopbar{border-radius:20px}.cmsSidebar{box-shadow:none}}
+
+
+/* Version 2.1 Medienverwaltung */
+.cmsThumb{width:100%;max-height:180px;object-fit:cover;border-radius:16px;border:1px solid var(--line);margin:10px 0 12px}
+.newsImage{width:100%;max-height:280px;object-fit:cover;border-radius:20px;border:1px solid var(--line);margin-bottom:16px;box-shadow:0 12px 28px rgba(14,76,27,.10)}
+.aboutPhoto{width:100%;max-height:440px;object-fit:cover;border-radius:24px;border:1px solid var(--line);margin:12px 0 20px;box-shadow:0 16px 34px rgba(14,76,27,.12)}
+input[type=file]{background:#fff}
