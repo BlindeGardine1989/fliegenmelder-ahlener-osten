@@ -73,6 +73,7 @@ function showView(name) {
     website: "Website",
     reports: "Meldungen",
     news: "Neuigkeiten",
+    knowledge: "Wissenswertes",
     timeline: "Chronik",
     faq: "FAQ",
     documents: "Dokumente",
@@ -84,6 +85,7 @@ function showView(name) {
   if (name === "website") loadSettings();
   if (name === "reports") renderCurrentView();
   if (name === "news") loadCmsTable("news");
+  if (name === "knowledge") loadCmsTable("knowledge");
   if (name === "timeline") loadCmsTable("timeline");
   if (name === "faq") loadCmsTable("faq");
   if (name === "documents") loadCmsTable("documents");
@@ -102,6 +104,7 @@ async function checkSession() {
     adminPanel.hidden = false;
     await loadReports();
     await loadCmsTable("news");
+    await loadCmsTable("knowledge");
     await loadCmsTable("timeline");
     await loadSettings();
     await loadCmsTable("faq");
@@ -375,6 +378,23 @@ function renderReports(reports) {
       <p><strong>Bemerkung:</strong><br>${escapeHtml(report.note || "–")}</p>
       <p><strong>Kontakt intern:</strong><br>${escapeHtml(report.contact_private || "–")}</p>
 
+      <div class="internalNoteBox">
+        <p><strong>Interne Bearbeitung:</strong></p>
+        <label>Interne Notiz
+          <textarea rows="3" data-internal-note="${id}" placeholder="z. B. Foto angefragt, Rückruf erfolgt, Doppelmeldung ...">${escapeHtml(report.internal_note || "")}</textarea>
+        </label>
+        <label>Status/Tags intern
+          <input data-internal-tags="${id}" value="${escapeHtml(report.internal_tags || "")}" placeholder="z. B. Foto angefragt, Adresse geprüft">
+        </label>
+        <div class="quickTags">
+          <button type="button" class="button secondary" data-quick-tag="Foto angefragt" data-id="${id}">Foto angefragt</button>
+          <button type="button" class="button secondary" data-quick-tag="Rückruf offen" data-id="${id}">Rückruf offen</button>
+          <button type="button" class="button secondary" data-quick-tag="Adresse geprüft" data-id="${id}">Adresse geprüft</button>
+          <button type="button" class="button secondary" data-quick-tag="Doppelmeldung" data-id="${id}">Doppelmeldung</button>
+        </div>
+        <button class="button secondary" data-action="saveInternalNote" data-id="${id}">Interne Notiz speichern</button>
+      </div>
+
       <div class="coordBox">
         <p><strong>Kartenposition:</strong> ${coordsAvailable ? "Koordinaten vorhanden." : "Noch keine Koordinaten gespeichert – ohne Koordinaten erscheint kein Pin auf der Karte."}</p>
 
@@ -408,12 +428,52 @@ function renderReports(reports) {
   list.querySelectorAll("button[data-action]").forEach(button => {
     button.addEventListener("click", () => handleAction(button));
   });
+
+  list.querySelectorAll("button[data-quick-tag]").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.id;
+      const tag = button.dataset.quickTag;
+      const input = list.querySelector(`input[data-internal-tags="${CSS.escape(id)}"]`);
+      if (!input) return;
+
+      const current = input.value
+        .split(",")
+        .map(value => value.trim())
+        .filter(Boolean);
+
+      if (!current.includes(tag)) current.push(tag);
+      input.value = current.join(", ");
+    });
+  });
 }
 
 async function handleAction(button) {
   const id = button.dataset.id;
   const action = button.dataset.action;
   const report = allReports.find(r => String(r.id) === String(id));
+
+  if (action === "saveInternalNote") {
+    const noteInput = list.querySelector(`textarea[data-internal-note="${CSS.escape(id)}"]`);
+    const tagsInput = list.querySelector(`input[data-internal-tags="${CSS.escape(id)}"]`);
+
+    const { error } = await supabase
+      .from("reports")
+      .update({
+        internal_note: noteInput?.value || "",
+        internal_tags: tagsInput?.value || ""
+      })
+      .eq("id", id);
+
+    if (error) {
+      console.error(error);
+      alert("Interne Notiz konnte nicht gespeichert werden.");
+      return;
+    }
+
+    if (status) status.textContent = "Interne Notiz gespeichert.";
+    await loadReports();
+    return;
+  }
 
   if (action === "autoCoords") {
     if (!report?.address) {
@@ -488,14 +548,14 @@ async function handleAction(button) {
 
 exportButton?.addEventListener("click", () => {
   const rows = getFilteredReports();
-  const header = ["Datum","Status","Sichtbar","Ort","Belastung","Seit","Tageszeit","Bemerkung","Kontakt","Lat","Lng"];
+  const header = ["Datum","Status","Sichtbar","Ort","Belastung","Seit","Tageszeit","Bemerkung","Kontakt","Interne Notiz","Interne Tags","Lat","Lng"];
 
   const csv = [
     header.join(";"),
     ...rows.map(r => [
       formatDate(r.created_at), r.status || "", r.visible ? "ja" : "nein",
       r.address || "", r.severity || "", r.since || "", r.time_of_day || "",
-      r.note || "", r.contact_private || "", r.lat || "", r.lng || ""
+      r.note || "", r.contact_private || "", r.internal_note || "", r.internal_tags || "", r.lat || "", r.lng || ""
     ].map(value => `"${String(value).replaceAll('"', '""')}"`).join(";"))
   ].join("\\n");
 
@@ -541,6 +601,13 @@ const cmsConfig = {
     form: document.querySelector("#newsForm"),
     list: document.querySelector("#newsList"),
     order: "date",
+    titleField: "title"
+  },
+  knowledge: {
+    table: "knowledge",
+    form: document.querySelector("#knowledgeForm"),
+    list: document.querySelector("#knowledgeList"),
+    order: "sort_order",
     titleField: "title"
   },
   timeline: {
@@ -597,7 +664,7 @@ function renderCmsList(type, rows) {
         </div>
       </div>
       ${row.image_url ? `<img class="cmsThumb" src="${escapeHtml(row.image_url)}" alt="">` : ""}
-      <p>${escapeHtml(row.summary || row.description || row.answer || row.location || "")}</p>
+      <p>${escapeHtml(row.summary || row.description || row.answer || row.body || row.location || "")}</p>
       ${row.file_url ? `<p><a href="${escapeHtml(row.file_url)}" target="_blank" rel="noopener">Datei öffnen</a></p>` : ""}
       <div class="adminControls">
         <button class="button secondary" data-cms-edit="${type}" data-id="${row.id}">Bearbeiten</button>
@@ -908,6 +975,7 @@ document.querySelector("#deleteNewsImage")?.addEventListener("click", async () =
       alert("Bild wurde gelöscht, aber der Datenbankeintrag konnte nicht aktualisiert werden.");
     }
     await loadCmsTable("news");
+    await loadCmsTable("knowledge");
   }
 
   updateMediaPreviews();
