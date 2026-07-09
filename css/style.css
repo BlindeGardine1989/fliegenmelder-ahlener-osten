@@ -123,3 +123,19 @@ input[type=file]{background:#fff}
 .dashboardRow strong{color:var(--green)}
 .dashboardRow small{color:var(--muted);font-weight:800}
 @media(max-width:1000px){.dashboardGrid{grid-template-columns:1fr}.dashboardCard:nth-child(3){grid-column:auto}}
+
+
+/* Modul 2.2c Interne Notizen */
+.internalNoteBox{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#fffdf7,#f8fcf6)}
+.internalNoteBox p{margin-top:0}
+.internalNoteBox textarea{min-height:90px}
+.quickTags{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px}
+.quickTags .button{padding:9px 12px;font-size:13px}
+
+
+/* Modul 2.2d Wissenswertes */
+.knowledgeCard{min-height:auto}
+.knowledgeCard p{white-space:pre-line}
+.privacyCheck{display:flex;gap:10px;align-items:flex-start;background:#f8fcf6;border:1px solid var(--line);border-radius:18px;padding:14px;margin:18px 0 10px}
+.privacyCheck input{width:auto;margin-top:4px}
+button:disabled,.button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
