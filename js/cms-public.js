@@ -36,6 +36,7 @@ async function loadNews() {
     } else {
       list.innerHTML = rows.map(item => `
         <article class="card">
+          ${item.image_url ? `<img class="newsImage" src="${escapeHtml(item.image_url)}" alt="">` : ""}
           <p class="docMeta">📅 ${formatDate(item.date)}</p>
           <h2>${escapeHtml(item.title)}</h2>
           <p>${escapeHtml(item.summary || item.body || "")}</p>
@@ -49,6 +50,7 @@ async function loadNews() {
     const latest = rows[0];
     home.innerHTML = latest ? `
       <article class="card">
+        ${latest.image_url ? `<img class="newsImage" src="${escapeHtml(latest.image_url)}" alt="">` : ""}
         <p class="eyebrow">Neueste Entwicklung</p>
         <h2>${escapeHtml(latest.title)}</h2>
         <p>${escapeHtml(latest.summary || latest.body || "")}</p>
@@ -56,6 +58,7 @@ async function loadNews() {
       </article>
     ` : `
       <article class="card">
+        ${latest.image_url ? `<img class="newsImage" src="${escapeHtml(latest.image_url)}" alt="">` : ""}
         <p class="eyebrow">Neueste Entwicklung</p>
         <h2>Aktuelle Entwicklung</h2>
         <p>Neue Informationen und Entwicklungen werden hier veröffentlicht.</p>
@@ -206,7 +209,12 @@ async function loadSettings() {
   nodes.forEach(node => {
     const key = node.dataset.setting;
     if (settings[key] && String(settings[key]).trim()) {
-      node.textContent = settings[key];
+      if (node.tagName === "IMG") {
+        node.src = settings[key];
+        node.hidden = false;
+      } else {
+        node.textContent = settings[key];
+      }
     }
   });
 }
