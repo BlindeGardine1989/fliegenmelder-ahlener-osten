@@ -66,7 +66,12 @@
       <label>Kontakt für Rückfragen, freiwillig
         <input name="contact_private" placeholder="E-Mail oder Telefonnummer">
       </label>
-      <button class="button" type="submit">Meldung absenden</button>
+      <label class="privacyCheck">
+        <input id="privacyConsent" type="checkbox" required>
+        Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> zur Kenntnis genommen.
+      </label>
+      <p class="muted">Mit dem Absenden erklären Sie sich einverstanden, dass Ihre Angaben zum Zweck der Bearbeitung der Meldung gespeichert und verarbeitet werden. Personenbezogene Daten werden nicht veröffentlicht.</p>
+      <button id="submitReport" class="button" type="submit" disabled>Meldung absenden</button>
       <p id="status"></p>
     </form>
   </section>
