@@ -540,6 +540,7 @@ function editCmsItem(type, id, rows) {
   });
 
   showView(type);
+  updateMediaPreviews();
 }
 
 async function deleteCmsItem(type, id) {
@@ -636,6 +637,7 @@ settingsForm?.addEventListener("submit", async event => {
   }
 
   settingsStatus.textContent = "Website-Texte gespeichert.";
+  updateMediaPreviews();
 });
 
 
@@ -681,6 +683,7 @@ document.querySelector("#uploadGroupPhoto")?.addEventListener("click", async () 
   if (input) input.value = url;
 
   if (settingsStatus) settingsStatus.textContent = "Gruppenfoto hochgeladen. Bitte Website-Texte speichern.";
+  updateMediaPreviews();
 });
 
 document.querySelector("#uploadNewsImage")?.addEventListener("click", async () => {
@@ -691,6 +694,7 @@ document.querySelector("#uploadNewsImage")?.addEventListener("click", async () =
   const input = document.querySelector('#newsForm [name="image_url"]');
   if (input) input.value = url;
 
+  updateMediaPreviews();
   alert("Bild hochgeladen. Bitte Neuigkeit speichern.");
 });
 
@@ -702,7 +706,147 @@ document.querySelector("#uploadDocumentFile")?.addEventListener("click", async (
   const input = document.querySelector('#documentsForm [name="file_url"]');
   if (input) input.value = url;
 
+  updateMediaPreviews();
   alert("PDF hochgeladen. Bitte Dokument speichern.");
+});
+
+
+
+function storagePathFromPublicUrl(url, bucket) {
+  if (!url) return null;
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const index = String(url).indexOf(marker);
+  if (index === -1) return null;
+  return decodeURIComponent(String(url).slice(index + marker.length));
+}
+
+async function deletePublicFile(bucket, publicUrl) {
+  const path = storagePathFromPublicUrl(publicUrl, bucket);
+  if (!path) return true;
+
+  const { error } = await supabase.storage.from(bucket).remove([path]);
+
+  if (error) {
+    console.error(error);
+    alert("Datei konnte nicht aus dem Speicher gelöscht werden.");
+    return false;
+  }
+
+  return true;
+}
+
+function updateMediaPreviews() {
+  const groupInput = document.querySelector('#settingsForm [name="group_photo_url"]');
+  const groupPreview = document.querySelector("#groupPhotoPreview");
+  if (groupInput && groupPreview) {
+    groupPreview.src = groupInput.value || "";
+    groupPreview.hidden = !groupInput.value;
+  }
+
+  const newsInput = document.querySelector('#newsForm [name="image_url"]');
+  const newsPreview = document.querySelector("#newsImagePreview");
+  if (newsInput && newsPreview) {
+    newsPreview.src = newsInput.value || "";
+    newsPreview.hidden = !newsInput.value;
+  }
+
+  const docInput = document.querySelector('#documentsForm [name="file_url"]');
+  const docPreview = document.querySelector("#documentFilePreview");
+  if (docInput && docPreview) {
+    docPreview.href = docInput.value || "#";
+    docPreview.hidden = !docInput.value;
+  }
+}
+
+document.addEventListener("input", event => {
+  if (
+    event.target?.name === "group_photo_url" ||
+    event.target?.name === "image_url" ||
+    event.target?.name === "file_url"
+  ) {
+    updateMediaPreviews();
+  }
+});
+
+document.querySelector("#deleteGroupPhoto")?.addEventListener("click", async () => {
+  const input = document.querySelector('#settingsForm [name="group_photo_url"]');
+  if (!input?.value) {
+    alert("Kein Gruppenfoto hinterlegt.");
+    return;
+  }
+
+  if (!confirm("Gruppenfoto wirklich löschen?")) return;
+
+  const ok = await deletePublicFile("website-media", input.value);
+  if (!ok) return;
+
+  input.value = "";
+
+  await supabase
+    .from("site_settings")
+    .upsert([{ key: "group_photo_url", value: "", updated_at: new Date().toISOString() }], { onConflict: "key" });
+
+  updateMediaPreviews();
+
+  if (settingsStatus) settingsStatus.textContent = "Gruppenfoto gelöscht.";
+});
+
+document.querySelector("#deleteNewsImage")?.addEventListener("click", async () => {
+  const form = document.querySelector("#newsForm");
+  const input = form?.elements?.image_url;
+  const id = form?.elements?.id?.value;
+
+  if (!input?.value) {
+    alert("Kein Bild hinterlegt.");
+    return;
+  }
+
+  if (!confirm("News-Bild wirklich löschen?")) return;
+
+  const ok = await deletePublicFile("website-media", input.value);
+  if (!ok) return;
+
+  input.value = "";
+
+  if (id) {
+    const { error } = await supabase.from("news").update({ image_url: "" }).eq("id", id);
+    if (error) {
+      console.error(error);
+      alert("Bild wurde gelöscht, aber der Datenbankeintrag konnte nicht aktualisiert werden.");
+    }
+    await loadCmsTable("news");
+  }
+
+  updateMediaPreviews();
+});
+
+document.querySelector("#deleteDocumentFile")?.addEventListener("click", async () => {
+  const form = document.querySelector("#documentsForm");
+  const input = form?.elements?.file_url;
+  const id = form?.elements?.id?.value;
+
+  if (!input?.value) {
+    alert("Keine PDF hinterlegt.");
+    return;
+  }
+
+  if (!confirm("PDF wirklich löschen?")) return;
+
+  const ok = await deletePublicFile("documents", input.value);
+  if (!ok) return;
+
+  input.value = "";
+
+  if (id) {
+    const { error } = await supabase.from("documents").update({ file_url: "" }).eq("id", id);
+    if (error) {
+      console.error(error);
+      alert("PDF wurde gelöscht, aber der Datenbankeintrag konnte nicht aktualisiert werden.");
+    }
+    await loadCmsTable("documents");
+  }
+
+  updateMediaPreviews();
 });
 
 

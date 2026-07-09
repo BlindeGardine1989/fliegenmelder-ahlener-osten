@@ -113,6 +113,10 @@
               <input id="groupPhotoUpload" type="file" accept="image/*">
             </label>
             <button class="button secondary" type="button" id="uploadGroupPhoto">Gruppenfoto hochladen</button>
+            <div class="mediaPreviewBox">
+              <img id="groupPhotoPreview" class="cmsThumb" alt="" hidden>
+              <button class="button danger" type="button" id="deleteGroupPhoto">Gruppenfoto löschen</button>
+            </div>
 
             <label>Kontakt: Einleitung
               <textarea name="contact_intro" rows="3"></textarea>
@@ -172,6 +176,10 @@
             <label>Bild-URL<input name="image_url" placeholder="Wird nach Upload automatisch gefüllt"></label>
             <label>Bild hochladen<input id="newsImageUpload" type="file" accept="image/*"></label>
             <button class="button secondary" type="button" id="uploadNewsImage">Bild hochladen</button>
+            <div class="mediaPreviewBox">
+              <img id="newsImagePreview" class="cmsThumb" alt="" hidden>
+              <button class="button danger" type="button" id="deleteNewsImage">Bild löschen</button>
+            </div>
             <label>Text<textarea name="body" rows="6"></textarea></label>
             <label><input name="visible" type="checkbox" checked> Sichtbar</label>
             <button class="button" type="submit">Neuigkeit speichern</button>
@@ -232,6 +240,10 @@
             <label>PDF-Link<input name="file_url" placeholder="Wird nach Upload automatisch gefüllt oder https://..."></label>
             <label>PDF hochladen<input id="documentFileUpload" type="file" accept="application/pdf"></label>
             <button class="button secondary" type="button" id="uploadDocumentFile">PDF hochladen</button>
+            <div class="mediaPreviewBox">
+              <a id="documentFilePreview" href="#" target="_blank" rel="noopener" hidden>PDF öffnen</a>
+              <button class="button danger" type="button" id="deleteDocumentFile">PDF löschen</button>
+            </div>
             <label><input name="visible" type="checkbox" checked> Sichtbar</label>
             <button class="button" type="submit">Dokument speichern</button>
             <button class="button secondary" type="button" data-reset-form="documentsForm">Formular leeren</button>
