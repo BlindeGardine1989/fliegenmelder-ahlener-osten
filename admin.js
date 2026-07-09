@@ -26,6 +26,10 @@ const statTotal = document.querySelector("#statTotal");
 const statApproved = document.querySelector("#statApproved");
 const statPending = document.querySelector("#statPending");
 const statAvg = document.querySelector("#statAvg");
+const statToday = document.querySelector("#statToday");
+const reportsChart = document.querySelector("#reportsChart");
+const topStreets = document.querySelector("#topStreets");
+const latestActivity = document.querySelector("#latestActivity");
 
 let allReports = [];
 
@@ -188,10 +192,99 @@ function updateStats(reports) {
     ? (severityValues.reduce((a, b) => a + b, 0) / severityValues.length).toFixed(1)
     : "0";
 
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const today = reports.filter(r => String(r.created_at || "").slice(0, 10) === todayKey).length;
+
   statTotal.textContent = total;
   statApproved.textContent = approved;
   statPending.textContent = pending;
   statAvg.textContent = avg;
+  if (statToday) statToday.textContent = today;
+
+  renderDashboardExtras(reports);
+}
+
+
+function normalizeStreet(address) {
+  const text = String(address || "").trim();
+  if (!text) return "Ohne Straße";
+  return text
+    .replace(/\d+[a-zA-Z]?\b/g, "")
+    .replace(/[,;].*$/, "")
+    .replace(/\s+/g, " ")
+    .trim() || text;
+}
+
+function renderDashboardExtras(reports) {
+  renderReportsChart(reports);
+  renderTopStreets(reports);
+  renderLatestActivity(reports);
+}
+
+function renderReportsChart(reports) {
+  if (!reportsChart) return;
+
+  const days = [];
+  const today = new Date();
+
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const key = date.toISOString().slice(0, 10);
+    days.push({ key, count: 0 });
+  }
+
+  reports.forEach(report => {
+    const key = String(report.created_at || "").slice(0, 10);
+    const day = days.find(item => item.key === key);
+    if (day) day.count += 1;
+  });
+
+  const max = Math.max(1, ...days.map(day => day.count));
+
+  reportsChart.innerHTML = days.map(day => {
+    const height = Math.max(8, Math.round((day.count / max) * 100));
+    return `<span title="${day.key}: ${day.count} Meldung(en)" style="height:${height}%"></span>`;
+  }).join("");
+}
+
+function renderTopStreets(reports) {
+  if (!topStreets) return;
+
+  const counts = new Map();
+
+  reports.forEach(report => {
+    const street = normalizeStreet(report.address);
+    counts.set(street, (counts.get(street) || 0) + 1);
+  });
+
+  const rows = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
+
+  topStreets.innerHTML = rows.length ? rows.map(([street, count]) => `
+    <div class="dashboardRow">
+      <span>${escapeHtml(street)}</span>
+      <strong>${count}</strong>
+    </div>
+  `).join("") : `<p>Keine Daten vorhanden.</p>`;
+}
+
+function renderLatestActivity(reports) {
+  if (!latestActivity) return;
+
+  const rows = [...reports]
+    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+    .slice(0, 6);
+
+  latestActivity.innerHTML = rows.length ? rows.map(report => `
+    <div class="dashboardRow">
+      <span>
+        <strong>${escapeHtml(report.address || "Neue Meldung")}</strong><br>
+        <small>${formatDate(report.created_at)} · Belastung ${escapeHtml(report.severity || "–")}/5</small>
+      </span>
+    </div>
+  `).join("") : `<p>Noch keine Meldungen vorhanden.</p>`;
 }
 
 function getFilteredReports() {

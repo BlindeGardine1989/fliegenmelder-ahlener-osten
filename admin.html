@@ -66,16 +66,37 @@
       </header>
 
       <section id="view-dashboard" class="cmsView">
-        <div class="adminStats">
-          <article><strong id="statTotal">0</strong><span>Meldungen gesamt</span></article>
-          <article><strong id="statApproved">0</strong><span>Freigegeben</span></article>
-          <article><strong id="statPending">0</strong><span>In Prüfung</span></article>
-          <article><strong id="statAvg">0</strong><span>Ø Belastung</span></article>
+        <div class="adminStats dashboardStats">
+          <article><strong id="statTotal">0</strong><span>🪰 Meldungen gesamt</span></article>
+          <article><strong id="statApproved">0</strong><span>📍 Öffentlich</span></article>
+          <article><strong id="statPending">0</strong><span>⏳ Warten auf Freigabe</span></article>
+          <article><strong id="statToday">0</strong><span>📅 Heute eingegangen</span></article>
         </div>
 
-        <section class="cmsHint card">
-          <h2>Fliegenmelder CMS</h2>
-          <p>Willkommen in der Verwaltungszentrale des Fliegenmelders. Hier pflegst du Meldungen, Website-Texte, Neuigkeiten, Chronik, FAQ, Dokumente und Termine zentral an einem Ort.</p>
+        <section class="dashboardGrid">
+          <article class="card dashboardCard">
+            <div class="dashboardHead">
+              <div>
+                <p class="eyebrow">Entwicklung</p>
+                <h2>Meldungen letzte 30 Tage</h2>
+              </div>
+              <strong id="statAvg">0</strong>
+            </div>
+            <div id="reportsChart" class="miniChart"></div>
+            <p class="muted">Ø Belastung wird oben rechts angezeigt.</p>
+          </article>
+
+          <article class="card dashboardCard">
+            <p class="eyebrow">Hotspots</p>
+            <h2>Top Straßen</h2>
+            <div id="topStreets" class="dashboardList"></div>
+          </article>
+
+          <article class="card dashboardCard">
+            <p class="eyebrow">Aktuell</p>
+            <h2>Letzte Meldungen</h2>
+            <div id="latestActivity" class="dashboardList"></div>
+          </article>
         </section>
       </section>
 
