@@ -105,6 +105,15 @@
               <textarea name="about_intro" rows="4"></textarea>
             </label>
 
+            <label>Gruppenfoto-URL
+              <input name="group_photo_url" placeholder="Wird nach Upload automatisch gefüllt">
+            </label>
+
+            <label>Gruppenfoto hochladen
+              <input id="groupPhotoUpload" type="file" accept="image/*">
+            </label>
+            <button class="button secondary" type="button" id="uploadGroupPhoto">Gruppenfoto hochladen</button>
+
             <label>Kontakt: Einleitung
               <textarea name="contact_intro" rows="3"></textarea>
             </label>
@@ -160,6 +169,9 @@
             <label>Titel<input name="title" required></label>
             <label>Datum<input name="date" type="date"></label>
             <label>Kurzbeschreibung<textarea name="summary" rows="3"></textarea></label>
+            <label>Bild-URL<input name="image_url" placeholder="Wird nach Upload automatisch gefüllt"></label>
+            <label>Bild hochladen<input id="newsImageUpload" type="file" accept="image/*"></label>
+            <button class="button secondary" type="button" id="uploadNewsImage">Bild hochladen</button>
             <label>Text<textarea name="body" rows="6"></textarea></label>
             <label><input name="visible" type="checkbox" checked> Sichtbar</label>
             <button class="button" type="submit">Neuigkeit speichern</button>
@@ -217,7 +229,9 @@
             <label>Titel<input name="title" required></label>
             <label>Datum<input name="document_date" type="date"></label>
             <label>Beschreibung<textarea name="description" rows="4"></textarea></label>
-            <label>PDF-Link<input name="file_url" placeholder="https://..."></label>
+            <label>PDF-Link<input name="file_url" placeholder="Wird nach Upload automatisch gefüllt oder https://..."></label>
+            <label>PDF hochladen<input id="documentFileUpload" type="file" accept="application/pdf"></label>
+            <button class="button secondary" type="button" id="uploadDocumentFile">PDF hochladen</button>
             <label><input name="visible" type="checkbox" checked> Sichtbar</label>
             <button class="button" type="submit">Dokument speichern</button>
             <button class="button secondary" type="button" data-reset-form="documentsForm">Formular leeren</button>

@@ -503,7 +503,9 @@ function renderCmsList(type, rows) {
           <p>${escapeHtml(meta ? String(meta).slice(0, 10) : "")}</p>
         </div>
       </div>
+      ${row.image_url ? `<img class="cmsThumb" src="${escapeHtml(row.image_url)}" alt="">` : ""}
       <p>${escapeHtml(row.summary || row.description || row.answer || row.location || "")}</p>
+      ${row.file_url ? `<p><a href="${escapeHtml(row.file_url)}" target="_blank" rel="noopener">Datei öffnen</a></p>` : ""}
       <div class="adminControls">
         <button class="button secondary" data-cms-edit="${type}" data-id="${row.id}">Bearbeiten</button>
         <button class="button danger" data-cms-delete="${type}" data-id="${row.id}">Löschen</button>
@@ -634,6 +636,73 @@ settingsForm?.addEventListener("submit", async event => {
   }
 
   settingsStatus.textContent = "Website-Texte gespeichert.";
+});
+
+
+
+function safeFileName(fileName) {
+  return String(fileName || "datei")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "-")
+    .replace(/-+/g, "-")
+    .toLowerCase();
+}
+
+async function uploadPublicFile(bucket, file, folder = "") {
+  if (!file) {
+    alert("Bitte zuerst eine Datei auswählen.");
+    return null;
+  }
+
+  const fileName = `${Date.now()}-${safeFileName(file.name)}`;
+  const path = folder ? `${folder}/${fileName}` : fileName;
+
+  const { error } = await supabase.storage
+    .from(bucket)
+    .upload(path, file, { upsert: true });
+
+  if (error) {
+    console.error(error);
+    alert("Upload nicht möglich. Bitte Storage-Bucket und Policies prüfen.");
+    return null;
+  }
+
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
+}
+
+document.querySelector("#uploadGroupPhoto")?.addEventListener("click", async () => {
+  const file = document.querySelector("#groupPhotoUpload")?.files?.[0];
+  const url = await uploadPublicFile("website-media", file, "gruppenfoto");
+  if (!url) return;
+
+  const input = document.querySelector('#settingsForm [name="group_photo_url"]');
+  if (input) input.value = url;
+
+  if (settingsStatus) settingsStatus.textContent = "Gruppenfoto hochgeladen. Bitte Website-Texte speichern.";
+});
+
+document.querySelector("#uploadNewsImage")?.addEventListener("click", async () => {
+  const file = document.querySelector("#newsImageUpload")?.files?.[0];
+  const url = await uploadPublicFile("website-media", file, "news");
+  if (!url) return;
+
+  const input = document.querySelector('#newsForm [name="image_url"]');
+  if (input) input.value = url;
+
+  alert("Bild hochgeladen. Bitte Neuigkeit speichern.");
+});
+
+document.querySelector("#uploadDocumentFile")?.addEventListener("click", async () => {
+  const file = document.querySelector("#documentFileUpload")?.files?.[0];
+  const url = await uploadPublicFile("documents", file, "pdf");
+  if (!url) return;
+
+  const input = document.querySelector('#documentsForm [name="file_url"]');
+  if (input) input.value = url;
+
+  alert("PDF hochgeladen. Bitte Dokument speichern.");
 });
 
 
