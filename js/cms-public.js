@@ -58,7 +58,6 @@ async function loadNews() {
       </article>
     ` : `
       <article class="card">
-        ${latest.image_url ? `<img class="newsImage" src="${escapeHtml(latest.image_url)}" alt="">` : ""}
         <p class="eyebrow">Neueste Entwicklung</p>
         <h2>Aktuelle Entwicklung</h2>
         <p>Neue Informationen und Entwicklungen werden hier veröffentlicht.</p>
@@ -76,8 +75,8 @@ async function loadTimeline() {
     .from("timeline")
     .select("*")
     .eq("visible", true)
-    .order("date", { ascending: false })
-    .order("created_at", { ascending: false });
+    .order("date", { ascending: true })
+    .order("created_at", { ascending: true });
 
   if (error) {
     console.error(error);
@@ -220,7 +219,38 @@ async function loadSettings() {
 }
 
 
+async function loadKnowledge() {
+  const list = document.querySelector("#cmsKnowledgeList");
+  if (!list) return;
+
+  const { data, error } = await supabase
+    .from("knowledge")
+    .select("*")
+    .eq("visible", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    list.innerHTML = emptyText("Wissenswertes konnte nicht geladen werden.");
+    return;
+  }
+
+  const rows = data || [];
+
+  list.innerHTML = rows.length ? rows.map(item => `
+    <article class="card knowledgeCard">
+      <p class="eyebrow">Wissenswertes</p>
+      <h2>${escapeHtml(item.title)}</h2>
+      ${item.summary ? `<p><strong>${escapeHtml(item.summary)}</strong></p>` : ""}
+      <p>${escapeHtml(item.body || "")}</p>
+    </article>
+  `).join("") : emptyText("Noch keine Beiträge vorhanden.");
+}
+
+
 loadSettings();
+loadKnowledge();
 loadNews();
 loadTimeline();
 loadFaq();

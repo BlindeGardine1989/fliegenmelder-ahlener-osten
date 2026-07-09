@@ -1,7 +1,7 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, IS_CONFIGURED } from "./config.js";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export function escapeHtml(value) {
   return String(value ?? "")
@@ -12,55 +12,64 @@ export function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-export function formatDate(value) {
-  if (!value) return "–";
-  try {
-    return new Intl.DateTimeFormat("de-DE", {
-      dateStyle: "medium",
-      timeStyle: "short"
-    }).format(new Date(value));
-  } catch {
-    return value;
+const reportForm = document.querySelector("#reportForm");
+const status = document.querySelector("#status");
+const privacyConsent = document.querySelector("#privacyConsent");
+const submitReport = document.querySelector("#submitReport");
+
+function setStatus(message) {
+  if (status) status.textContent = message;
+}
+
+function updateSubmitState() {
+  if (!submitReport) return;
+  if (privacyConsent) {
+    submitReport.disabled = !privacyConsent.checked;
   }
 }
 
-const form = document.querySelector("#reportForm");
-const status = document.querySelector("#status");
+privacyConsent?.addEventListener("change", updateSubmitState);
+updateSubmitState();
 
-if (form) {
-  form.addEventListener("submit", async event => {
-    event.preventDefault();
+reportForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-    if (!IS_CONFIGURED) {
-      status.textContent = "Supabase ist noch nicht verbunden.";
-      return;
-    }
+  if (privacyConsent && !privacyConsent.checked) {
+    setStatus("Bitte bestätigen Sie die Datenschutzerklärung.");
+    return;
+  }
 
-    status.textContent = "Meldung wird gesendet ...";
+  setStatus("Meldung wird gespeichert ...");
 
-    const f = new FormData(form);
+  const formData = new FormData(reportForm);
 
-    const payload = {
-  public_id: crypto.randomUUID(),
-  address: f.get("address"),
-  severity: Number(f.get("severity")),
-  since: f.get("since"),
-  time_of_day: f.get("time_of_day"),
-  note: f.get("note"),
-  contact_private: f.get("contact_private"),
-  status: "pending",
-  visible: false
-};
+  const report = {
+    address: String(formData.get("address") || "").trim(),
+    severity: Number(formData.get("severity") || 3),
+    since: String(formData.get("since") || "").trim(),
+    time_of_day: String(formData.get("time_of_day") || "").trim(),
+    note: String(formData.get("note") || "").trim(),
+    contact_private: String(formData.get("contact_private") || "").trim(),
+    status: "pending",
+    visible: false
+  };
 
-    const { error } = await supabase.from("reports").insert(payload);
+  if (!report.address) {
+    setStatus("Bitte Straße und Hausnummer eintragen.");
+    return;
+  }
 
-    if (error) {
-      console.error(error);
-      status.textContent = "Meldung konnte nicht gesendet werden: " + error.message;
-      return;
-    }
+  const { error } = await supabase
+    .from("reports")
+    .insert(report);
 
-    form.reset();
-    status.textContent = "Danke. Deine Meldung wurde eingereicht und wird geprüft.";
-  });
-}
+  if (error) {
+    console.error(error);
+    setStatus("Meldung konnte nicht gespeichert werden. Bitte später erneut versuchen.");
+    return;
+  }
+
+  reportForm.reset();
+  updateSubmitState();
+  setStatus("Vielen Dank. Ihre Meldung wurde gespeichert und wird geprüft.");
+});
