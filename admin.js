@@ -615,12 +615,14 @@ const cmsConfig = {
     order: "date",
     titleField: "title"
   },
-  knowledge: {
-    table: "knowledge",
-    form: document.querySelector("#knowledgeForm"),
-    list: document.querySelector("#knowledgeList"),
-    order: "sort_order",
-    titleField: "title"
+ knowledge: {
+  table: "knowledge",
+  form: document.querySelector("#knowledgeForm"),
+  list: document.querySelector("#knowledgeList"),
+  order: "sort_order",
+  ascending: true,
+  titleField: "title"
+},
   },
   timeline: {
     table: "timeline",
