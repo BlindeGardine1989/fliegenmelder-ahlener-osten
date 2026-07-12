@@ -22,7 +22,7 @@ async function loadKnowledge() {
 
   const { data, error } = await supabase
     .from("knowledge")
-    .select("id, title, summary, content, visible, sort_order, created_at")
+    .select("id, title, summary, body, visible, sort_order, created_at")
     .eq("visible", true)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
@@ -58,7 +58,7 @@ async function loadKnowledge() {
     .map((entry) => {
       const title = escapeHtml(entry.title || "");
       const summary = escapeHtml(entry.summary || "");
-      const content = formatContent(entry.content || "");
+     const content = formatContent(entry.body || "");
 
       return `
         <article class="box knowledgeItem">
