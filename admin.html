@@ -214,6 +214,78 @@
         </div>
       </section>
 
+      <section id="view-knowledge" class="cmsView" hidden>
+
+  <div class="cmsEditorGrid">
+
+    <form id="knowledgeForm" class="card cmsForm">
+
+      <h2>Wissensbeitrag anlegen</h2>
+
+      <input type="hidden" name="id">
+
+      <label>
+        Titel
+        <input name="title" required>
+      </label>
+
+      <label>
+        Kurzbeschreibung
+        <textarea name="summary" rows="3"></textarea>
+      </label>
+
+      <label>
+        Text
+        <textarea name="body" rows="8"></textarea>
+      </label>
+
+      <label>
+        Reihenfolge
+        <input
+          name="sort_order"
+          type="number"
+          value="0"
+        >
+      </label>
+
+      <label>
+        <input
+          name="visible"
+          type="checkbox"
+          checked
+        >
+        Sichtbar
+      </label>
+
+      <button class="button" type="submit">
+        Beitrag speichern
+      </button>
+
+      <button
+        class="button secondary"
+        type="button"
+        data-reset-form="knowledgeForm"
+      >
+        Formular leeren
+      </button>
+
+    </form>
+
+    <div>
+
+      <h2>Vorhandene Beiträge</h2>
+
+      <div
+        id="knowledgeList"
+        class="cmsList"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
       <section id="view-timeline" class="cmsView" hidden>
         <div class="cmsEditorGrid">
           <form id="timelineForm" class="card cmsForm">
