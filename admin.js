@@ -579,20 +579,32 @@ document.querySelectorAll("[data-reset-form]").forEach(button => {
 
 async function loadCmsTable(type) {
   const config = cmsConfig[type];
-  if (!config) return;
+
+  if (!config || !config.list) {
+    return;
+  }
 
   const { data, error } = await supabase
     .from(config.table)
     .select("*")
-    .order(config.order, { ascending: false });
+    .order(config.order, {
+      ascending: config.ascending ?? false
+    });
 
   if (error) {
-    console.error(error);
-    config.list.innerHTML = `<article class="adminCard"><p>Konnte nicht geladen werden.</p></article>`;
+    console.error(`${type} konnte nicht geladen werden:`, error);
+
+    config.list.innerHTML = `
+      <article class="adminCard">
+        <p>Die Einträge konnten nicht geladen werden.</p>
+      </article>
+    `;
+
     return;
   }
 
   renderCmsList(type, data || []);
+}
 }
 
 const cmsConfig = {
