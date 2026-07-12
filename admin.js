@@ -656,10 +656,20 @@ const cmsConfig = {
 
 function renderCmsList(type, rows) {
   const config = cmsConfig[type];
+
+  if (!config?.list) {
+    return;
+  }
+
   config.list.innerHTML = "";
 
   if (!rows.length) {
-    config.list.innerHTML = `<article class="adminCard"><p>Noch keine Einträge vorhanden.</p></article>`;
+    config.list.innerHTML = `
+      <article class="adminCard">
+        <p>Noch keine Einträge vorhanden.</p>
+      </article>
+    `;
+
     return;
   }
 
@@ -667,35 +677,127 @@ function renderCmsList(type, rows) {
     const card = document.createElement("article");
     card.className = "adminCard";
 
-    const meta = row.date || row.created_at || "";
+    const isKnowledge = type === "knowledge";
+    const isVisible = row.visible === true;
+
+    const title = escapeHtml(
+      row[config.titleField] || "Eintrag"
+    );
+
+    const preview = escapeHtml(
+      row.summary ||
+      row.description ||
+      row.answer ||
+      row.body ||
+      row.location ||
+      ""
+    );
+
+    let meta = row.date || row.created_at || "";
+
+    if (isKnowledge) {
+      meta = `Reihenfolge: ${escapeHtml(row.sort_order ?? 0)}`;
+    } else if (meta) {
+      meta = String(meta).slice(0, 10);
+    }
 
     card.innerHTML = `
       <div class="adminCardHead">
         <div>
-          <p class="eyebrow">${row.visible ? "Sichtbar" : "Ausgeblendet"}</p>
-          <h2>${escapeHtml(row[config.titleField] || "Eintrag")}</h2>
-          <p>${escapeHtml(meta ? String(meta).slice(0, 10) : "")}</p>
+          <p class="eyebrow">
+            ${isVisible ? "🟢 Sichtbar" : "🔴 Ausgeblendet"}
+          </p>
+
+          <h2>${title}</h2>
+
+          ${
+            meta
+              ? `<p><strong>${escapeHtml(meta)}</strong></p>`
+              : ""
+          }
         </div>
       </div>
-      ${row.image_url ? `<img class="cmsThumb" src="${escapeHtml(row.image_url)}" alt="">` : ""}
-      <p>${escapeHtml(row.summary || row.description || row.answer || row.body || row.location || "")}</p>
-      ${row.file_url ? `<p><a href="${escapeHtml(row.file_url)}" target="_blank" rel="noopener">Datei öffnen</a></p>` : ""}
+
+      ${
+        row.image_url
+          ? `
+            <img
+              class="cmsThumb"
+              src="${escapeHtml(row.image_url)}"
+              alt=""
+            >
+          `
+          : ""
+      }
+
+      ${
+        preview
+          ? `<p>${preview}</p>`
+          : `<p class="muted">Keine Beschreibung vorhanden.</p>`
+      }
+
+      ${
+        row.file_url
+          ? `
+            <p>
+              <a
+                href="${escapeHtml(row.file_url)}"
+                target="_blank"
+                rel="noopener"
+              >
+                Datei öffnen
+              </a>
+            </p>
+          `
+          : ""
+      }
+
       <div class="adminControls">
-        <button class="button secondary" data-cms-edit="${type}" data-id="${row.id}">Bearbeiten</button>
-        <button class="button danger" data-cms-delete="${type}" data-id="${row.id}">Löschen</button>
+        <button
+          class="button secondary"
+          type="button"
+          data-cms-edit="${type}"
+          data-id="${row.id}"
+        >
+          ✏️ Bearbeiten
+        </button>
+
+        <button
+          class="button danger"
+          type="button"
+          data-cms-delete="${type}"
+          data-id="${row.id}"
+        >
+          🗑️ Löschen
+        </button>
       </div>
     `;
 
     config.list.appendChild(card);
   });
 
-  config.list.querySelectorAll("[data-cms-edit]").forEach(button => {
-    button.addEventListener("click", () => editCmsItem(button.dataset.cmsEdit, button.dataset.id, rows));
-  });
+  config.list
+    .querySelectorAll("[data-cms-edit]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        editCmsItem(
+          button.dataset.cmsEdit,
+          button.dataset.id,
+          rows
+        );
+      });
+    });
 
-  config.list.querySelectorAll("[data-cms-delete]").forEach(button => {
-    button.addEventListener("click", () => deleteCmsItem(button.dataset.cmsDelete, button.dataset.id));
-  });
+  config.list
+    .querySelectorAll("[data-cms-delete]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        deleteCmsItem(
+          button.dataset.cmsDelete,
+          button.dataset.id
+        );
+      });
+    });
 }
 
 function editCmsItem(type, id, rows) {
