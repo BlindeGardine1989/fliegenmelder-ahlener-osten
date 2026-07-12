@@ -139,3 +139,34 @@ input[type=file]{background:#fff}
 .privacyCheck{display:flex;gap:10px;align-items:flex-start;background:#f8fcf6;border:1px solid var(--line);border-radius:18px;padding:14px;margin:18px 0 10px}
 .privacyCheck input{width:auto;margin-top:4px}
 button:disabled,.button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+
+/* Navigation auf großen Bildschirmen sauber ausrichten */
+@media (min-width: 1100px) {
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .topbar .brand {
+    flex: 0 0 auto;
+  }
+
+  .topbar .nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 16px;
+    font-size: 14px;
+  }
+
+  .topbar .nav a {
+    white-space: nowrap;
+  }
+
+  .topbar .nav .buttonLink {
+    margin-left: 4px;
+  }
+}
