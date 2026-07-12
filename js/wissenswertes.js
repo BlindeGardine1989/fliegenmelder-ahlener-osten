@@ -1,11 +1,16 @@
 import { supabase, escapeHtml } from "./app.js";
 
-const knowledgeList = document.querySelector("#knowledgeList");
+const knowledgeList =
+  document.querySelector("#cmsKnowledgeList") ||
+  document.querySelector("#knowledgeList");
 
 loadKnowledge();
 
 async function loadKnowledge() {
   if (!knowledgeList) {
+    console.error(
+      "Der Bereich #cmsKnowledgeList oder #knowledgeList wurde nicht gefunden."
+    );
     return;
   }
 
@@ -17,13 +22,16 @@ async function loadKnowledge() {
 
   const { data, error } = await supabase
     .from("knowledge")
-    .select("id, title, summary, content, sort_order")
+    .select("id, title, summary, content, visible, sort_order, created_at")
     .eq("visible", true)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
 
   if (error) {
-    console.error("Wissenswertes konnte nicht geladen werden:", error);
+    console.error(
+      "Wissenswertes konnte nicht geladen werden:",
+      error
+    );
 
     knowledgeList.innerHTML = `
       <div class="box emptyState">
@@ -77,7 +85,10 @@ function formatContent(text) {
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
     .map((paragraph) => {
-      return `<p>${escapeHtml(paragraph).replace(/\n/g, "<br>")}</p>`;
+      const safeParagraph = escapeHtml(paragraph)
+        .replace(/\n/g, "<br>");
+
+      return `<p>${safeParagraph}</p>`;
     })
     .join("");
 }
