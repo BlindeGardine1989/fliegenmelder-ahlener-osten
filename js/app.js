@@ -11,7 +11,15 @@ export function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+export function formatDate(value) {
+  if (!value) return "–";
 
+  return new Date(value).toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
 const reportForm = document.querySelector("#reportForm");
 const status = document.querySelector("#status");
 const privacyConsent = document.querySelector("#privacyConsent");
