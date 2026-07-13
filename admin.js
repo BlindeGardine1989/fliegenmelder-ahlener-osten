@@ -605,7 +605,7 @@ async function loadCmsTable(type) {
 
   renderCmsList(type, data || []);
 }
-}
+
 
 const cmsConfig = {
   news: {
@@ -623,7 +623,7 @@ const cmsConfig = {
   ascending: true,
   titleField: "title"
 },
-  },
+  
   timeline: {
     table: "timeline",
     form: document.querySelector("#timelineForm"),
