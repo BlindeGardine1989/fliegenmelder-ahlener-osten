@@ -1,10 +1,17 @@
-import { supabase } from "./app.js";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 import {
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
   ORT_LAT,
   ORT_LNG,
   START_ZOOM
 } from "./config.js";
+
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 
 const form = document.querySelector("#reportForm");
