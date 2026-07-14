@@ -5,10 +5,8 @@ import {
 } from "./app.js";
 
 import {
-  IS_CONFIGURED,
   SUPABASE_PUBLISHABLE_KEY
 } from "./config.js";
-
 
 const form = document.querySelector("#reportForm");
 const status = document.querySelector("#status");
@@ -193,8 +191,9 @@ form?.addEventListener("submit", async event => {
   }
 
   if (
-    !IS_CONFIGURED ||
-    SUPABASE_PUBLISHABLE_KEY.includes("HIER_DEINEN")
+  !SUPABASE_PUBLISHABLE_KEY ||
+  SUPABASE_PUBLISHABLE_KEY.includes("HIER_DEINEN")
+) {
   ) {
     if (status) {
       status.textContent =
