@@ -202,3 +202,100 @@ button:disabled,.button:disabled{opacity:.55;cursor:not-allowed;transform:none!i
 .knowledgeContent{
     margin-top:20px;
 }
+/* ===== Einheitliches Design für öffentliche Unterseiten ===== */
+
+.sectionGrid {
+  gap: 28px;
+}
+
+/* Einheitlicher Hero */
+.pageHero {
+  min-height: auto;
+  padding: clamp(34px, 6vw, 64px);
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pageHero h1 {
+  max-width: 900px;
+}
+
+.pageHero .lead {
+  margin-bottom: 0;
+}
+
+/* Einheitliche Inhaltskarten */
+.sectionGrid > .card,
+.sectionGrid > .timelineItem,
+.sectionGrid > article {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--line);
+  border-top: 6px solid var(--green);
+  border-radius: 28px;
+  padding: clamp(24px, 4vw, 36px);
+  box-shadow: var(--shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sectionGrid > .card:hover,
+.sectionGrid > .timelineItem:hover,
+.sectionGrid > article:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow2);
+}
+
+/* Chronik optisch wie Neuigkeiten */
+.timeline {
+  gap: 28px;
+}
+
+.timelineItem {
+  min-height: auto;
+}
+
+.timelineItem strong {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--green);
+  font-size: 1.05rem;
+  font-weight: 950;
+}
+
+.timelineItem h2 {
+  margin-bottom: 18px;
+}
+
+.timelineItem p {
+  margin-bottom: 0;
+}
+
+/* Karteninhalte */
+.sectionGrid .card p:last-child,
+.sectionGrid .timelineItem p:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobile Feinschliff */
+@media (max-width: 680px) {
+  .pageHero {
+    padding: 34px 28px;
+    margin-bottom: 28px;
+  }
+
+  .sectionGrid {
+    gap: 20px;
+  }
+
+  .sectionGrid > .card,
+  .sectionGrid > .timelineItem,
+  .sectionGrid > article {
+    border-radius: 24px;
+    padding: 26px 24px;
+  }
+
+  .timelineItem h2 {
+    font-size: 1.8rem;
+  }
+}
