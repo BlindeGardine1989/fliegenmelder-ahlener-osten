@@ -5,7 +5,7 @@ import {
 } from "./app.js";
 
 import {
-  SUPABASE_PUBLISHABLE_KEY
+  SUPABASE_ANON_KEY
 } from "./config.js";
 
 const form = document.querySelector("#reportForm");
@@ -190,13 +190,13 @@ form?.addEventListener("submit", async event => {
     return;
   }
 
- if (
-  !SUPABASE_PUBLISHABLE_KEY ||
-  SUPABASE_PUBLISHABLE_KEY.includes("HIER_DEINEN")
+if (
+  !SUPABASE_ANON_KEY ||
+  SUPABASE_ANON_KEY.includes("HIER_DEINEN")
 ) {
   if (status) {
     status.textContent =
-      "Publishable Key fehlt noch in js/config.js.";
+      "Supabase-Schlüssel fehlt noch in js/config.js.";
   }
 
   return;
