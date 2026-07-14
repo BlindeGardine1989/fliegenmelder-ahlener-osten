@@ -177,7 +177,7 @@ button:disabled,.button:disabled{opacity:.55;cursor:not-allowed;transform:none!i
     border-radius:24px;
     padding:32px;
     margin-bottom:24px;
-    border-top:5px solid var(--primary);
+    border-top:5px solid var(--green);
     box-shadow:0 10px 30px rgba(0,0,0,.05);
 }
 
