@@ -3,78 +3,209 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Fliegen melden | Fliegenmelder Ahlener Osten</title>
-  <meta name="description" content="Fliegenmelder Ahlener Osten">
+
+  <meta
+    name="description"
+    content="Fliegenbelastung im Ahlener Osten melden."
+  >
+
   <link rel="icon" href="assets/logo.png" type="image/png">
   <link rel="stylesheet" href="css/style.css">
-  
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
 </head>
+
 <body>
+
 <header class="topbar">
   <a class="brand" href="index.html">
-    <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+    <img
+      src="assets/logo.png"
+      alt="Logo Fliegenmelder Ahlener Osten"
+    >
+
     <div>
-      <strong>Fliegenmelder<br>Ahlener Osten</strong>
-      <span>Melden. Dokumentieren. Transparent informieren.</span>
+      <strong>
+        Fliegenmelder<br>
+        Ahlener Osten
+      </strong>
+
+      <span>
+        Melden. Dokumentieren. Transparent informieren.
+      </span>
     </div>
   </a>
-  <nav class="nav">
-    <a href="index.html">Startseite</a>
-    <a href="melden.html" aria-current="page">Fliegen melden</a>
-    <a href="karte.html">Meldungskarte</a>
-    <a href="neuigkeiten.html">Neuigkeiten</a>
-    <a href="chronik.html">Chronik</a>
-    <a href="dokumente.html">Dokumente</a>
-    <a href="termine.html">Termine</a>
-    <a href="ueber-uns.html">Über uns</a>
-    <a href="kontakt.html">Kontakt</a>
-    <a class="buttonLink" href="melden.html">+ Meldung einreichen</a>
-  </nav>
+
+  <nav class="nav"></nav>
 </header>
 
 <main class="container">
+
   <section class="box pageHero">
     <p class="eyebrow">Meldung einreichen</p>
+
     <h1>Fliegenbelastung melden</h1>
-    <p class="lead">Vielen Dank für Ihre Unterstützung.</p>
-    <p>Jede Meldung hilft dabei, die Entwicklung der Fliegenbelastung nachvollziehbar zu dokumentieren und dient als Grundlage für den weiteren Austausch mit Stadt, Politik und Behörden.</p>
+
+    <p class="lead">
+      Jede Meldung hilft dabei, die Entwicklung der Fliegenbelastung
+      nachvollziehbar zu dokumentieren.
+    </p>
   </section>
 
   <section class="card">
+
     <form id="reportForm">
-      <label>Straße und Hausnummer
-        <input name="address" required placeholder="z. B. Bergstraße 148">
+
+      <label>
+        Straße und Hausnummer
+
+        <input
+          id="address"
+          name="address"
+          type="text"
+          required
+          placeholder="z. B. Bergstraße 148"
+        >
       </label>
-      <label>Wie stark ist die Fliegenbelastung?
-        <select name="severity" required>
-          <option value="1">1 sehr gering</option>
-          <option value="2">2 gering</option>
-          <option value="3" selected>3 mittel</option>
-          <option value="4">4 stark</option>
-          <option value="5">5 sehr stark</option>
+
+      <label>
+        Wie stark ist die Fliegenbelastung?
+
+        <select id="severity" name="severity" required>
+          <option value="1">1 – sehr gering</option>
+          <option value="2">2 – gering</option>
+          <option value="3" selected>3 – mittel</option>
+          <option value="4">4 – stark</option>
+          <option value="5">5 – sehr stark</option>
         </select>
       </label>
-      <label>Seit wann?
-        <input name="since" placeholder="z. B. seit einigen Tagen">
+
+      <label>
+        Seit wann besteht die Belastung?
+
+        <input
+          id="since"
+          name="since"
+          type="text"
+          placeholder="z. B. seit einigen Tagen"
+        >
       </label>
-      <label>Tageszeit
-        <input name="time_of_day" placeholder="z. B. morgens, mittags, abends">
+
+      <label>
+        Tageszeit
+
+        <input
+          id="time_of_day"
+          name="time_of_day"
+          type="text"
+          placeholder="z. B. morgens, mittags oder abends"
+        >
       </label>
-      <label>Weitere Hinweise (optional)
-        <textarea name="note" rows="5" placeholder="z. B. besonders stark im Garten, an Fenstern oder auf der Terrasse"></textarea>
+
+      <label>
+        Weitere Hinweise
+
+        <textarea
+          id="note"
+          name="note"
+          rows="5"
+          placeholder="z. B. besonders stark im Garten, an Fenstern oder auf der Terrasse"
+        ></textarea>
       </label>
-      <label>Kontakt für Rückfragen, freiwillig
-        <input name="contact_private" placeholder="E-Mail oder Telefonnummer">
+
+      <label>
+        Kontakt für Rückfragen – freiwillig
+
+        <input
+          id="contact"
+          name="contact_private"
+          type="text"
+          placeholder="E-Mail-Adresse oder Telefonnummer"
+        >
       </label>
+
+      <label>
+        Foto – freiwillig
+
+        <input
+          id="photo"
+          name="photo"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+        >
+      </label>
+
+      <section class="locationPicker">
+        <h2>Standort auswählen</h2>
+
+        <p>
+          Klicken Sie auf die Karte oder verwenden Sie den aktuellen
+          Standort Ihres Geräts.
+        </p>
+
+        <button
+          id="useGps"
+          class="button secondary"
+          type="button"
+        >
+          📍 Aktuellen Standort verwenden
+        </button>
+
+        <div
+          id="map"
+          style="height: 420px; margin-top: 18px; border-radius: 18px;"
+        ></div>
+
+        <input id="lat" name="lat" type="hidden">
+        <input id="lng" name="lng" type="hidden">
+      </section>
+
       <label class="privacyCheck">
-        <input id="privacyConsent" type="checkbox" required>
-        Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> zur Kenntnis genommen.
+        <input
+          id="privacyConsent"
+          name="privacyConsent"
+          type="checkbox"
+          required
+        >
+
+        <span>
+          Ich habe die
+          <a
+            href="datenschutz.html"
+            target="_blank"
+            rel="noopener"
+          >
+            Datenschutzerklärung
+          </a>
+          zur Kenntnis genommen.
+        </span>
       </label>
-      <p class="muted">Mit dem Absenden erklären Sie sich einverstanden, dass Ihre Angaben zum Zweck der Bearbeitung der Meldung gespeichert und verarbeitet werden. Personenbezogene Daten werden nicht veröffentlicht.</p>
-      <button id="submitReport" class="button" type="submit" disabled>Meldung absenden</button>
-      <p id="status"></p>
+
+      <p class="muted">
+        Personenbezogene Kontaktangaben werden ausschließlich intern
+        für Rückfragen verwendet und nicht veröffentlicht.
+      </p>
+
+      <button
+        id="submitReport"
+        class="button"
+        type="submit"
+        disabled
+      >
+        Meldung absenden
+      </button>
+
+      <p id="status" aria-live="polite"></p>
+
     </form>
+
   </section>
+
 </main>
 
 <footer class="siteFooter">
@@ -116,6 +247,7 @@
 </footer>
 
 <script src="js/menu.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module" src="js/melden.js"></script>
 
 </body>
