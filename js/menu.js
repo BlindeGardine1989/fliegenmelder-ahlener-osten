@@ -72,7 +72,7 @@ if (topbar && nav) {
       );
     });
 
-    nav.querySelectorAll("a").forEach((link) => {
+      nav.querySelectorAll("a").forEach((link) => {
       link.addEventListener("click", () => {
         topbar.classList.remove("menuOpen");
         button.setAttribute("aria-expanded", "false");
@@ -80,3 +80,4 @@ if (topbar && nav) {
       });
     });
   }
+}
