@@ -190,19 +190,17 @@ form?.addEventListener("submit", async event => {
     return;
   }
 
-  if (
+ if (
   !SUPABASE_PUBLISHABLE_KEY ||
   SUPABASE_PUBLISHABLE_KEY.includes("HIER_DEINEN")
 ) {
-  ) {
-    if (status) {
-      status.textContent =
-        "Publishable Key fehlt noch in js/config.js.";
-    }
-
-    return;
+  if (status) {
+    status.textContent =
+      "Publishable Key fehlt noch in js/config.js.";
   }
 
+  return;
+}
   if (status) {
     status.textContent = "Meldung wird gespeichert ...";
   }
