@@ -253,25 +253,39 @@ button:disabled,.button:disabled{opacity:.55;cursor:not-allowed;transform:none!i
   box-shadow: var(--shadow2);
 }
 
-/* Chronik optisch wie Neuigkeiten */
-.timeline {
-  gap: 28px;
+.timeline{
+    display:grid;
+    gap:24px;
 }
 
-.timelineItem {
-  min-height: auto;
+.timelineItem{
+    background:#fff;
+    border-radius:24px;
+    padding:32px;
+    margin-bottom:0;
+    border-top:5px solid var(--green);
+    border:1px solid var(--line);
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
 }
 
-.timelineItem strong {
-  display: block;
-  margin-bottom: 12px;
-  color: var(--green);
-  font-size: 1.05rem;
-  font-weight: 950;
+.timelineItem strong{
+    display:block;
+    margin-bottom:12px;
+    color:var(--green);
+    font-size:1rem;
+    font-weight:700;
 }
 
-.timelineItem h2 {
-  margin-bottom: 18px;
+.timelineItem h2{
+    margin:0 0 18px;
+    font-size:2rem;
+    color:#1d1d1d;
+}
+
+.timelineItem p{
+    color:#444;
+    line-height:1.8;
+    margin:0;
 }
 
 .timelineItem p {
