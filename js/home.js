@@ -14,7 +14,13 @@ let layer;
 let reports = [];
 
 function publicAddress(address) {
-  const value = String(address || "").trim();
+  if (!address) return "Ahlener Osten";
+
+  return String(address)
+    .trim()
+    .replace(/\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/, "")
+    .trim();
+}
 
   if (!value) {
     return "Ahlener Osten";
