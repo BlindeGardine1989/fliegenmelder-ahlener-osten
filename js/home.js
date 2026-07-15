@@ -1,31 +1,216 @@
 import { supabase, escapeHtml, formatDate } from "./app.js";
 
-const mapEl = document.querySelector("#map"),
-      latestEl = document.querySelector("#latestReports"),
-      filterEl = document.querySelector("#severityFilter");
+const mapEl = document.querySelector("#map");
+const latestEl = document.querySelector("#latestReports");
+const filterEl = document.querySelector("#severityFilter");
 
-const statTotal = document.querySelector("#statTotal"),
-      statMonth = document.querySelector("#statMonth"),
-      statAvg = document.querySelector("#statAvg"),
-      statHotspots = document.querySelector("#statHotspots");
+const statTotal = document.querySelector("#statTotal");
+const statMonth = document.querySelector("#statMonth");
+const statAvg = document.querySelector("#statAvg");
+const statHotspots = document.querySelector("#statHotspots");
 
-let map, layer, reports = [];
+let map;
+let layer;
+let reports = [];
+
+function publicAddress(address) {
+  const value = String(address || "").trim();
+
+  if (!value) {
+    return "Ahlener Osten";
+  }
+
+  return (
+    value
+      .replace(
+        /\s+\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
+        ""
+      )
+      .trim() || "Ahlener Osten"
+  );
+}
 
 if (mapEl && window.L) {
-    map = L.map(mapEl).setView([51.762, 7.91], 13);
+  map = L.map(mapEl).setView([51.762, 7.91], 13);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap-Mitwirkende"
-    }).addTo(map);
+  L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      attribution: "© OpenStreetMap-Mitwirkende"
+    }
+  ).addTo(map);
 
-    layer = L.layerGroup().addTo(map);
+  layer = L.layerGroup().addTo(map);
 }
 
 loadReports();
+
 filterEl?.addEventListener("change", renderMap);
-filterEl?.addEventListener("change",renderMap);
-async function loadReports(){const {data,error}=await supabase.from("reports").select("*").eq("visible",true).order("created_at",{ascending:false});if(error){console.error(error);if(latestEl)latestEl.innerHTML='<div class="emptyState">Meldungen konnten nicht geladen werden.</div>';return}reports=data||[];renderStats();renderLatest();renderMap()}
-function renderStats(){if(!statTotal)return;statTotal.textContent=reports.length;const now=new Date();const month=reports.filter(r=>{const d=new Date(r.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()});statMonth.textContent=month.length;const s=reports.map(r=>Number(r.severity)).filter(Boolean);statAvg.textContent=s.length?(s.reduce((a,b)=>a+b,0)/s.length).toFixed(1):"–";statHotspots.textContent=reports.filter(r=>Number(r.severity)>=4).length}
-function renderLatest(){if(!latestEl)return;const latest=reports.slice(0,5);if(!latest.length){latestEl.innerHTML='<div class="emptyState">Noch keine freigegebenen Meldungen vorhanden.</div>';return}latestEl.innerHTML=latest.map(r=>`<article class="latestItem"><span class="dot s${escapeHtml(r.severity||3)}"></span><div><strong>${escapeHtml(r.address||"Ahlener Osten")}</strong><br><small>${formatDate(r.created_at)}</small></div><small>${escapeHtml(r.severity||"–")}/5</small></article>`).join("")}
-function renderMap(){if(!map||!layer)return;layer.clearLayers();const filter=filterEl?.value||"all";let shown=reports.filter(r=>r.lat&&r.lng);if(filter==="4plus")shown=shown.filter(r=>Number(r.severity)>=4);else if(filter!=="all")shown=shown.filter(r=>String(r.severity)===filter);for(const r of shown){const sev=Number(r.severity)||3;L.circleMarker([r.lat,r.lng],{radius:9,color:"#fff",weight:2,fillColor:color(sev),fillOpacity:.95}).bindPopup(`<strong>${escapeHtml(r.address||"Meldung")}</strong><br>Belastung: ${escapeHtml(sev)}/5<br>${escapeHtml(r.note||"")}`).addTo(layer)}}
-function color(sev){return sev===1?"#2e7d32":sev===2?"#79bf5b":sev===3?"#f2b705":sev===4?"#ef7d00":"#d51f28"}
+
+async function loadReports() {
+  const { data, error } = await supabase
+    .from("reports")
+    .select("*")
+    .eq("visible", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+
+    if (latestEl) {
+      latestEl.innerHTML = `
+        <div class="emptyState">
+          Meldungen konnten nicht geladen werden.
+        </div>
+      `;
+    }
+
+    return;
+  }
+
+  reports = data || [];
+
+  renderStats();
+  renderLatest();
+  renderMap();
+}
+
+function renderStats() {
+  if (!statTotal) {
+    return;
+  }
+
+  statTotal.textContent = reports.length;
+
+  const now = new Date();
+
+  const month = reports.filter(report => {
+    const date = new Date(report.created_at);
+
+    return (
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    );
+  });
+
+  if (statMonth) {
+    statMonth.textContent = month.length;
+  }
+
+  const severityValues = reports
+    .map(report => Number(report.severity))
+    .filter(Boolean);
+
+  if (statAvg) {
+    statAvg.textContent = severityValues.length
+      ? (
+          severityValues.reduce((sum, value) => sum + value, 0) /
+          severityValues.length
+        ).toFixed(1)
+      : "–";
+  }
+
+  if (statHotspots) {
+    statHotspots.textContent = reports.filter(
+      report => Number(report.severity) >= 4
+    ).length;
+  }
+}
+
+function renderLatest() {
+  if (!latestEl) {
+    return;
+  }
+
+  const latest = reports.slice(0, 5);
+
+  if (!latest.length) {
+    latestEl.innerHTML = `
+      <div class="emptyState">
+        Noch keine freigegebenen Meldungen vorhanden.
+      </div>
+    `;
+
+    return;
+  }
+
+  latestEl.innerHTML = latest
+    .map(report => {
+      const severity = report.severity || 3;
+
+      return `
+        <article class="latestItem">
+          <span class="dot s${escapeHtml(severity)}"></span>
+
+          <div>
+            <strong>
+              ${escapeHtml(publicAddress(report.address))}
+            </strong>
+            <br>
+            <small>${formatDate(report.created_at)}</small>
+          </div>
+
+          <small>${escapeHtml(severity)}/5</small>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function renderMap() {
+  if (!map || !layer) {
+    return;
+  }
+
+  layer.clearLayers();
+
+  const filter = filterEl?.value || "all";
+
+  let shown = reports.filter(
+    report => report.lat && report.lng
+  );
+
+  if (filter === "4plus") {
+    shown = shown.filter(
+      report => Number(report.severity) >= 4
+    );
+  } else if (filter !== "all") {
+    shown = shown.filter(
+      report => String(report.severity) === filter
+    );
+  }
+
+  for (const report of shown) {
+    const severity = Number(report.severity) || 3;
+
+    L.circleMarker(
+      [report.lat, report.lng],
+      {
+        radius: 9,
+        color: "#fff",
+        weight: 2,
+        fillColor: color(severity),
+        fillOpacity: 0.95
+      }
+    )
+      .bindPopup(`
+        <strong>
+          📍 ${escapeHtml(publicAddress(report.address))}
+        </strong>
+        <br>
+        🪰 Belastung: ${escapeHtml(severity)}/5
+        <br>
+        📅 ${formatDate(report.created_at)}
+      `)
+      .addTo(layer);
+  }
+}
+
+function color(severity) {
+  if (severity === 1) return "#2e7d32";
+  if (severity === 2) return "#79bf5b";
+  if (severity === 3) return "#f2b705";
+  if (severity === 4) return "#ef7d00";
+
+  return "#d51f28";
+}
