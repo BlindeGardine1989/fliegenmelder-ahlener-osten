@@ -1,4 +1,4 @@
-iimport { supabase, escapeHtml, formatDate } from "./app.js";
+import { supabase, escapeHtml, formatDate } from "./app.js";
 
 const mapEl = document.querySelector("#map");
 const latestEl = document.querySelector("#latestReports");
