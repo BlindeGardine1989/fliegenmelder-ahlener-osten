@@ -1,4 +1,4 @@
-import { supabase, escapeHtml, formatDate } from "./app.js";
+iimport { supabase, escapeHtml, formatDate } from "./app.js";
 
 const mapEl = document.querySelector("#map");
 const latestEl = document.querySelector("#latestReports");
@@ -14,13 +14,7 @@ let layer;
 let reports = [];
 
 function publicAddress(address) {
-  if (!address) return "Ahlener Osten";
-
-  return String(address)
-    .trim()
-    .replace(/\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/, "")
-    .trim();
-}
+  const value = String(address || "").trim();
 
   if (!value) {
     return "Ahlener Osten";
@@ -29,7 +23,7 @@ function publicAddress(address) {
   return (
     value
       .replace(
-        /\s+\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
+        /\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
         ""
       )
       .trim() || "Ahlener Osten"
@@ -90,7 +84,7 @@ function renderStats() {
 
   const now = new Date();
 
-  const month = reports.filter(report => {
+  const monthReports = reports.filter(report => {
     const date = new Date(report.created_at);
 
     return (
@@ -100,7 +94,7 @@ function renderStats() {
   });
 
   if (statMonth) {
-    statMonth.textContent = month.length;
+    statMonth.textContent = monthReports.length;
   }
 
   const severityValues = reports
