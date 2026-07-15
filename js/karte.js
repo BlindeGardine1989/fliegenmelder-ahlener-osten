@@ -14,10 +14,12 @@ let markers = [];
 
 function color(severity) {
   const s = Number(severity);
+
   if (s === 1) return "#2e7d32";
   if (s === 2) return "#79bf5b";
   if (s === 3) return "#f2b705";
   if (s === 4) return "#ef7d00";
+
   return "#d51f28";
 }
 
@@ -26,10 +28,44 @@ function clearMarkers() {
   markers = [];
 }
 
+function publicAddress(address) {
+  const value = String(address || "").trim();
+
+  if (!value) {
+    return "Ahlener Osten";
+  }
+
+  return (
+    value
+      .replace(
+        /\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
+        ""
+      )
+      .trim() || "Ahlener Osten"
+  );
+}
+
+function formatDate(date) {
+  if (!date) {
+    return "–";
+  }
+
+  return new Date(date).toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
+
 function markerIcon(severity) {
   return L.divIcon({
     className: "",
-    html: `<span class="marker-dot" style="background:${color(severity)}"></span>`,
+    html: `
+      <span
+        class="marker-dot"
+        style="background:${color(severity)}"
+      ></span>
+    `,
     iconSize: [22, 22],
     iconAnchor: [11, 11]
   });
@@ -37,25 +73,7 @@ function markerIcon(severity) {
 
 async function loadMap() {
   clearMarkers();
-function publicAddress(address) {
-  if (!address) return "Ahlener Osten";
 
-  return String(address)
-    .trim()
-    .replace(/\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/, "")
-    .trim();
-}
-
-  return String(address)
-    .replace(/\s+\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?$/, "")
-    .trim();
-}
-
-function formatDate(date) {
-  if (!date) return "–";
-
-  return new Date(date).toLocaleDateString("de-DE");
-}
   const { data, error } = await supabase
     .from("reports")
     .select("*")
@@ -63,7 +81,7 @@ function formatDate(date) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(error);
+    console.error("Meldungen konnten nicht geladen werden:", error);
     return;
   }
 
@@ -71,32 +89,48 @@ function formatDate(date) {
   const value = filter?.value || "all";
 
   if (value === "4plus") {
-    reports = reports.filter(r => Number(r.severity) >= 4);
+    reports = reports.filter(
+      report => Number(report.severity) >= 4
+    );
   } else if (value !== "all") {
-    reports = reports.filter(r => String(r.severity) === value);
+    reports = reports.filter(
+      report => String(report.severity) === value
+    );
   }
 
-  reports.forEach(r => {
-    if (!r.lat || !r.lng) return;
+  reports.forEach(report => {
+    if (!report.lat || !report.lng) {
+      return;
+    }
 
-    const lat = Number(r.lat);
-    const lng = Number(r.lng);
+    const lat = Number(report.lat);
+    const lng = Number(report.lng);
 
-    const marker = L.marker([lat, lng], {
-      icon: markerIcon(r.severity)
-    }).addTo(map);
+    const marker = L.marker(
+      [lat, lng],
+      {
+        icon: markerIcon(report.severity)
+      }
+    ).addTo(map);
 
-   marker.bindPopup(`
-  <strong>📍 ${escapeHtml(publicAddress(r.address))}</strong><br>
-  🪰 Belastung: ${escapeHtml(r.severity || "–")}/5<br>
-  📅 ${formatDate(r.created_at)}
-`);
+    marker.bindPopup(`
+      <strong>
+        📍 ${escapeHtml(publicAddress(report.address))}
+      </strong>
+      <br>
+      🪰 Belastung: ${escapeHtml(report.severity || "–")}/5
+      <br>
+      📅 ${formatDate(report.created_at)}
+    `);
 
     markers.push(marker);
   });
 
-  setTimeout(() => map.invalidateSize(), 200);
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 200);
 }
 
 filter?.addEventListener("change", loadMap);
+
 loadMap();
