@@ -37,7 +37,19 @@ function markerIcon(severity) {
 
 async function loadMap() {
   clearMarkers();
+function publicAddress(address) {
+  if (!address) return "Ort nicht angegeben";
 
+  return String(address)
+    .replace(/\s+\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?$/, "")
+    .trim();
+}
+
+function formatDate(date) {
+  if (!date) return "–";
+
+  return new Date(date).toLocaleDateString("de-DE");
+}
   const { data, error } = await supabase
     .from("reports")
     .select("*")
@@ -68,11 +80,11 @@ async function loadMap() {
       icon: markerIcon(r.severity)
     }).addTo(map);
 
-    marker.bindPopup(`
-      <strong>Belastung: ${escapeHtml(r.severity || "–")}/5</strong><br>
-      ${escapeHtml(r.address || "Ort nicht angegeben")}<br>
-      ${escapeHtml(r.note || "")}
-    `);
+   marker.bindPopup(`
+  <strong>📍 ${escapeHtml(publicAddress(r.address))}</strong><br>
+  🪰 Belastung: ${escapeHtml(r.severity || "–")}/5<br>
+  📅 ${formatDate(r.created_at)}
+`);
 
     markers.push(marker);
   });
