@@ -38,7 +38,13 @@ function markerIcon(severity) {
 async function loadMap() {
   clearMarkers();
 function publicAddress(address) {
-  if (!address) return "Ort nicht angegeben";
+  if (!address) return "Ahlener Osten";
+
+  return String(address)
+    .trim()
+    .replace(/\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/, "")
+    .trim();
+}
 
   return String(address)
     .replace(/\s+\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?$/, "")
