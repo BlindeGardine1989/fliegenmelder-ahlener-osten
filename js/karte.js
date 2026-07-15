@@ -74,11 +74,10 @@ function markerIcon(severity) {
 async function loadMap() {
   clearMarkers();
 
-  const { data, error } = await supabase
-    .from("reports")
-    .select("*")
-    .eq("visible", true)
-    .order("created_at", { ascending: false });
+ const { data, error } = await supabase
+  .from("reports_public")
+  .select("*")
+  .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Meldungen konnten nicht geladen werden:", error);
