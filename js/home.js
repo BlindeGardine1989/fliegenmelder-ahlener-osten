@@ -34,20 +34,6 @@ function publicAddress(address) {
 
   return normalized || "Ahlener Osten";
 }
-
-  if (!value) {
-    return "Ahlener Osten";
-  }
-
-  return (
-    value
-      .replace(
-        /\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
-        ""
-      )
-      .trim() || "Ahlener Osten"
-}
-
 if (mapEl && window.L) {
   map = L.map(mapEl).setView([51.762, 7.91], 13);
 
