@@ -28,9 +28,17 @@ function clearMarkers() {
   markers = [];
 }
 
-function publicAddress(address) {
-  const value = String(address || "").trim();
+  const normalized = withoutNumber
+    .replace(/^Bergstr\.?$/i, "Bergstraße")
+    .replace(/^Bergstrasse\.?$/i, "Bergstraße")
+    .replace(/^Jägerstr\.?$/i, "Jägerstraße");
 
+  return normalized || "Ahlener Osten";
+}
+
+  if (!value) {
+    return "Ahlener Osten";
+  }
   if (!value) {
     return "Ahlener Osten";
   }
