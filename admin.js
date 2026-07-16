@@ -343,13 +343,60 @@ function mapsUrl(report) {
 }
 
 async function geocodeAddress(report) {
-  const address = `${report.address || ""}, Ahlen, Nordrhein-Westfalen, Deutschland`;
-  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q=${encodeURIComponent(address)}`;
-  const response = await fetch(url, { headers: { "Accept": "application/json" } });
-  if (!response.ok) throw new Error("Geocoding fehlgeschlagen.");
+  const address =
+    `${report.address || ""}, Ahlen, Nordrhein-Westfalen, Deutschland`;
+
+  const url =
+    `https://nominatim.openstreetmap.org/search` +
+    `?format=json&limit=1&addressdetails=1` +
+    `&q=${encodeURIComponent(address)}`;
+
+  const response = await fetch(url, {
+    headers: {
+      Accept: "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error("Geocoding fehlgeschlagen.");
+  }
+
   const results = await response.json();
-  if (!results || !results.length) throw new Error("Adresse nicht gefunden.");
-  return { lat: Number(results[0].lat), lng: Number(results[0].lon) };
+
+  if (!results || !results.length) {
+    throw new Error("Adresse nicht gefunden.");
+  }
+
+  return {
+    lat: Number(results[0].lat),
+    lng: Number(results[0].lon)
+  };
+}
+
+async function snapToStreet(lat, lng) {
+  const url =
+    `https://router.project-osrm.org/nearest/v1/driving/` +
+    `${lng},${lat}?number=1`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(
+      "Straßenposition konnte nicht ermittelt werden."
+    );
+  }
+
+  const data = await response.json();
+  const location = data?.waypoints?.[0]?.location;
+
+  if (!Array.isArray(location) || location.length < 2) {
+    throw new Error("Keine passende Straße gefunden.");
+  }
+
+  return {
+    lat: Number(location[1]),
+    lng: Number(location[0])
+  };
 }
 
 function renderReports(reports) {
