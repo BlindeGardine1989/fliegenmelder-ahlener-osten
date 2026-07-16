@@ -3,70 +3,167 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Fliegenmelder Ahlener Osten</title>
+
   <link rel="icon" href="assets/logo.png" type="image/png">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
 </head>
+
 <body>
+
 <header class="topbar">
   <a class="brand" href="index.html">
-    <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+    <img
+      src="assets/logo.png"
+      alt="Logo Fliegenmelder Ahlener Osten"
+    >
+
     <div>
-      <strong>Fliegenmelder<br>Ahlener Osten</strong>
-      <span>Melden. Dokumentieren. Transparent informieren.</span>
+      <strong>
+        Fliegenmelder<br>
+        Ahlener Osten
+      </strong>
+
+      <span>
+        Melden. Dokumentieren. Transparent informieren.
+      </span>
     </div>
   </a>
+
   <nav class="nav">
     <a href="index.html" aria-current="page">Startseite</a>
-   <a href="melden.html">Fliegen melden</a>
-<a href="karte.html">Meldungskarte</a>
-<a href="wissenswertes.html">Wissenswertes</a>
-<a href="neuigkeiten.html">Neuigkeiten</a>
+    <a href="melden.html">Fliegen melden</a>
+    <a href="karte.html">Meldungskarte</a>
+    <a href="wissenswertes.html">Wissenswertes</a>
+    <a href="neuigkeiten.html">Neuigkeiten</a>
     <a href="chronik.html">Chronik</a>
     <a href="dokumente.html">Dokumente</a>
     <a href="termine.html">Termine</a>
     <a href="ueber-uns.html">Über uns</a>
     <a href="kontakt.html">Kontakt</a>
-    <a class="buttonLink" href="melden.html">+ Meldung einreichen</a>
+
+    <a class="buttonLink" href="melden.html">
+      + Meldung einreichen
+    </a>
   </nav>
 </header>
 
 <main>
+
   <section class="hero">
     <div class="box heroText">
-      <h1 data-setting="home_headline">Fliegenmelder Ahlener Osten</h1>
-      <h2 data-setting="home_subheadline">Gemeinsam gegen die Fliegenplage.</h2>
-      <p class="lead"><span data-setting="home_intro">Der Fliegenmelder dokumentiert die Fliegenbelastung im Ahlener Osten und informiert transparent über aktuelle Entwicklungen.</span></p>
-      <p class="muted"><span data-setting="project_line">Ein ehrenamtliches Projekt der Bürgerinitiative Ahlener Osten.</span></p>
+      <h1 data-setting="home_headline">
+        Fliegenmelder Ahlener Osten
+      </h1>
+
+      <h2 data-setting="home_subheadline">
+        Gemeinsam gegen die Fliegenplage.
+      </h2>
+
+      <p class="lead">
+        <span data-setting="home_intro">
+          Der Fliegenmelder dokumentiert die Fliegenbelastung
+          im Ahlener Osten und informiert transparent über
+          aktuelle Entwicklungen.
+        </span>
+      </p>
+
+      <p class="muted">
+        <span data-setting="project_line">
+          Ein ehrenamtliches Projekt der Bürgerinitiative
+          Ahlener Osten.
+        </span>
+      </p>
+
       <div class="actions">
-        <a class="button" href="melden.html">Jetzt Fliegen melden</a>
-        <a class="button ghost" href="karte.html">Meldungskarte ansehen</a>
+        <a class="button" href="melden.html">
+          Jetzt Fliegen melden
+        </a>
+
+        <a class="button ghost" href="karte.html">
+          Meldungskarte ansehen
+        </a>
       </div>
     </div>
+
     <div class="box logoHero">
-      <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+      <img
+        src="assets/logo.png"
+        alt="Logo Fliegenmelder Ahlener Osten"
+      >
     </div>
   </section>
 
   <section class="stats">
-    <article class="stat"><strong id="statTotal">0</strong><span>Meldungen öffentlich</span></article>
-    <article class="stat"><strong id="statMonth">0</strong><span>diesen Monat</span></article>
-    <article class="stat"><strong id="statAvg">–</strong><span>Ø Belastung</span></article>
-    <article class="stat"><strong id="statHotspots">0</strong><span>starke Belastungen</span></article>
+    <article class="stat">
+      <strong id="statTotal">0</strong>
+      <span>Meldungen öffentlich</span>
+    </article>
+
+    <article class="stat">
+      <strong id="statMonth">0</strong>
+      <span>diesen Monat</span>
+    </article>
+
+    <article class="stat">
+      <strong id="statAvg">–</strong>
+      <span>Ø Belastung</span>
+    </article>
+
+    <article class="stat">
+      <strong id="statHotspots">0</strong>
+      <span>starke Belastungen</span>
+    </article>
   </section>
 
   <section class="cards">
-    <article class="card"><h2>🪰 Fliegen melden</h2><p>Fliegenbelastung schnell und unkompliziert melden.</p><a href="melden.html">Jetzt melden →</a></article>
-    <article class="card"><h2>🗺️ Meldungskarte</h2><p>Freigegebene Meldungen auf der Übersichtskarte ansehen.</p><a href="karte.html">Karte ansehen →</a></article>
-    <article class="card"><h2>📰 Neuigkeiten</h2><p>Aktuelle Entwicklungen und Hinweise verfolgen.</p><a href="neuigkeiten.html">Neuigkeiten lesen →</a></article>
-    <article class="card"><h2>📅 Termine</h2><p>Bürgerdialoge, Sitzungen und wichtige Termine finden.</p><a href="termine.html">Termine ansehen →</a></article>
+    <article class="card">
+      <h2>🪰 Fliegen melden</h2>
+      <p>
+        Fliegenbelastung schnell und unkompliziert melden.
+      </p>
+      <a href="melden.html">Jetzt melden →</a>
+    </article>
+
+    <article class="card">
+      <h2>🗺️ Meldungskarte</h2>
+      <p>
+        Freigegebene Meldungen auf der Übersichtskarte ansehen.
+      </p>
+      <a href="karte.html">Karte ansehen →</a>
+    </article>
+
+    <article class="card">
+      <h2>📰 Neuigkeiten</h2>
+      <p>
+        Aktuelle Entwicklungen und Hinweise verfolgen.
+      </p>
+      <a href="neuigkeiten.html">Neuigkeiten lesen →</a>
+    </article>
+
+    <article class="card">
+      <h2>📅 Termine</h2>
+      <p>
+        Bürgerdialoge, Sitzungen und wichtige Termine finden.
+      </p>
+      <a href="termine.html">Termine ansehen →</a>
+    </article>
   </section>
 
   <section class="layout">
+
     <section class="panel mapPanel">
       <div class="mapHead">
-        <div><p class="eyebrow">Öffentliche Übersicht</p><h2>Meldungskarte</h2></div>
+        <div>
+          <p class="eyebrow">Öffentliche Übersicht</p>
+          <h2>Meldungskarte</h2>
+        </div>
+
         <select id="severityFilter">
           <option value="all">Alle Meldungen</option>
           <option value="4plus">Nur stark / sehr stark</option>
@@ -77,26 +174,70 @@
           <option value="5">5 sehr stark</option>
         </select>
       </div>
+
       <div id="map" class="map"></div>
-      <div class="legend"><strong>Belastung</strong><span><i class="dot s1"></i>1</span><span><i class="dot s2"></i>2</span><span><i class="dot s3"></i>3</span><span><i class="dot s4"></i>4</span><span><i class="dot s5"></i>5</span></div>
+
+      <div class="legend">
+        <strong>Belastung</strong>
+        <span><i class="dot s1"></i>1</span>
+        <span><i class="dot s2"></i>2</span>
+        <span><i class="dot s3"></i>3</span>
+        <span><i class="dot s4"></i>4</span>
+        <span><i class="dot s5"></i>5</span>
+      </div>
     </section>
 
-   <section class="panel">
-  <p class="eyebrow">Aktuelle Schwerpunkte</p>
-  <h2>🔥 Hotspots</h2>
-  <p>Die Straßen mit den meisten freigegebenen Meldungen.</p>
-  <div id="publicHotspots" class="list"></div>
-</section>
+    <section class="panel">
+      <p class="eyebrow">Aktuelle Schwerpunkte</p>
 
-  <section id="cmsLatestNews" class="newsPreview"></section>
+      <h2>🔥 Hotspots</h2>
+
+      <p>
+        Die Straßen mit den meisten freigegebenen Meldungen.
+      </p>
+
+      <div id="publicHotspots" class="list"></div>
+    </section>
+
+  </section>
+
+  <section
+    id="cmsLatestNews"
+    class="newsPreview"
+  ></section>
+
 </main>
 
 <footer class="siteFooter">
   <h2>Fliegenmelder Ahlener Osten</h2>
-  <p><span data-setting="footer_line_1">Gemeinsam gegen die Fliegenplage.</span></p>
-  <p><strong><span data-setting="footer_line_2">>Die Informationsplattform für die Fliegenplage im Ahlener Osten.</span></strong></p>
-  <p><em>Ein ehrenamtliches Projekt der Bürgerinitiative Ahlener Osten.</em></p>
-  <p><span data-setting="footer_line_3">Für eine lebenswerte Zukunft im Ahlener Osten.</span></p>
+
+  <p>
+    <span data-setting="footer_line_1">
+      Gemeinsam gegen die Fliegenplage.
+    </span>
+  </p>
+
+  <p>
+    <strong>
+      <span data-setting="footer_line_2">
+        Die Informationsplattform für die Fliegenplage
+        im Ahlener Osten.
+      </span>
+    </strong>
+  </p>
+
+  <p>
+    <em>
+      Ein ehrenamtliches Projekt der Bürgerinitiative Ahlener Osten.
+    </em>
+  </p>
+
+  <p>
+    <span data-setting="footer_line_3">
+      Für eine lebenswerte Zukunft im Ahlener Osten.
+    </span>
+  </p>
+
   <nav>
     <a href="faq.html">FAQ</a>
     <a href="impressum.html">Impressum</a>
@@ -105,9 +246,14 @@
     <a href="admin.html">Interner Bereich</a>
   </nav>
 </footer>
+
 <script src="js/menu.js"></script>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script type="module" src="js/home.js"></script>
+
 <script type="module" src="js/cms-public.js"></script>
+
 </body>
 </html>
