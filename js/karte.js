@@ -27,6 +27,19 @@ function clearMarkers() {
   markers.forEach(marker => marker.remove());
   markers = [];
 }
+function publicAddress(address) {
+  const value = String(address || "").trim();
+
+  if (!value) {
+    return "Ahlener Osten";
+  }
+
+  const withoutNumber = value
+    .replace(
+      /\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
+      ""
+    )
+    .trim();
 
   const normalized = withoutNumber
     .replace(/^Bergstr\.?$/i, "Bergstraße")
@@ -34,23 +47,6 @@ function clearMarkers() {
     .replace(/^Jägerstr\.?$/i, "Jägerstraße");
 
   return normalized || "Ahlener Osten";
-}
-
-  if (!value) {
-    return "Ahlener Osten";
-  }
-  if (!value) {
-    return "Ahlener Osten";
-  }
-
-  return (
-    value
-      .replace(
-        /\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
-        ""
-      )
-      .trim() || "Ahlener Osten"
-  );
 }
 
 function formatDate(date) {
