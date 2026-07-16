@@ -224,6 +224,10 @@ function normalizeStreet(address) {
   }
 
   street = street
+    .replace(/^Bergstr\.?$/i, "Bergstraße")
+    .replace(/^Bergstrasse$/i, "Bergstraße")
+    .replace(/^Jägerstr\.?$/i, "Jägerstraße")
+    .replace(/^Jägerstrasse$/i, "Jägerstraße")
     .replace(/\bstr\.?$/i, "straße")
     .replace(/\bstrasse$/i, "straße");
 
