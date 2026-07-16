@@ -209,13 +209,25 @@ function updateStats(reports) {
 
 
 function normalizeStreet(address) {
-  const text = String(address || "").trim();
-  if (!text) return "Ohne Straße";
-  return text
-    .replace(/\d+[a-zA-Z]?\b/g, "")
+  let street = String(address || "")
+    .trim()
+    .replace(
+      /\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
+      ""
+    )
     .replace(/[,;].*$/, "")
     .replace(/\s+/g, " ")
-    .trim() || text;
+    .trim();
+
+  if (!street) {
+    return "Ohne Straße";
+  }
+
+  street = street
+    .replace(/\bstr\.?$/i, "straße")
+    .replace(/\bstrasse$/i, "straße");
+
+  return street;
 }
 
 function renderDashboardExtras(reports) {
