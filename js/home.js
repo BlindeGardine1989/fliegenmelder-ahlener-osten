@@ -1,9 +1,8 @@
 import { supabase, escapeHtml, formatDate } from "./app.js";
 
 const mapEl = document.querySelector("#map");
-const latestEl = document.querySelector("#latestReports");
+const publicHotspotsEl = document.querySelector("#publicHotspots");
 const filterEl = document.querySelector("#severityFilter");
-
 const statTotal = document.querySelector("#statTotal");
 const statMonth = document.querySelector("#statMonth");
 const statAvg = document.querySelector("#statAvg");
@@ -14,8 +13,27 @@ let layer;
 let reports = [];
 
 function publicAddress(address) {
-  const value = String(address || "").trim();
+  function normalizeStreet(address) {
+  let street = String(address || "")
+    .trim()
+    .replace(
+      /\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
+      ""
+    )
+    .replace(/[,;].*$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
 
+  if (!street) {
+    return "Ahlener Osten";
+  }
+
+  street = street
+    .replace(/\bstr\.?$/i, "straße")
+    .replace(/\bstrasse$/i, "straße");
+
+  return street;
+}
   if (!value) {
     return "Ahlener Osten";
   }
@@ -71,11 +89,11 @@ async function loadReports() {
     return;
   }
 
-  reports = data || [];
+reports = data || [];
 
-  renderStats();
-  renderLatest();
-  renderMap();
+renderStats();
+renderHotspots();
+renderMap();
 }
 
 function renderStats() {
@@ -120,10 +138,88 @@ function renderStats() {
   }
 }
 
-function renderLatest() {
-  if (!latestEl) {
+function renderHotspots() {
+  if (!publicHotspotsEl) {
     return;
   }
+
+  const streets = new Map();
+
+  reports.forEach(report => {
+    const street = normalizeStreet(report.address);
+    const severity = Number(report.severity) || 0;
+
+    if (!streets.has(street)) {
+      streets.set(street, {
+        count: 0,
+        severityTotal: 0
+      });
+    }
+
+    const entry = streets.get(street);
+    entry.count += 1;
+    entry.severityTotal += severity;
+  });
+
+  const hotspots = [...streets.entries()]
+    .map(([street, values]) => ({
+      street,
+      count: values.count,
+      average: values.count
+        ? values.severityTotal / values.count
+        : 0
+    }))
+    .sort((a, b) => {
+      if (b.count !== a.count) {
+        return b.count - a.count;
+      }
+
+      return b.average - a.average;
+    })
+    .slice(0, 5);
+
+  if (!hotspots.length) {
+    publicHotspotsEl.innerHTML = `
+      <div class="emptyState">
+        Noch keine freigegebenen Meldungen vorhanden.
+      </div>
+    `;
+
+    return;
+  }
+
+  publicHotspotsEl.innerHTML = hotspots
+    .map((hotspot, index) => {
+      const severityClass = Math.max(
+        1,
+        Math.min(5, Math.round(hotspot.average || 1))
+      );
+
+      const label =
+        hotspot.count === 1 ? "Meldung" : "Meldungen";
+
+      return `
+        <article class="latestItem">
+          <span class="dot s${severityClass}"></span>
+
+          <div>
+            <strong>
+              ${index + 1}. ${escapeHtml(hotspot.street)}
+            </strong>
+            <br>
+            <small>
+              Ø Belastung ${hotspot.average.toFixed(1)}/5
+            </small>
+          </div>
+
+          <strong>
+            ${hotspot.count} ${label}
+          </strong>
+        </article>
+      `;
+    })
+    .join("");
+}
 
   const latest = reports.slice(0, 5);
 
