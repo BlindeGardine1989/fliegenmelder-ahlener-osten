@@ -459,7 +459,20 @@ function renderReports(reports) {
       </div>
 
       <div class="coordBox">
-        <p><strong>Kartenposition:</strong> ${coordsAvailable ? "Koordinaten vorhanden." : "Noch keine Koordinaten gespeichert – ohne Koordinaten erscheint kein Pin auf der Karte."}</p>
+        <p>
+          <strong>Interne Kartenposition:</strong>
+          ${coordsAvailable
+            ? "Koordinaten vorhanden."
+            : "Noch keine Koordinaten gespeichert – ohne Koordinaten kann kein öffentlicher Pin berechnet werden."}
+          <br>
+          <strong>Öffentlicher Straßen-Pin:</strong>
+          ${report.public_lat !== null &&
+            report.public_lat !== undefined &&
+            report.public_lng !== null &&
+            report.public_lng !== undefined
+              ? "vorhanden"
+              : "noch nicht gesetzt"}
+        </p>
 
         <div class="coordGrid">
           <label>Breitengrad lat
@@ -474,6 +487,9 @@ function renderReports(reports) {
           <button class="button" data-action="autoCoords" data-id="${id}">Koordinaten aus Adresse holen</button>
           <a class="button secondary" href="${mapsUrl(report)}" target="_blank" rel="noopener">In Google Maps prüfen</a>
           <button class="button secondary" data-action="saveCoords" data-id="${id}">Koordinaten speichern</button>
+          <button class="button secondary" data-action="setPublicCoords" data-id="${id}">
+            Öffentlichen Pin auf Straße setzen
+          </button>
         </div>
       </div>
 
@@ -580,6 +596,51 @@ async function handleAction(button) {
 
     if (status) status.textContent = "Koordinaten gespeichert.";
     await loadReports();
+    return;
+  }
+
+  if (action === "setPublicCoords") {
+    if (!report || !hasCoords(report)) {
+      alert("Für diese Meldung sind noch keine internen Koordinaten vorhanden.");
+      return;
+    }
+
+    try {
+      if (status) {
+        status.textContent =
+          "Öffentliche Position wird auf die Straße gesetzt ...";
+      }
+
+      const publicCoords = await snapToStreet(
+        Number(report.lat),
+        Number(report.lng)
+      );
+
+      const { error } = await supabase
+        .from("reports")
+        .update({
+          public_lat: publicCoords.lat,
+          public_lng: publicCoords.lng
+        })
+        .eq("id", id);
+
+      if (error) {
+        throw error;
+      }
+
+      if (status) {
+        status.textContent =
+          "Öffentlicher Pin wurde auf die Straße gesetzt.";
+      }
+
+      await loadReports();
+    } catch (error) {
+      console.error(error);
+      alert(
+        "Die öffentliche Straßenposition konnte nicht ermittelt werden."
+      );
+    }
+
     return;
   }
 
