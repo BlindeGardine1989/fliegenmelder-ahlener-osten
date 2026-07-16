@@ -46,7 +46,6 @@ function publicAddress(address) {
         ""
       )
       .trim() || "Ahlener Osten"
-  );
 }
 
 if (mapEl && window.L) {
