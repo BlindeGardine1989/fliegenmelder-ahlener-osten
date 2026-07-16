@@ -20,6 +20,25 @@ function publicAddress(address) {
     return "Ahlener Osten";
   }
 
+  const withoutNumber = value
+    .replace(
+      /\s*\d+[a-zA-Z]?(?:\s*[-/]\s*\d+[a-zA-Z]?)?\s*$/,
+      ""
+    )
+    .trim();
+
+  const normalized = withoutNumber
+    .replace(/^Bergstr\.?$/i, "Bergstraße")
+    .replace(/^Bergstrasse\.?$/i, "Bergstraße")
+    .replace(/^Jägerstr\.?$/i, "Jägerstraße");
+
+  return normalized || "Ahlener Osten";
+}
+
+  if (!value) {
+    return "Ahlener Osten";
+  }
+
   return (
     value
       .replace(
