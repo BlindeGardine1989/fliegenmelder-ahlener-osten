@@ -18,6 +18,7 @@ const statStrong = document.querySelector("#statHotspots");
 let map = null;
 let reportLayer = null;
 let reports = [];
+let isLoadingReports = false;
 
 
 /* =========================================================
@@ -78,35 +79,50 @@ if (mapElement && window.L) {
    ========================================================= */
 
 async function loadReports() {
-  const { data, error } = await supabase
-    .from("reports_public")
-    .select("*")
-    .order("created_at", {
-      ascending: false
-    });
-
-  if (error) {
-    console.error(
-      "Öffentliche Meldungen konnten nicht geladen werden:",
-      error
-    );
-
-    if (hotspotList) {
-      hotspotList.innerHTML = `
-        <div class="emptyState">
-          Meldungen konnten nicht geladen werden.
-        </div>
-      `;
-    }
-
+  /*
+   * Verhindert, dass mehrere Ladevorgänge gleichzeitig laufen,
+   * wenn z. B. Fokus, Sichtbarkeit und Zeitintervall fast
+   * gleichzeitig ausgelöst werden.
+   */
+  if (isLoadingReports) {
     return;
   }
 
-  reports = data || [];
+  isLoadingReports = true;
 
-  renderStatistics();
-  renderHotspots();
-  renderMap();
+  try {
+    const { data, error } = await supabase
+      .from("reports_public")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+    if (error) {
+      console.error(
+        "Öffentliche Meldungen konnten nicht geladen werden:",
+        error
+      );
+
+      if (hotspotList && reports.length === 0) {
+        hotspotList.innerHTML = `
+          <div class="emptyState">
+            Meldungen konnten nicht geladen werden.
+          </div>
+        `;
+      }
+
+      return;
+    }
+
+    reports = data || [];
+
+    renderStatistics();
+    renderHotspots();
+    renderMap();
+  } finally {
+    isLoadingReports = false;
+  }
 }
 
 
@@ -294,7 +310,11 @@ function renderMap() {
 
     return (
       Number.isFinite(lat) &&
-      Number.isFinite(lng)
+      Number.isFinite(lng) &&
+      lat >= -90 &&
+      lat <= 90 &&
+      lng >= -180 &&
+      lng <= 180
     );
   });
 
@@ -309,33 +329,50 @@ function renderMap() {
     );
   }
 
-  visibleReports.forEach(report => {
-    const latitude = Number(report.lat);
-    const longitude = Number(report.lng);
-    const severity = Number(report.severity) || 3;
-    const street = normalizeStreet(report.address);
+  /*
+   * Älteste Meldungen zuerst, damit neuere Meldungen bei
+   * identischen Koordinaten oben liegen.
+   */
+  visibleReports
+    .slice()
+    .sort((a, b) => {
+      return new Date(a.created_at) - new Date(b.created_at);
+    })
+    .forEach((report, index) => {
+      const latitude = Number(report.lat);
+      const longitude = Number(report.lng);
+      const severity = Number(report.severity) || 3;
+      const street = normalizeStreet(report.address);
 
-    L.circleMarker(
-      [latitude, longitude],
-      {
-        radius: 9,
-        color: "#ffffff",
-        weight: 2,
-        fillColor: severityColor(severity),
-        fillOpacity: 0.95
-      }
-    )
-      .bindPopup(`
-        <strong>
-          📍 ${escapeHtml(street)}
-        </strong>
-        <br>
-        🪰 Belastung: ${escapeHtml(severity)}/5
-        <br>
-        📅 ${formatDate(report.created_at)}
-      `)
-      .addTo(reportLayer);
-  });
+      const marker = L.circleMarker(
+        [latitude, longitude],
+        {
+          radius: 9,
+          color: "#ffffff",
+          weight: 2,
+          fillColor: severityColor(severity),
+          fillOpacity: 0.95
+        }
+      );
+
+      marker.setStyle({
+        pane: "markerPane"
+      });
+
+      marker.options.zIndexOffset = index;
+
+      marker
+        .bindPopup(`
+          <strong>
+            📍 ${escapeHtml(street)}
+          </strong>
+          <br>
+          🪰 Belastung: ${escapeHtml(severity)}/5
+          <br>
+          📅 ${escapeHtml(formatDate(report.created_at))}
+        `)
+        .addTo(reportLayer);
+    });
 
   window.setTimeout(() => {
     map.invalidateSize();
@@ -369,12 +406,37 @@ function severityColor(severity) {
 
 
 /* =========================================================
-   Ereignisse und Start
+   Automatische Aktualisierung
    ========================================================= */
 
 severityFilter?.addEventListener(
   "change",
   renderMap
 );
+
+/*
+ * Beim Zurückkehren auf die Startseite werden neue,
+ * inzwischen freigegebene Meldungen sofort neu geladen.
+ */
+window.addEventListener("focus", loadReports);
+
+window.addEventListener("pageshow", loadReports);
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    loadReports();
+  }
+});
+
+/*
+ * Auch bei dauerhaft geöffneter Startseite werden die Daten
+ * regelmäßig aktualisiert.
+ */
+window.setInterval(loadReports, 30000);
+
+
+/* =========================================================
+   Start
+   ========================================================= */
 
 loadReports();
