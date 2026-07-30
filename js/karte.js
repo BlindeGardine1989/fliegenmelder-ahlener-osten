@@ -7,6 +7,16 @@ if (!mapElement) {
   throw new Error("Das Kartenelement #map wurde nicht gefunden.");
 }
 
+if (typeof L === "undefined") {
+  throw new Error("Leaflet wurde nicht geladen.");
+}
+
+if (typeof L.markerClusterGroup !== "function") {
+  throw new Error(
+    "Leaflet.markercluster wurde nicht geladen. Bitte prüfe karte.html."
+  );
+}
+
 const map = L.map(mapElement).setView([51.763, 7.895], 13);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -14,17 +24,35 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "&copy; OpenStreetMap-Mitwirkende"
 }).addTo(map);
 
-const markerLayer = L.layerGroup().addTo(map);
-
 function color(severity) {
   const value = Number(severity);
 
-  if (value === 1) return "#2e7d32";
-  if (value === 2) return "#79bf5b";
-  if (value === 3) return "#f2b705";
-  if (value === 4) return "#ef7d00";
+  if (value <= 1) return "#2e7d32";
+  if (value <= 2) return "#79bf5b";
+  if (value <= 3) return "#f2b705";
+  if (value <= 4) return "#ef7d00";
 
   return "#d51f28";
+}
+
+function severityClass(severity) {
+  const value = Math.max(
+    1,
+    Math.min(5, Math.round(Number(severity) || 1))
+  );
+
+  return `s${value}`;
+}
+
+function severityLabel(severity) {
+  const value = Number(severity);
+
+  if (value === 1) return "sehr gering";
+  if (value === 2) return "gering";
+  if (value === 3) return "mittel";
+  if (value === 4) return "stark";
+
+  return "sehr stark";
 }
 
 function publicAddress(address) {
@@ -76,6 +104,7 @@ function markerIcon(severity) {
       <span
         class="marker-dot"
         style="background:${color(severity)}"
+        title="Belastung ${escapeHtml(severity)} von 5"
       ></span>
     `,
     iconSize: [22, 22],
@@ -83,6 +112,81 @@ function markerIcon(severity) {
     popupAnchor: [0, -10]
   });
 }
+
+function averageClusterSeverity(cluster) {
+  const childMarkers = cluster.getAllChildMarkers();
+
+  if (!childMarkers.length) {
+    return 1;
+  }
+
+  const total = childMarkers.reduce((sum, marker) => {
+    return sum + (Number(marker.options.severity) || 1);
+  }, 0);
+
+  return total / childMarkers.length;
+}
+
+function clusterIcon(cluster) {
+  const count = cluster.getChildCount();
+  const average = averageClusterSeverity(cluster);
+  const level = severityClass(average);
+
+  return L.divIcon({
+    className: "fly-cluster",
+    html: `
+      <div
+        class="fly-cluster__circle fly-cluster__circle--${level}"
+        title="${escapeHtml(count)} Meldungen, durchschnittliche Belastung ${escapeHtml(average.toFixed(1))} von 5"
+      >
+        <span class="fly-cluster__fly" aria-hidden="true">🪰</span>
+        <span class="fly-cluster__count">${escapeHtml(count)}</span>
+      </div>
+    `,
+    iconSize: [48, 48],
+    iconAnchor: [24, 24]
+  });
+}
+
+const markerLayer = L.markerClusterGroup({
+  showCoverageOnHover: false,
+  zoomToBoundsOnClick: true,
+  spiderfyOnMaxZoom: true,
+  removeOutsideVisibleBounds: true,
+  animate: true,
+  animateAddingMarkers: false,
+  maxClusterRadius: 50,
+  chunkedLoading: true,
+  iconCreateFunction: clusterIcon
+}).addTo(map);
+
+markerLayer.on("clustermouseover", event => {
+  const cluster = event.layer;
+  const count = cluster.getChildCount();
+  const average = averageClusterSeverity(cluster);
+
+  cluster.bindTooltip(
+    `
+      <div class="cluster-tooltip">
+        <strong>${escapeHtml(count)} Meldungen</strong>
+        Ø Belastung ${escapeHtml(average.toFixed(1))} / 5
+        <br>
+        Zum Öffnen hineinzoomen
+      </div>
+    `,
+    {
+      direction: "top",
+      offset: [0, -18],
+      opacity: 0.96
+    }
+  );
+
+  cluster.openTooltip();
+});
+
+markerLayer.on("clustermouseout", event => {
+  event.layer.closeTooltip();
+});
 
 function hasValidCoordinates(report) {
   const lat = Number(report?.lat);
@@ -116,6 +220,30 @@ function applyFilter(reports) {
   return reports;
 }
 
+function popupContent(report, severity) {
+  const level = severityClass(severity);
+  const address = escapeHtml(publicAddress(report.address));
+  const date = escapeHtml(formatDate(report.created_at));
+  const label = escapeHtml(severityLabel(severity));
+  const safeSeverity = escapeHtml(severity);
+
+  return `
+    <div class="map-popup">
+      <strong class="map-popup__title">
+        📍 ${address}
+      </strong>
+
+      <span class="map-popup__severity map-popup__severity--${level}">
+        🪰 ${safeSeverity}/5 · ${label}
+      </span>
+
+      <div class="map-popup__date">
+        📅 Gemeldet am ${date}
+      </div>
+    </div>
+  `;
+}
+
 function renderMarkers(reports) {
   markerLayer.clearLayers();
 
@@ -127,6 +255,8 @@ function renderMarkers(reports) {
     return new Date(a.created_at) - new Date(b.created_at);
   });
 
+  const markers = [];
+
   sortedReports.forEach((report, index) => {
     if (!hasValidCoordinates(report)) {
       return;
@@ -134,10 +264,19 @@ function renderMarkers(reports) {
 
     const lat = Number(report.lat);
     const lng = Number(report.lng);
-    const severity = Number(report.severity) || 1;
+    const severity = Math.max(
+      1,
+      Math.min(5, Number(report.severity) || 1)
+    );
 
     const marker = L.marker([lat, lng], {
       icon: markerIcon(severity),
+
+      /*
+       * Die Belastung wird am Marker gespeichert, damit der Cluster
+       * daraus seine Durchschnittsfarbe berechnen kann.
+       */
+      severity,
 
       /*
        * Neuere Meldungen erhalten einen höheren Ebenenwert.
@@ -145,18 +284,14 @@ function renderMarkers(reports) {
       zIndexOffset: index
     });
 
-    marker.bindPopup(`
-      <strong>
-        📍 ${escapeHtml(publicAddress(report.address))}
-      </strong>
-      <br>
-      🪰 Belastung: ${escapeHtml(severity)}/5
-      <br>
-      📅 ${escapeHtml(formatDate(report.created_at))}
-    `);
+    marker.bindPopup(popupContent(report, severity), {
+      maxWidth: 280
+    });
 
-    marker.addTo(markerLayer);
+    markers.push(marker);
   });
+
+  markerLayer.addLayers(markers);
 
   window.setTimeout(() => {
     map.invalidateSize();
