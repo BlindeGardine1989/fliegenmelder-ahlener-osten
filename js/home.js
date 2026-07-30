@@ -22,6 +22,115 @@ let isLoadingReports = false;
 
 
 /* =========================================================
+   Statusanzeige vorbereiten
+   ========================================================= */
+
+function ensureStatusStyles() {
+  if (document.querySelector("#flyStatusStyles")) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "flyStatusStyles";
+
+  style.textContent = `
+    .flyStatus {
+      margin: 0 0 18px;
+      padding: 18px 20px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-left: 7px solid var(--fly-status-color, #6b7280);
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.07);
+    }
+
+    .flyStatus__top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .flyStatus__light {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+      border-radius: 50%;
+      background: var(--fly-status-color, #6b7280);
+      box-shadow: 0 0 0 5px var(--fly-status-glow, rgba(107, 114, 128, 0.15));
+    }
+
+    .flyStatus__title {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.35;
+    }
+
+    .flyStatus__value {
+      color: var(--fly-status-color, #6b7280);
+    }
+
+    .flyStatus__text {
+      margin: 8px 0 0 30px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .flyStatus__details {
+      margin: 8px 0 0 30px;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    @media (max-width: 640px) {
+      .flyStatus {
+        padding: 16px;
+      }
+
+      .flyStatus__text,
+      .flyStatus__details {
+        margin-left: 0;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+
+function ensureStatusElement() {
+  let statusElement = document.querySelector("#flyStatus");
+
+  if (statusElement) {
+    return statusElement;
+  }
+
+  statusElement = document.createElement("section");
+  statusElement.id = "flyStatus";
+  statusElement.className = "flyStatus";
+  statusElement.setAttribute("aria-live", "polite");
+
+  /*
+   * Der Status wird direkt oberhalb der kleinen Startseitenkarte
+   * eingesetzt. Dadurch ist keine Änderung an index.html nötig.
+   */
+  if (mapElement?.parentElement) {
+    mapElement.parentElement.insertBefore(
+      statusElement,
+      mapElement
+    );
+  } else if (hotspotList?.parentElement) {
+    hotspotList.parentElement.insertBefore(
+      statusElement,
+      hotspotList
+    );
+  }
+
+  return statusElement;
+}
+
+
+/* =========================================================
    Straßennamen für die öffentliche Anzeige vereinheitlichen
    ========================================================= */
 
@@ -79,11 +188,6 @@ if (mapElement && window.L) {
    ========================================================= */
 
 async function loadReports() {
-  /*
-   * Verhindert, dass mehrere Ladevorgänge gleichzeitig laufen,
-   * wenn z. B. Fokus, Sichtbarkeit und Zeitintervall fast
-   * gleichzeitig ausgelöst werden.
-   */
   if (isLoadingReports) {
     return;
   }
@@ -112,17 +216,207 @@ async function loadReports() {
         `;
       }
 
+      renderCurrentStatus(true);
       return;
     }
 
     reports = data || [];
 
     renderStatistics();
+    renderCurrentStatus();
     renderHotspots();
     renderMap();
   } finally {
     isLoadingReports = false;
   }
+}
+
+
+/* =========================================================
+   Aktueller Belastungsstatus
+   ========================================================= */
+
+function reportsFromLastDays(days) {
+  const now = Date.now();
+  const start = now - days * 24 * 60 * 60 * 1000;
+
+  return reports.filter(report => {
+    const timestamp = new Date(report.created_at).getTime();
+
+    return (
+      Number.isFinite(timestamp) &&
+      timestamp >= start &&
+      timestamp <= now
+    );
+  });
+}
+
+
+function calculateCurrentStatus() {
+  const recentReports = reportsFromLastDays(14);
+
+  if (recentReports.length === 0) {
+    return {
+      label: "Keine aktuelle Einstufung",
+      color: "#6b7280",
+      glow: "rgba(107, 114, 128, 0.16)",
+      text: "In den vergangenen 14 Tagen liegen keine freigegebenen Meldungen vor.",
+      details: "Grundlage: freigegebene Meldungen der letzten 14 Tage"
+    };
+  }
+
+  const severityValues = recentReports
+    .map(report => Number(report.severity))
+    .filter(value => Number.isFinite(value));
+
+  const average = severityValues.length
+    ? severityValues.reduce(
+        (sum, value) => sum + value,
+        0
+      ) / severityValues.length
+    : 0;
+
+  const strongCount = recentReports.filter(
+    report => Number(report.severity) >= 4
+  ).length;
+
+  const strongShare = recentReports.length
+    ? strongCount / recentReports.length
+    : 0;
+
+  /*
+   * Einfache, nachvollziehbare Einstufung:
+   * Durchschnittliche Belastung ist die Hauptgrundlage.
+   * Ein hoher Anteil starker Meldungen hebt die Stufe gegebenenfalls an.
+   */
+  let level = 1;
+
+  if (average >= 4.25 || strongShare >= 0.75) {
+    level = 5;
+  } else if (average >= 3.5 || strongShare >= 0.55) {
+    level = 4;
+  } else if (average >= 2.75 || strongShare >= 0.35) {
+    level = 3;
+  } else if (average >= 2 || strongShare >= 0.2) {
+    level = 2;
+  }
+
+  const configurations = {
+    1: {
+      label: "Gering",
+      color: "#2e7d32",
+      glow: "rgba(46, 125, 50, 0.18)",
+      text: "Die aktuell gemeldete Belastung ist gering."
+    },
+    2: {
+      label: "Erhöht",
+      color: "#79a83b",
+      glow: "rgba(121, 168, 59, 0.20)",
+      text: "Die aktuell gemeldete Belastung ist erhöht."
+    },
+    3: {
+      label: "Deutlich erhöht",
+      color: "#d39b00",
+      glow: "rgba(211, 155, 0, 0.20)",
+      text: "Die aktuell gemeldete Belastung ist deutlich erhöht."
+    },
+    4: {
+      label: "Hoch",
+      color: "#ef7d00",
+      glow: "rgba(239, 125, 0, 0.20)",
+      text: "Die aktuell gemeldete Belastung ist hoch."
+    },
+    5: {
+      label: "Akut",
+      color: "#d51f28",
+      glow: "rgba(213, 31, 40, 0.20)",
+      text: "Die aktuell gemeldete Belastung ist akut."
+    }
+  };
+
+  const status = configurations[level];
+
+  return {
+    ...status,
+    details:
+      `Grundlage: ${recentReports.length} ${
+        recentReports.length === 1 ? "Meldung" : "Meldungen"
+      } in den letzten 14 Tagen · Ø Belastung ${
+        average.toFixed(1).replace(".", ",")
+      }/5`
+  };
+}
+
+
+function renderCurrentStatus(loadError = false) {
+  ensureStatusStyles();
+
+  const statusElement = ensureStatusElement();
+
+  if (!statusElement) {
+    return;
+  }
+
+  if (loadError) {
+    statusElement.style.setProperty(
+      "--fly-status-color",
+      "#6b7280"
+    );
+    statusElement.style.setProperty(
+      "--fly-status-glow",
+      "rgba(107, 114, 128, 0.16)"
+    );
+
+    statusElement.innerHTML = `
+      <div class="flyStatus__top">
+        <span class="flyStatus__light" aria-hidden="true"></span>
+        <h2 class="flyStatus__title">
+          Aktuelle Fliegenbelastung:
+          <span class="flyStatus__value">
+            derzeit nicht verfügbar
+          </span>
+        </h2>
+      </div>
+
+      <p class="flyStatus__text">
+        Die aktuellen Meldungen konnten gerade nicht geladen werden.
+      </p>
+    `;
+
+    return;
+  }
+
+  const status = calculateCurrentStatus();
+
+  statusElement.style.setProperty(
+    "--fly-status-color",
+    status.color
+  );
+  statusElement.style.setProperty(
+    "--fly-status-glow",
+    status.glow
+  );
+
+  statusElement.innerHTML = `
+    <div class="flyStatus__top">
+      <span class="flyStatus__light" aria-hidden="true"></span>
+
+      <h2 class="flyStatus__title">
+        Aktuelle Fliegenbelastung:
+        <span class="flyStatus__value">
+          ${escapeHtml(status.label)}
+        </span>
+      </h2>
+    </div>
+
+    <p class="flyStatus__text">
+      ${escapeHtml(status.text)}
+    </p>
+
+    <p class="flyStatus__details">
+      ${escapeHtml(status.details)}
+    </p>
+  `;
 }
 
 
@@ -329,22 +623,18 @@ function renderMap() {
     );
   }
 
-  /*
-   * Älteste Meldungen zuerst, damit neuere Meldungen bei
-   * identischen Koordinaten oben liegen.
-   */
   visibleReports
     .slice()
     .sort((a, b) => {
       return new Date(a.created_at) - new Date(b.created_at);
     })
-    .forEach((report, index) => {
+    .forEach(report => {
       const latitude = Number(report.lat);
       const longitude = Number(report.lng);
       const severity = Number(report.severity) || 3;
       const street = normalizeStreet(report.address);
 
-      const marker = L.circleMarker(
+      L.circleMarker(
         [latitude, longitude],
         {
           radius: 9,
@@ -353,15 +643,7 @@ function renderMap() {
           fillColor: severityColor(severity),
           fillOpacity: 0.95
         }
-      );
-
-      marker.setStyle({
-        pane: "markerPane"
-      });
-
-      marker.options.zIndexOffset = index;
-
-      marker
+      )
         .bindPopup(`
           <strong>
             📍 ${escapeHtml(street)}
@@ -406,7 +688,7 @@ function severityColor(severity) {
 
 
 /* =========================================================
-   Automatische Aktualisierung
+   Ereignisse und automatische Aktualisierung
    ========================================================= */
 
 severityFilter?.addEventListener(
@@ -414,12 +696,7 @@ severityFilter?.addEventListener(
   renderMap
 );
 
-/*
- * Beim Zurückkehren auf die Startseite werden neue,
- * inzwischen freigegebene Meldungen sofort neu geladen.
- */
 window.addEventListener("focus", loadReports);
-
 window.addEventListener("pageshow", loadReports);
 
 document.addEventListener("visibilitychange", () => {
@@ -428,10 +705,6 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-/*
- * Auch bei dauerhaft geöffneter Startseite werden die Daten
- * regelmäßig aktualisiert.
- */
 window.setInterval(loadReports, 30000);
 
 
@@ -439,4 +712,6 @@ window.setInterval(loadReports, 30000);
    Start
    ========================================================= */
 
+ensureStatusStyles();
+ensureStatusElement();
 loadReports();
