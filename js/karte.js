@@ -16,8 +16,6 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 const markerLayer = L.layerGroup().addTo(map);
 
-let isLoading = false;
-
 function color(severity) {
   const value = Number(severity);
 
@@ -78,7 +76,6 @@ function markerIcon(severity) {
       <span
         class="marker-dot"
         style="background:${color(severity)}"
-        aria-hidden="true"
       ></span>
     `,
     iconSize: [22, 22],
@@ -101,7 +98,7 @@ function hasValidCoordinates(report) {
   );
 }
 
-function filterReports(reports) {
+function applyFilter(reports) {
   const selectedValue = filter?.value || "all";
 
   if (selectedValue === "4plus") {
@@ -122,22 +119,30 @@ function filterReports(reports) {
 function renderMarkers(reports) {
   markerLayer.clearLayers();
 
-  reports.forEach(report => {
+  /*
+   * Älteste Meldungen zuerst und neueste zuletzt.
+   * Dadurch liegt der neueste Pin bei gleichen Koordinaten oben.
+   */
+  const sortedReports = [...reports].sort((a, b) => {
+    return new Date(a.created_at) - new Date(b.created_at);
+  });
+
+  sortedReports.forEach((report, index) => {
     if (!hasValidCoordinates(report)) {
-      console.warn(
-        "Meldung ohne gültige öffentliche Koordinaten:",
-        report
-      );
       return;
     }
 
     const lat = Number(report.lat);
     const lng = Number(report.lng);
-
     const severity = Number(report.severity) || 1;
 
     const marker = L.marker([lat, lng], {
-      icon: markerIcon(severity)
+      icon: markerIcon(severity),
+
+      /*
+       * Neuere Meldungen erhalten einen höheren Ebenenwert.
+       */
+      zIndexOffset: index
     });
 
     marker.bindPopup(`
@@ -155,83 +160,31 @@ function renderMarkers(reports) {
 
   window.setTimeout(() => {
     map.invalidateSize();
-  }, 150);
+  }, 200);
 }
 
 async function loadMap() {
-  if (isLoading) {
-    return;
-  }
+  const { data, error } = await supabase
+    .from("reports_public")
+    .select("id, address, severity, created_at, lat, lng")
+    .order("created_at", { ascending: true });
 
-  isLoading = true;
-
-  try {
-    const { data, error } = await supabase
-      .from("reports_public")
-      .select("id, address, severity, created_at, lat, lng")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      throw error;
-    }
-
-    const reports = filterReports(data || []);
-
-    renderMarkers(reports);
-  } catch (error) {
+  if (error) {
     console.error(
       "Meldungen konnten nicht geladen werden:",
       error
     );
-  } finally {
-    isLoading = false;
+    return;
   }
+
+  const reports = applyFilter(data || []);
+
+  renderMarkers(reports);
 }
 
-filter?.addEventListener("change", () => {
-  loadMap();
-});
+filter?.addEventListener("change", loadMap);
 
-/*
- * Sobald sich die Tabelle reports ändert, werden die öffentlichen
- * Daten erneut geladen. Eine Meldung erscheint dadurch nach ihrer
- * Freigabe automatisch auf der geöffneten Karte.
- */
-const reportsChannel = supabase
-  .channel("public-map-reports")
-  .on(
-    "postgres_changes",
-    {
-      event: "*",
-      schema: "public",
-      table: "reports"
-    },
-    () => {
-      window.setTimeout(() => {
-        loadMap();
-      }, 500);
-    }
-  )
-  .subscribe(status => {
-    if (status === "CHANNEL_ERROR") {
-      console.warn(
-        "Die automatische Kartenaktualisierung konnte nicht gestartet werden."
-      );
-    }
-  });
-
-/*
- * Zusätzliche Aktualisierung alle 60 Sekunden.
- * Dadurch erscheinen neue Pins auch dann, wenn Realtime in Supabase
- * für die Tabelle nicht aktiviert sein sollte.
- */
-const refreshInterval = window.setInterval(() => {
-  loadMap();
-}, 60000);
-
-window.addEventListener("focus", () => {
-  loadMap();
-});
+window.addEventListener("focus", loadMap);
 
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
@@ -239,9 +192,9 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-window.addEventListener("beforeunload", () => {
-  window.clearInterval(refreshInterval);
-  supabase.removeChannel(reportsChannel);
-});
+/*
+ * Sicherheitshalber alle 60 Sekunden neu laden.
+ */
+window.setInterval(loadMap, 60000);
 
 loadMap();
