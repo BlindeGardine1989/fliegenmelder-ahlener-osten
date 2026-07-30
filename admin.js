@@ -342,6 +342,26 @@ function mapsUrl(report) {
   return `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
 
+function reportPhotoUrl(photoPath) {
+  if (!photoPath) return "";
+
+  const value = String(photoPath).trim();
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  const normalizedPath = value
+    .replace(/^report-photos\//, "")
+    .replace(/^\/+/, "");
+
+  const { data } = supabase.storage
+    .from("report-photos")
+    .getPublicUrl(normalizedPath);
+
+  return data?.publicUrl || "";
+}
+
 async function geocodeAddress(report) {
   const address =
     `${report.address || ""}, Ahlen, Nordrhein-Westfalen, Deutschland`;
@@ -415,6 +435,7 @@ function renderReports(reports) {
     const title = report.public_id || report.id || "Meldung";
     const reportStatus = report.status || "pending";
     const coordsAvailable = hasCoords(report);
+    const photoUrl = reportPhotoUrl(report.photo_path);
 
     const card = document.createElement("article");
     card.className = `adminCard status-${reportStatus}`;
@@ -440,6 +461,29 @@ function renderReports(reports) {
 
       <p><strong>Bemerkung:</strong><br>${escapeHtml(report.note || "–")}</p>
       <p><strong>Kontakt intern:</strong><br>${escapeHtml(report.contact_private || "–")}</p>
+
+      ${
+        photoUrl
+          ? `
+            <div class="reportPhotoBox">
+              <p><strong>Hochgeladenes Foto:</strong></p>
+              <a href="${escapeHtml(photoUrl)}" target="_blank" rel="noopener">
+                <img
+                  class="reportPhotoPreview"
+                  src="${escapeHtml(photoUrl)}"
+                  alt="Foto zur Meldung ${escapeHtml(String(title).slice(0, 8))}"
+                  loading="lazy"
+                >
+              </a>
+              <p class="muted">Zum Vergrößern auf das Foto klicken.</p>
+            </div>
+          `
+          : `
+            <div class="reportPhotoBox noPhoto">
+              <p><strong>Hochgeladenes Foto:</strong> keines vorhanden</p>
+            </div>
+          `
+      }
 
       <div class="internalNoteBox">
         <p><strong>Interne Bearbeitung:</strong></p>
