@@ -4,11 +4,153 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Meldungskarte | Fliegenmelder Ahlener Osten</title>
-  <meta name="description" content="Fliegenmelder Ahlener Osten">
+  <meta name="description" content="Öffentliche Meldungskarte des Fliegenmelders Ahlener Osten.">
   <link rel="icon" href="assets/logo.png" type="image/png">
+
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+  >
+
+  <style>
+    /*
+     * Eigene Darstellung der Karten-Cluster.
+     * Die Farbe richtet sich nach der durchschnittlichen Belastung
+     * der enthaltenen Meldungen.
+     */
+
+    .fly-cluster {
+      background: transparent;
+      border: 0;
+    }
+
+    .fly-cluster__circle {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border: 3px solid rgba(255, 255, 255, 0.95);
+      border-radius: 50%;
+      color: #fff;
+      font-weight: 800;
+      line-height: 1;
+      box-shadow:
+        0 5px 14px rgba(0, 0, 0, 0.28),
+        0 0 0 2px rgba(0, 0, 0, 0.08);
+      transition:
+        transform 160ms ease,
+        box-shadow 160ms ease;
+    }
+
+    .fly-cluster__circle:hover {
+      transform: scale(1.08);
+      box-shadow:
+        0 7px 18px rgba(0, 0, 0, 0.34),
+        0 0 0 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .fly-cluster__fly {
+      font-size: 14px;
+      transform: translateY(-1px);
+    }
+
+    .fly-cluster__count {
+      font-size: 15px;
+    }
+
+    .fly-cluster__circle--s1 {
+      background: #2e7d32;
+    }
+
+    .fly-cluster__circle--s2 {
+      background: #79bf5b;
+    }
+
+    .fly-cluster__circle--s3 {
+      background: #f2b705;
+      color: #2b2400;
+    }
+
+    .fly-cluster__circle--s4 {
+      background: #ef7d00;
+    }
+
+    .fly-cluster__circle--s5 {
+      background: #d51f28;
+    }
+
+    .map-popup {
+      min-width: 190px;
+    }
+
+    .map-popup__title {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .map-popup__severity {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 7px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .map-popup__severity--s1 {
+      background: #2e7d32;
+    }
+
+    .map-popup__severity--s2 {
+      background: #79bf5b;
+    }
+
+    .map-popup__severity--s3 {
+      background: #f2b705;
+      color: #2b2400;
+    }
+
+    .map-popup__severity--s4 {
+      background: #ef7d00;
+    }
+
+    .map-popup__severity--s5 {
+      background: #d51f28;
+    }
+
+    .map-popup__date {
+      color: #555;
+    }
+
+    .cluster-tooltip {
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .cluster-tooltip strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+  </style>
 </head>
+
 <body>
 <header class="topbar">
   <a class="brand" href="index.html">
@@ -18,6 +160,7 @@
       <span>Melden. Dokumentieren. Transparent informieren.</span>
     </div>
   </a>
+
   <nav class="nav">
     <a href="index.html">Startseite</a>
     <a href="melden.html">Fliegen melden</a>
@@ -36,7 +179,11 @@
   <section class="box pageHero">
     <p class="eyebrow">Meldungskarte</p>
     <h1>Öffentliche Meldungskarte</h1>
-    <p class="lead">Freigegebene Meldungen werden hier gesammelt dargestellt.</p>
+    <p class="lead">
+      Freigegebene Meldungen werden hier datenschutzgerecht dargestellt.
+      Nahe beieinanderliegende Marker werden nur optisch gebündelt und
+      lösen sich beim Hineinzoomen wieder in einzelne Meldungen auf.
+    </p>
   </section>
 
   <section class="panel mapPanel">
@@ -45,6 +192,11 @@
         <p class="eyebrow">Öffentliche Übersicht</p>
         <h2>Meldungen nach Belastung</h2>
       </div>
+
+      <label for="severityFilter" class="visually-hidden">
+        Meldungen nach Belastung filtern
+      </label>
+
       <select id="severityFilter">
         <option value="all">Alle Meldungen</option>
         <option value="4plus">Nur stark / sehr stark</option>
@@ -55,7 +207,9 @@
         <option value="5">5 sehr stark</option>
       </select>
     </div>
+
     <div id="map" class="map"></div>
+
     <div class="legend">
       <strong>Belastung</strong>
       <span><i class="dot s1"></i>1</span>
@@ -64,6 +218,13 @@
       <span><i class="dot s4"></i>4</span>
       <span><i class="dot s5"></i>5</span>
     </div>
+
+    <p class="mapHint">
+      Die Zahl in einem Kreis zeigt, wie viele Meldungen in diesem
+      Kartenausschnitt nah beieinanderliegen. Die Farbe zeigt die
+      durchschnittliche Belastung. Beim Hineinzoomen werden die einzelnen
+      Meldungen wieder sichtbar.
+    </p>
   </section>
 </main>
 
@@ -104,8 +265,13 @@
     <a href="admin.html">Interner Bereich</a>
   </nav>
 </footer>
+
 <script src="js/menu.js"></script>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
 <script type="module" src="js/karte.js"></script>
 </body>
 </html>
