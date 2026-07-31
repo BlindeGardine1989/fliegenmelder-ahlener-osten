@@ -6,6 +6,11 @@ const timeFilter = document.querySelector("#timeFilter");
 const resultCount = document.querySelector("#mapResultCount");
 const viewButtons = document.querySelectorAll("[data-map-view]");
 
+const dashboardCount = document.querySelector("#dashboardCount");
+const dashboardStreets = document.querySelector("#dashboardStreets");
+const dashboardAverage = document.querySelector("#dashboardAverage");
+const dashboardLatest = document.querySelector("#dashboardLatest");
+
 if (!mapElement) {
   throw new Error("Das Kartenelement #map wurde nicht gefunden.");
 }
@@ -101,6 +106,56 @@ function formatDate(date) {
     day: "2-digit",
     month: "2-digit",
     year: "numeric"
+  });
+}
+
+function formatLatestDate(date) {
+  if (!date) {
+    return "–";
+  }
+
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "–";
+  }
+
+  const today = new Date();
+  const todayStart = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+
+  const reportStart = new Date(
+    parsedDate.getFullYear(),
+    parsedDate.getMonth(),
+    parsedDate.getDate()
+  );
+
+  const differenceInDays = Math.round(
+    (todayStart - reportStart) / 86400000
+  );
+
+  if (differenceInDays === 0) {
+    return "Heute";
+  }
+
+  if (differenceInDays === 1) {
+    return "Gestern";
+  }
+
+  return parsedDate.toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit"
+  });
+}
+
+function formatAverage(value) {
+  return Number(value).toLocaleString("de-DE", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
   });
 }
 
@@ -317,6 +372,56 @@ function createMarker(report, index) {
   return marker;
 }
 
+function updateDashboard(reports) {
+  const validReports = reports.filter(hasValidCoordinates);
+
+  const count = validReports.length;
+
+  const streets = new Set(
+    validReports
+      .map(report => publicAddress(report.address))
+      .filter(address => address && address !== "Ahlener Osten")
+  );
+
+  const severityValues = validReports
+    .map(report => Number(report.severity))
+    .filter(value => Number.isFinite(value));
+
+  const average = severityValues.length
+    ? severityValues.reduce((sum, value) => sum + value, 0) /
+      severityValues.length
+    : 0;
+
+  const latestReport = [...validReports]
+    .filter(report => {
+      const date = new Date(report.created_at);
+      return !Number.isNaN(date.getTime());
+    })
+    .sort((a, b) => {
+      return new Date(b.created_at) - new Date(a.created_at);
+    })[0];
+
+  if (dashboardCount) {
+    dashboardCount.textContent = String(count);
+  }
+
+  if (dashboardStreets) {
+    dashboardStreets.textContent = String(streets.size);
+  }
+
+  if (dashboardAverage) {
+    dashboardAverage.textContent = severityValues.length
+      ? `${formatAverage(average)} / 5`
+      : "–";
+  }
+
+  if (dashboardLatest) {
+    dashboardLatest.textContent = latestReport
+      ? formatLatestDate(latestReport.created_at)
+      : "–";
+  }
+}
+
 function updateResultCount(count) {
   if (!resultCount) {
     return;
@@ -344,6 +449,7 @@ function updateViewButtons() {
       button.dataset.mapView === currentMapView;
 
     button.classList.toggle("is-active", isActive);
+
     button.setAttribute(
       "aria-pressed",
       String(isActive)
@@ -381,10 +487,6 @@ function renderMarkers(reports) {
   clusterLayer.clearLayers();
   singleMarkerLayer.clearLayers();
 
-  /*
-   * Älteste Meldungen zuerst und neueste zuletzt.
-   * Dadurch liegt bei gleichen Koordinaten die neueste Meldung oben.
-   */
   const sortedReports = [...reports].sort((a, b) => {
     return new Date(a.created_at) - new Date(b.created_at);
   });
@@ -407,10 +509,12 @@ function renderMarkers(reports) {
   });
 
   clusterLayer.addLayers(clusterMarkers);
-  singleMarkerLayer.addLayer(
-    L.featureGroup(singleMarkers)
-  );
 
+  singleMarkers.forEach(marker => {
+    singleMarkerLayer.addLayer(marker);
+  });
+
+  updateDashboard(reports);
   updateResultCount(clusterMarkers.length);
   updateVisibleLayer();
 }
@@ -495,9 +599,6 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-/*
- * Sicherheitshalber alle 60 Sekunden neue Meldungen laden.
- */
 window.setInterval(loadMap, 60000);
 
 updateViewButtons();
