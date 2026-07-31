@@ -9,12 +9,12 @@
   >
 
   <title>
-    Meldungskarte | Fliegenmelder Ahlener Osten
+    Interaktive Meldungskarte | Fliegenmelder Ahlener Osten
   </title>
 
   <meta
     name="description"
-    content="Öffentliche Meldungskarte des Fliegenmelders Ahlener Osten."
+    content="Interaktive öffentliche Meldungskarte des Fliegenmelders Ahlener Osten mit Cluster-, Einzel- und Heatmapansicht."
   >
 
   <link
@@ -152,7 +152,7 @@
 
     .mapViewButton {
       min-height: 40px;
-      padding: 8px 15px;
+      padding: 8px 13px;
       border: 0;
       border-radius: 8px;
       background: transparent;
@@ -160,6 +160,7 @@
       font: inherit;
       font-size: 14px;
       font-weight: 750;
+      white-space: nowrap;
       cursor: pointer;
       transition:
         background 150ms ease,
@@ -329,6 +330,36 @@
       margin-bottom: 2px;
     }
 
+    /*
+     * Heatmap-Legende
+     */
+
+    .heatLegend {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 12px;
+      color: #555;
+      font-size: 13px;
+    }
+
+    .heatLegend__bar {
+      width: 150px;
+      height: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 999px;
+      background:
+        linear-gradient(
+          90deg,
+          #2e7d32 0%,
+          #79bf5b 25%,
+          #f2b705 55%,
+          #ef7d00 78%,
+          #d51f28 100%
+        );
+    }
+
     @media (max-width: 1000px) {
       .mapDashboard {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -372,9 +403,15 @@
         min-height: 44px;
       }
 
+      .mapViewToggle {
+        width: 100%;
+      }
+
       .mapViewButton {
+        min-width: 0;
         min-height: 44px;
-        padding-inline: 10px;
+        padding-inline: 7px;
+        font-size: 13px;
       }
 
       .mapDashboard {
@@ -410,6 +447,11 @@
 
       .dashboardCard__value--text {
         font-size: 20px;
+      }
+
+      .heatLegend__bar {
+        flex: 1;
+        min-width: 120px;
       }
     }
   </style>
@@ -466,12 +508,12 @@
   <section class="box pageHero">
     <p class="eyebrow">Meldungskarte</p>
 
-    <h1>Öffentliche Meldungskarte</h1>
+    <h1>Interaktive Meldungskarte</h1>
 
     <p class="lead">
       Freigegebene Meldungen werden hier datenschutzgerecht dargestellt.
-      Die Meldungen können gebündelt oder einzeln angezeigt und nach
-      Zeitraum sowie Belastung gefiltert werden.
+      Wählen Sie zwischen Cluster-, Einzel- und Heatmapansicht und filtern
+      Sie die Ergebnisse nach Zeitraum und Belastung.
     </p>
   </section>
 
@@ -580,6 +622,15 @@
               aria-pressed="false"
             >
               📍 Einzeln
+            </button>
+
+            <button
+              class="mapViewButton"
+              type="button"
+              data-map-view="heat"
+              aria-pressed="false"
+            >
+              🔥 Heatmap
             </button>
           </div>
         </div>
@@ -692,38 +743,27 @@
     <div class="legend">
       <strong>Belastung</strong>
 
-      <span>
-        <i class="dot s1"></i>
-        1
-      </span>
+      <span><i class="dot s1"></i>1</span>
+      <span><i class="dot s2"></i>2</span>
+      <span><i class="dot s3"></i>3</span>
+      <span><i class="dot s4"></i>4</span>
+      <span><i class="dot s5"></i>5</span>
+    </div>
 
-      <span>
-        <i class="dot s2"></i>
-        2
-      </span>
-
-      <span>
-        <i class="dot s3"></i>
-        3
-      </span>
-
-      <span>
-        <i class="dot s4"></i>
-        4
-      </span>
-
-      <span>
-        <i class="dot s5"></i>
-        5
-      </span>
+    <div class="heatLegend">
+      <strong>Heatmap:</strong>
+      <span>geringe Verdichtung</span>
+      <span class="heatLegend__bar" aria-hidden="true"></span>
+      <span>hohe Verdichtung</span>
     </div>
 
     <p class="mapHint">
-      Die Kennzahlen und die Karte beziehen sich immer auf die aktuell
-      ausgewählten Filter. In der Clusteransicht zeigt die Zahl in einem
-      Kreis, wie viele Meldungen nah beieinanderliegen. Die Farbe zeigt
-      die durchschnittliche Belastung. In der Ansicht „Einzeln“ werden
-      alle Meldungen direkt als einzelne Punkte dargestellt.
+      Die Kennzahlen und die Karte beziehen sich auf die aktuell
+      ausgewählten Filter. Cluster bündeln nahe beieinanderliegende
+      Meldungen lediglich optisch. Die Einzelansicht zeigt jede Meldung
+      separat. Die Heatmap macht Bereiche mit vielen und besonders starken
+      Meldungen sichtbar. Sie ersetzt keine Einzelmeldungen und verändert
+      die zugrunde liegenden Daten nicht.
     </p>
   </section>
 </main>
@@ -771,6 +811,8 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
 <script
   type="module"
