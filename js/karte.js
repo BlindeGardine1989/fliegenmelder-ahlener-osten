@@ -4,6 +4,7 @@ const mapElement = document.querySelector("#map");
 const severityFilter = document.querySelector("#severityFilter");
 const timeFilter = document.querySelector("#timeFilter");
 const resultCount = document.querySelector("#mapResultCount");
+const viewButtons = document.querySelectorAll("[data-map-view]");
 
 if (!mapElement) {
   throw new Error("Das Kartenelement #map wurde nicht gefunden.");
@@ -28,6 +29,7 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 let isLoadingMap = false;
 let allReports = [];
+let currentMapView = "cluster";
 
 function color(severity) {
   const value = Number(severity);
@@ -153,7 +155,7 @@ function clusterIcon(cluster) {
   });
 }
 
-const markerLayer = L.markerClusterGroup({
+const clusterLayer = L.markerClusterGroup({
   showCoverageOnHover: false,
   zoomToBoundsOnClick: true,
   spiderfyOnMaxZoom: true,
@@ -163,9 +165,13 @@ const markerLayer = L.markerClusterGroup({
   maxClusterRadius: 50,
   chunkedLoading: true,
   iconCreateFunction: clusterIcon
-}).addTo(map);
+});
 
-markerLayer.on("clustermouseover", event => {
+const singleMarkerLayer = L.layerGroup();
+
+clusterLayer.addTo(map);
+
+clusterLayer.on("clustermouseover", event => {
   const cluster = event.layer;
   const count = cluster.getChildCount();
   const average = averageClusterSeverity(cluster);
@@ -189,7 +195,7 @@ markerLayer.on("clustermouseover", event => {
   cluster.openTooltip();
 });
 
-markerLayer.on("clustermouseout", event => {
+clusterLayer.on("clustermouseout", event => {
   event.layer.closeTooltip();
 });
 
@@ -260,9 +266,9 @@ function applyTimeFilter(reports) {
 }
 
 function applyFilters(reports) {
-  const timeFilteredReports = applyTimeFilter(reports);
-
-  return applySeverityFilter(timeFilteredReports);
+  return applySeverityFilter(
+    applyTimeFilter(reports)
+  );
 }
 
 function popupContent(report, severity) {
@@ -289,6 +295,28 @@ function popupContent(report, severity) {
   `;
 }
 
+function createMarker(report, index) {
+  const lat = Number(report.lat);
+  const lng = Number(report.lng);
+
+  const severity = Math.max(
+    1,
+    Math.min(5, Number(report.severity) || 1)
+  );
+
+  const marker = L.marker([lat, lng], {
+    icon: markerIcon(severity),
+    severity,
+    zIndexOffset: index
+  });
+
+  marker.bindPopup(popupContent(report, severity), {
+    maxWidth: 280
+  });
+
+  return marker;
+}
+
 function updateResultCount(count) {
   if (!resultCount) {
     return;
@@ -310,59 +338,81 @@ function updateResultCount(count) {
     `${count} Meldungen entsprechen der aktuellen Auswahl.`;
 }
 
+function updateViewButtons() {
+  viewButtons.forEach(button => {
+    const isActive =
+      button.dataset.mapView === currentMapView;
+
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute(
+      "aria-pressed",
+      String(isActive)
+    );
+  });
+}
+
+function updateVisibleLayer() {
+  if (currentMapView === "single") {
+    if (map.hasLayer(clusterLayer)) {
+      map.removeLayer(clusterLayer);
+    }
+
+    if (!map.hasLayer(singleMarkerLayer)) {
+      singleMarkerLayer.addTo(map);
+    }
+  } else {
+    if (map.hasLayer(singleMarkerLayer)) {
+      map.removeLayer(singleMarkerLayer);
+    }
+
+    if (!map.hasLayer(clusterLayer)) {
+      clusterLayer.addTo(map);
+    }
+  }
+
+  updateViewButtons();
+
+  window.setTimeout(() => {
+    map.invalidateSize();
+  }, 100);
+}
+
 function renderMarkers(reports) {
-  markerLayer.clearLayers();
+  clusterLayer.clearLayers();
+  singleMarkerLayer.clearLayers();
 
   /*
    * Älteste Meldungen zuerst und neueste zuletzt.
-   * Dadurch liegt der neueste Pin bei gleichen Koordinaten oben.
+   * Dadurch liegt bei gleichen Koordinaten die neueste Meldung oben.
    */
   const sortedReports = [...reports].sort((a, b) => {
     return new Date(a.created_at) - new Date(b.created_at);
   });
 
-  const markers = [];
+  const clusterMarkers = [];
+  const singleMarkers = [];
 
   sortedReports.forEach((report, index) => {
     if (!hasValidCoordinates(report)) {
       return;
     }
 
-    const lat = Number(report.lat);
-    const lng = Number(report.lng);
-    const severity = Math.max(
-      1,
-      Math.min(5, Number(report.severity) || 1)
+    clusterMarkers.push(
+      createMarker(report, index)
     );
 
-    const marker = L.marker([lat, lng], {
-      icon: markerIcon(severity),
-
-      /*
-       * Die Belastung wird am Marker gespeichert, damit der Cluster
-       * daraus seine Durchschnittsfarbe berechnen kann.
-       */
-      severity,
-
-      /*
-       * Neuere Meldungen erhalten einen höheren Ebenenwert.
-       */
-      zIndexOffset: index
-    });
-
-    marker.bindPopup(popupContent(report, severity), {
-      maxWidth: 280
-    });
-
-    markers.push(marker);
+    singleMarkers.push(
+      createMarker(report, index)
+    );
   });
 
-  markerLayer.addLayers(markers);
-  updateResultCount(markers.length);
+  clusterLayer.addLayers(clusterMarkers);
+  singleMarkerLayer.addLayer(
+    L.featureGroup(singleMarkers)
+  );
 
-  window.setTimeout(() => {
-    map.invalidateSize();
-  }, 200);
+  updateResultCount(clusterMarkers.length);
+  updateVisibleLayer();
 }
 
 function refreshMapDisplay() {
@@ -405,8 +455,31 @@ async function loadMap() {
   }
 }
 
-severityFilter?.addEventListener("change", refreshMapDisplay);
-timeFilter?.addEventListener("change", refreshMapDisplay);
+viewButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    const selectedView = button.dataset.mapView;
+
+    if (
+      selectedView !== "cluster" &&
+      selectedView !== "single"
+    ) {
+      return;
+    }
+
+    currentMapView = selectedView;
+    updateVisibleLayer();
+  });
+});
+
+severityFilter?.addEventListener(
+  "change",
+  refreshMapDisplay
+);
+
+timeFilter?.addEventListener(
+  "change",
+  refreshMapDisplay
+);
 
 window.addEventListener("focus", loadMap);
 
@@ -427,4 +500,5 @@ document.addEventListener("visibilitychange", () => {
  */
 window.setInterval(loadMap, 60000);
 
+updateViewButtons();
 loadMap();
