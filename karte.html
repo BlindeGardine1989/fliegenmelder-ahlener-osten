@@ -44,10 +44,6 @@
   >
 
   <style>
-    /*
-     * Eigene Cluster
-     */
-
     .fly-cluster {
       background: transparent;
       border: 0;
@@ -149,21 +145,21 @@
     .mapViewToggle {
       display: inline-flex;
       padding: 3px;
-      border: 1px solid #d3d8d4;
-      border-radius: 10px;
-      background: #f4f6f4;
+      border: 1px solid #ccd8cf;
+      border-radius: 11px;
+      background: #f3f6f4;
     }
 
     .mapViewButton {
-      min-height: 38px;
-      padding: 8px 13px;
+      min-height: 40px;
+      padding: 8px 15px;
       border: 0;
-      border-radius: 7px;
+      border-radius: 8px;
       background: transparent;
-      color: #3b443e;
+      color: #435048;
       font: inherit;
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 750;
       cursor: pointer;
       transition:
         background 150ms ease,
@@ -172,19 +168,98 @@
     }
 
     .mapViewButton:hover {
-      background: rgba(255, 255, 255, 0.75);
+      background: rgba(255, 255, 255, 0.85);
     }
 
     .mapViewButton.is-active {
-      background: #fff;
-      color: #1d5e38;
+      background: #14532d;
+      color: #fff;
       box-shadow:
-        0 1px 4px rgba(0, 0, 0, 0.14);
+        0 3px 8px rgba(20, 83, 45, 0.24);
     }
 
     .mapViewButton:focus-visible {
-      outline: 3px solid rgba(29, 94, 56, 0.25);
+      outline: 3px solid rgba(20, 83, 45, 0.28);
       outline-offset: 2px;
+    }
+
+    /*
+     * Dashboard
+     */
+
+    .mapDashboard {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: 24px 0 18px;
+    }
+
+    .dashboardCard {
+      position: relative;
+      min-height: 112px;
+      padding: 18px;
+      overflow: hidden;
+      border: 1px solid #d7e5d9;
+      border-radius: 18px;
+      background:
+        linear-gradient(
+          145deg,
+          #ffffff 0%,
+          #f7fbf7 100%
+        );
+      box-shadow:
+        0 8px 24px rgba(23, 71, 42, 0.08);
+    }
+
+    .dashboardCard::after {
+      content: "";
+      position: absolute;
+      right: -22px;
+      bottom: -28px;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: rgba(46, 125, 50, 0.07);
+    }
+
+    .dashboardCard__top {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    .dashboardCard__icon {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      place-items: center;
+      border-radius: 10px;
+      background: #eaf5ea;
+      font-size: 18px;
+    }
+
+    .dashboardCard__label {
+      color: #56625a;
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.25;
+    }
+
+    .dashboardCard__value {
+      position: relative;
+      z-index: 1;
+      display: block;
+      color: #123d25;
+      font-size: clamp(25px, 3vw, 34px);
+      font-weight: 850;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+    }
+
+    .dashboardCard__value--text {
+      font-size: clamp(21px, 2.4vw, 28px);
     }
 
     .mapResultCount {
@@ -254,6 +329,12 @@
       margin-bottom: 2px;
     }
 
+    @media (max-width: 1000px) {
+      .mapDashboard {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
     @media (max-width: 900px) {
       .mapHead {
         align-items: stretch;
@@ -293,6 +374,42 @@
 
       .mapViewButton {
         min-height: 44px;
+        padding-inline: 10px;
+      }
+
+      .mapDashboard {
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .dashboardCard {
+        min-height: 104px;
+        padding: 14px;
+        border-radius: 15px;
+      }
+
+      .dashboardCard__top {
+        align-items: flex-start;
+        gap: 7px;
+      }
+
+      .dashboardCard__icon {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+        font-size: 16px;
+      }
+
+      .dashboardCard__label {
+        font-size: 12px;
+      }
+
+      .dashboardCard__value {
+        font-size: 26px;
+      }
+
+      .dashboardCard__value--text {
+        font-size: 20px;
       }
     }
   </style>
@@ -462,11 +579,104 @@
               data-map-view="single"
               aria-pressed="false"
             >
-              📍 Einzelmeldungen
+              📍 Einzeln
             </button>
           </div>
         </div>
       </div>
+    </div>
+
+    <div
+      class="mapDashboard"
+      aria-label="Auswertung der aktuell ausgewählten Meldungen"
+    >
+      <article class="dashboardCard">
+        <div class="dashboardCard__top">
+          <span
+            class="dashboardCard__icon"
+            aria-hidden="true"
+          >
+            🪰
+          </span>
+
+          <span class="dashboardCard__label">
+            Meldungen
+          </span>
+        </div>
+
+        <strong
+          id="dashboardCount"
+          class="dashboardCard__value"
+        >
+          –
+        </strong>
+      </article>
+
+      <article class="dashboardCard">
+        <div class="dashboardCard__top">
+          <span
+            class="dashboardCard__icon"
+            aria-hidden="true"
+          >
+            📍
+          </span>
+
+          <span class="dashboardCard__label">
+            Betroffene Straßen
+          </span>
+        </div>
+
+        <strong
+          id="dashboardStreets"
+          class="dashboardCard__value"
+        >
+          –
+        </strong>
+      </article>
+
+      <article class="dashboardCard">
+        <div class="dashboardCard__top">
+          <span
+            class="dashboardCard__icon"
+            aria-hidden="true"
+          >
+            📊
+          </span>
+
+          <span class="dashboardCard__label">
+            Ø Belastung
+          </span>
+        </div>
+
+        <strong
+          id="dashboardAverage"
+          class="dashboardCard__value dashboardCard__value--text"
+        >
+          –
+        </strong>
+      </article>
+
+      <article class="dashboardCard">
+        <div class="dashboardCard__top">
+          <span
+            class="dashboardCard__icon"
+            aria-hidden="true"
+          >
+            🕒
+          </span>
+
+          <span class="dashboardCard__label">
+            Letzte Meldung
+          </span>
+        </div>
+
+        <strong
+          id="dashboardLatest"
+          class="dashboardCard__value dashboardCard__value--text"
+        >
+          –
+        </strong>
+      </article>
     </div>
 
     <div id="map" class="map"></div>
@@ -509,12 +719,11 @@
     </div>
 
     <p class="mapHint">
-      In der Clusteransicht zeigt die Zahl in einem Kreis, wie viele
-      Meldungen in diesem Kartenausschnitt nah beieinanderliegen. Die
-      Farbe zeigt die durchschnittliche Belastung. In der Ansicht
-      „Einzelmeldungen“ werden alle Meldungen direkt als einzelne Punkte
-      dargestellt. Zeitraum und Belastung können miteinander kombiniert
-      werden.
+      Die Kennzahlen und die Karte beziehen sich immer auf die aktuell
+      ausgewählten Filter. In der Clusteransicht zeigt die Zahl in einem
+      Kreis, wie viele Meldungen nah beieinanderliegen. Die Farbe zeigt
+      die durchschnittliche Belastung. In der Ansicht „Einzeln“ werden
+      alle Meldungen direkt als einzelne Punkte dargestellt.
     </p>
   </section>
 </main>
