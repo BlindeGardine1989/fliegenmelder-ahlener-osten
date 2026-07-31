@@ -2,18 +2,31 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Meldungskarte | Fliegenmelder Ahlener Osten</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    Meldungskarte | Fliegenmelder Ahlener Osten
+  </title>
 
   <meta
     name="description"
     content="Öffentliche Meldungskarte des Fliegenmelders Ahlener Osten."
   >
 
-  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link
+    rel="icon"
+    href="assets/logo.png"
+    type="image/png"
+  >
 
-  <link rel="stylesheet" href="css/style.css">
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
 
   <link
     rel="stylesheet"
@@ -32,9 +45,7 @@
 
   <style>
     /*
-     * Eigene Darstellung der Karten-Cluster.
-     * Die Farbe richtet sich nach der durchschnittlichen Belastung
-     * der enthaltenen Meldungen.
+     * Eigene Cluster
      */
 
     .fly-cluster {
@@ -100,10 +111,10 @@
     }
 
     /*
-     * Filterbereich
+     * Filter und Ansichtsumschalter
      */
 
-    .mapFilters {
+    .mapControls {
       display: flex;
       align-items: flex-end;
       justify-content: flex-end;
@@ -118,7 +129,8 @@
       min-width: 170px;
     }
 
-    .mapFilter span {
+    .mapFilter > span,
+    .mapViewLabel {
       color: #555;
       font-size: 13px;
       font-weight: 700;
@@ -126,6 +138,53 @@
 
     .mapFilter select {
       width: 100%;
+    }
+
+    .mapViewControl {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .mapViewToggle {
+      display: inline-flex;
+      padding: 3px;
+      border: 1px solid #d3d8d4;
+      border-radius: 10px;
+      background: #f4f6f4;
+    }
+
+    .mapViewButton {
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: #3b443e;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition:
+        background 150ms ease,
+        color 150ms ease,
+        box-shadow 150ms ease;
+    }
+
+    .mapViewButton:hover {
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    .mapViewButton.is-active {
+      background: #fff;
+      color: #1d5e38;
+      box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.14);
+    }
+
+    .mapViewButton:focus-visible {
+      outline: 3px solid rgba(29, 94, 56, 0.25);
+      outline-offset: 2px;
     }
 
     .mapResultCount {
@@ -136,7 +195,7 @@
     }
 
     /*
-     * Popups und Hinweise
+     * Popups
      */
 
     .map-popup {
@@ -195,22 +254,44 @@
       margin-bottom: 2px;
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 900px) {
       .mapHead {
         align-items: stretch;
       }
 
-      .mapFilters {
+      .mapControls {
         width: 100%;
         justify-content: stretch;
       }
 
+      .mapFilter {
+        flex: 1 1 180px;
+      }
+
+      .mapViewControl {
+        flex: 1 1 100%;
+      }
+
+      .mapViewToggle {
+        display: flex;
+      }
+
+      .mapViewButton {
+        flex: 1;
+      }
+    }
+
+    @media (max-width: 600px) {
       .mapFilter {
         flex: 1 1 100%;
         min-width: 0;
       }
 
       .mapFilter select {
+        min-height: 44px;
+      }
+
+      .mapViewButton {
         min-height: 44px;
       }
     }
@@ -240,7 +321,14 @@
   <nav class="nav">
     <a href="index.html">Startseite</a>
     <a href="melden.html">Fliegen melden</a>
-    <a href="karte.html" aria-current="page">Meldungskarte</a>
+
+    <a
+      href="karte.html"
+      aria-current="page"
+    >
+      Meldungskarte
+    </a>
+
     <a href="neuigkeiten.html">Neuigkeiten</a>
     <a href="chronik.html">Chronik</a>
     <a href="dokumente.html">Dokumente</a>
@@ -248,7 +336,10 @@
     <a href="ueber-uns.html">Über uns</a>
     <a href="kontakt.html">Kontakt</a>
 
-    <a class="buttonLink" href="melden.html">
+    <a
+      class="buttonLink"
+      href="melden.html"
+    >
       + Meldung einreichen
     </a>
   </nav>
@@ -262,44 +353,119 @@
 
     <p class="lead">
       Freigegebene Meldungen werden hier datenschutzgerecht dargestellt.
-      Nahe beieinanderliegende Marker werden nur optisch gebündelt und
-      lösen sich beim Hineinzoomen wieder in einzelne Meldungen auf.
+      Die Meldungen können gebündelt oder einzeln angezeigt und nach
+      Zeitraum sowie Belastung gefiltert werden.
     </p>
   </section>
 
   <section class="panel mapPanel">
     <div class="mapHead">
       <div>
-        <p class="eyebrow">Öffentliche Übersicht</p>
-        <h2>Meldungen nach Zeitraum und Belastung</h2>
+        <p class="eyebrow">
+          Öffentliche Übersicht
+        </p>
+
+        <h2>
+          Meldungen nach Zeitraum und Belastung
+        </h2>
       </div>
 
-      <div class="mapFilters">
-        <label class="mapFilter" for="timeFilter">
+      <div class="mapControls">
+        <label
+          class="mapFilter"
+          for="timeFilter"
+        >
           <span>Zeitraum</span>
 
           <select id="timeFilter">
-            <option value="all">Gesamter Zeitraum</option>
-            <option value="7">Letzte 7 Tage</option>
-            <option value="14">Letzte 14 Tage</option>
-            <option value="30">Letzte 30 Tage</option>
-            <option value="year">Dieses Jahr</option>
+            <option value="all">
+              Gesamter Zeitraum
+            </option>
+
+            <option value="7">
+              Letzte 7 Tage
+            </option>
+
+            <option value="14">
+              Letzte 14 Tage
+            </option>
+
+            <option value="30">
+              Letzte 30 Tage
+            </option>
+
+            <option value="year">
+              Dieses Jahr
+            </option>
           </select>
         </label>
 
-        <label class="mapFilter" for="severityFilter">
+        <label
+          class="mapFilter"
+          for="severityFilter"
+        >
           <span>Belastung</span>
 
           <select id="severityFilter">
-            <option value="all">Alle Meldungen</option>
-            <option value="4plus">Nur stark / sehr stark</option>
-            <option value="1">1 – sehr gering</option>
-            <option value="2">2 – gering</option>
-            <option value="3">3 – mittel</option>
-            <option value="4">4 – stark</option>
-            <option value="5">5 – sehr stark</option>
+            <option value="all">
+              Alle Meldungen
+            </option>
+
+            <option value="4plus">
+              Nur stark / sehr stark
+            </option>
+
+            <option value="1">
+              1 – sehr gering
+            </option>
+
+            <option value="2">
+              2 – gering
+            </option>
+
+            <option value="3">
+              3 – mittel
+            </option>
+
+            <option value="4">
+              4 – stark
+            </option>
+
+            <option value="5">
+              5 – sehr stark
+            </option>
           </select>
         </label>
+
+        <div class="mapViewControl">
+          <span class="mapViewLabel">
+            Darstellung
+          </span>
+
+          <div
+            class="mapViewToggle"
+            role="group"
+            aria-label="Kartendarstellung auswählen"
+          >
+            <button
+              class="mapViewButton is-active"
+              type="button"
+              data-map-view="cluster"
+              aria-pressed="true"
+            >
+              🪰 Cluster
+            </button>
+
+            <button
+              class="mapViewButton"
+              type="button"
+              data-map-view="single"
+              aria-pressed="false"
+            >
+              📍 Einzelmeldungen
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -343,11 +509,12 @@
     </div>
 
     <p class="mapHint">
-      Die Zahl in einem Kreis zeigt, wie viele Meldungen in diesem
-      Kartenausschnitt nah beieinanderliegen. Die Farbe zeigt die
-      durchschnittliche Belastung. Beim Hineinzoomen werden die einzelnen
-      Meldungen wieder sichtbar. Zeitraum und Belastung können miteinander
-      kombiniert werden.
+      In der Clusteransicht zeigt die Zahl in einem Kreis, wie viele
+      Meldungen in diesem Kartenausschnitt nah beieinanderliegen. Die
+      Farbe zeigt die durchschnittliche Belastung. In der Ansicht
+      „Einzelmeldungen“ werden alle Meldungen direkt als einzelne Punkte
+      dargestellt. Zeitraum und Belastung können miteinander kombiniert
+      werden.
     </p>
   </section>
 </main>
@@ -396,6 +563,9 @@
 
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
-<script type="module" src="js/karte.js"></script>
+<script
+  type="module"
+  src="js/karte.js"
+></script>
 </body>
 </html>
