@@ -25,7 +25,17 @@ if (typeof L.markerClusterGroup !== "function") {
   );
 }
 
-const map = L.map(mapElement).setView([51.763, 7.895], 13);
+if (typeof L.heatLayer !== "function") {
+  throw new Error(
+    "Leaflet.heat wurde nicht geladen. Bitte prüfe karte.html."
+  );
+}
+
+/*
+ * Der Mittelpunkt wurde etwas nach Osten verschoben,
+ * damit die Meldungen auf Smartphones weniger nah am rechten Rand liegen.
+ */
+const map = L.map(mapElement).setView([51.763, 7.905], 13);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
@@ -121,6 +131,7 @@ function formatLatestDate(date) {
   }
 
   const today = new Date();
+
   const todayStart = new Date(
     today.getFullYear(),
     today.getMonth(),
@@ -224,6 +235,25 @@ const clusterLayer = L.markerClusterGroup({
 
 const singleMarkerLayer = L.layerGroup();
 
+/*
+ * Die Heatmap wird mit eigenen Farben dargestellt.
+ * Die Straßenkarte bleibt durch die Transparenz gut sichtbar.
+ */
+const heatLayer = L.heatLayer([], {
+  radius: 32,
+  blur: 23,
+  maxZoom: 17,
+  max: 1,
+  minOpacity: 0.3,
+  gradient: {
+    0.2: "#2e7d32",
+    0.4: "#79bf5b",
+    0.6: "#f2b705",
+    0.8: "#ef7d00",
+    1: "#d51f28"
+  }
+});
+
 clusterLayer.addTo(map);
 
 clusterLayer.on("clustermouseover", event => {
@@ -265,6 +295,13 @@ function hasValidCoordinates(report) {
     lat <= 90 &&
     lng >= -180 &&
     lng <= 180
+  );
+}
+
+function normalizedSeverity(report) {
+  return Math.max(
+    1,
+    Math.min(5, Number(report?.severity) || 1)
   );
 }
 
@@ -353,11 +390,7 @@ function popupContent(report, severity) {
 function createMarker(report, index) {
   const lat = Number(report.lat);
   const lng = Number(report.lng);
-
-  const severity = Math.max(
-    1,
-    Math.min(5, Number(report.severity) || 1)
-  );
+  const severity = normalizedSeverity(report);
 
   const marker = L.marker([lat, lng], {
     icon: markerIcon(severity),
@@ -372,15 +405,40 @@ function createMarker(report, index) {
   return marker;
 }
 
+/*
+ * Jede Meldung wird als eigener Heatmap-Punkt verwendet.
+ * Die Intensität richtet sich zusätzlich nach der Belastungsstufe.
+ *
+ * 1 = 0,35
+ * 2 = 0,50
+ * 3 = 0,67
+ * 4 = 0,84
+ * 5 = 1,00
+ *
+ * Mehrere Meldungen im gleichen Bereich verstärken sich automatisch.
+ */
+function createHeatPoint(report) {
+  const severity = normalizedSeverity(report);
+
+  const intensity = 0.18 + severity * 0.164;
+
+  return [
+    Number(report.lat),
+    Number(report.lng),
+    Math.min(1, intensity)
+  ];
+}
+
 function updateDashboard(reports) {
   const validReports = reports.filter(hasValidCoordinates);
-
   const count = validReports.length;
 
   const streets = new Set(
     validReports
       .map(report => publicAddress(report.address))
-      .filter(address => address && address !== "Ahlener Osten")
+      .filter(address => {
+        return address && address !== "Ahlener Osten";
+      })
   );
 
   const severityValues = validReports
@@ -388,13 +446,15 @@ function updateDashboard(reports) {
     .filter(value => Number.isFinite(value));
 
   const average = severityValues.length
-    ? severityValues.reduce((sum, value) => sum + value, 0) /
-      severityValues.length
+    ? severityValues.reduce((sum, value) => {
+        return sum + value;
+      }, 0) / severityValues.length
     : 0;
 
   const latestReport = [...validReports]
     .filter(report => {
       const date = new Date(report.created_at);
+
       return !Number.isNaN(date.getTime());
     })
     .sort((a, b) => {
@@ -457,29 +517,42 @@ function updateViewButtons() {
   });
 }
 
+function removeAllDataLayers() {
+  if (map.hasLayer(clusterLayer)) {
+    map.removeLayer(clusterLayer);
+  }
+
+  if (map.hasLayer(singleMarkerLayer)) {
+    map.removeLayer(singleMarkerLayer);
+  }
+
+  if (map.hasLayer(heatLayer)) {
+    map.removeLayer(heatLayer);
+  }
+}
+
 function updateVisibleLayer() {
+  removeAllDataLayers();
+
   if (currentMapView === "single") {
-    if (map.hasLayer(clusterLayer)) {
-      map.removeLayer(clusterLayer);
-    }
-
-    if (!map.hasLayer(singleMarkerLayer)) {
-      singleMarkerLayer.addTo(map);
-    }
+    singleMarkerLayer.addTo(map);
+  } else if (currentMapView === "heat") {
+    heatLayer.addTo(map);
   } else {
-    if (map.hasLayer(singleMarkerLayer)) {
-      map.removeLayer(singleMarkerLayer);
-    }
-
-    if (!map.hasLayer(clusterLayer)) {
-      clusterLayer.addTo(map);
-    }
+    clusterLayer.addTo(map);
   }
 
   updateViewButtons();
 
   window.setTimeout(() => {
     map.invalidateSize();
+
+    if (
+      currentMapView === "heat" &&
+      typeof heatLayer.redraw === "function"
+    ) {
+      heatLayer.redraw();
+    }
   }, 100);
 }
 
@@ -493,6 +566,7 @@ function renderMarkers(reports) {
 
   const clusterMarkers = [];
   const singleMarkers = [];
+  const heatPoints = [];
 
   sortedReports.forEach((report, index) => {
     if (!hasValidCoordinates(report)) {
@@ -506,6 +580,10 @@ function renderMarkers(reports) {
     singleMarkers.push(
       createMarker(report, index)
     );
+
+    heatPoints.push(
+      createHeatPoint(report)
+    );
   });
 
   clusterLayer.addLayers(clusterMarkers);
@@ -513,6 +591,8 @@ function renderMarkers(reports) {
   singleMarkers.forEach(marker => {
     singleMarkerLayer.addLayer(marker);
   });
+
+  heatLayer.setLatLngs(heatPoints);
 
   updateDashboard(reports);
   updateResultCount(clusterMarkers.length);
@@ -565,7 +645,8 @@ viewButtons.forEach(button => {
 
     if (
       selectedView !== "cluster" &&
-      selectedView !== "single"
+      selectedView !== "single" &&
+      selectedView !== "heat"
     ) {
       return;
     }
