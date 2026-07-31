@@ -3,8 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Meldungskarte | Fliegenmelder Ahlener Osten</title>
-  <meta name="description" content="Öffentliche Meldungskarte des Fliegenmelders Ahlener Osten.">
+
+  <meta
+    name="description"
+    content="Öffentliche Meldungskarte des Fliegenmelders Ahlener Osten."
+  >
+
   <link rel="icon" href="assets/logo.png" type="image/png">
 
   <link rel="stylesheet" href="css/style.css">
@@ -93,6 +99,46 @@
       background: #d51f28;
     }
 
+    /*
+     * Filterbereich
+     */
+
+    .mapFilters {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .mapFilter {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 170px;
+    }
+
+    .mapFilter span {
+      color: #555;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .mapFilter select {
+      width: 100%;
+    }
+
+    .mapResultCount {
+      margin: 12px 0 0;
+      color: #555;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /*
+     * Popups und Hinweise
+     */
+
     .map-popup {
       min-width: 190px;
     }
@@ -148,16 +194,46 @@
       display: block;
       margin-bottom: 2px;
     }
+
+    @media (max-width: 760px) {
+      .mapHead {
+        align-items: stretch;
+      }
+
+      .mapFilters {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .mapFilter {
+        flex: 1 1 100%;
+        min-width: 0;
+      }
+
+      .mapFilter select {
+        min-height: 44px;
+      }
+    }
   </style>
 </head>
 
 <body>
 <header class="topbar">
   <a class="brand" href="index.html">
-    <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+    <img
+      src="assets/logo.png"
+      alt="Logo Fliegenmelder Ahlener Osten"
+    >
+
     <div>
-      <strong>Fliegenmelder<br>Ahlener Osten</strong>
-      <span>Melden. Dokumentieren. Transparent informieren.</span>
+      <strong>
+        Fliegenmelder<br>
+        Ahlener Osten
+      </strong>
+
+      <span>
+        Melden. Dokumentieren. Transparent informieren.
+      </span>
     </div>
   </a>
 
@@ -171,14 +247,19 @@
     <a href="termine.html">Termine</a>
     <a href="ueber-uns.html">Über uns</a>
     <a href="kontakt.html">Kontakt</a>
-    <a class="buttonLink" href="melden.html">+ Meldung einreichen</a>
+
+    <a class="buttonLink" href="melden.html">
+      + Meldung einreichen
+    </a>
   </nav>
 </header>
 
 <main>
   <section class="box pageHero">
     <p class="eyebrow">Meldungskarte</p>
+
     <h1>Öffentliche Meldungskarte</h1>
+
     <p class="lead">
       Freigegebene Meldungen werden hier datenschutzgerecht dargestellt.
       Nahe beieinanderliegende Marker werden nur optisch gebündelt und
@@ -190,40 +271,83 @@
     <div class="mapHead">
       <div>
         <p class="eyebrow">Öffentliche Übersicht</p>
-        <h2>Meldungen nach Belastung</h2>
+        <h2>Meldungen nach Zeitraum und Belastung</h2>
       </div>
 
-      <label for="severityFilter" class="visually-hidden">
-        Meldungen nach Belastung filtern
-      </label>
+      <div class="mapFilters">
+        <label class="mapFilter" for="timeFilter">
+          <span>Zeitraum</span>
 
-      <select id="severityFilter">
-        <option value="all">Alle Meldungen</option>
-        <option value="4plus">Nur stark / sehr stark</option>
-        <option value="1">1 sehr gering</option>
-        <option value="2">2 gering</option>
-        <option value="3">3 mittel</option>
-        <option value="4">4 stark</option>
-        <option value="5">5 sehr stark</option>
-      </select>
+          <select id="timeFilter">
+            <option value="all">Gesamter Zeitraum</option>
+            <option value="7">Letzte 7 Tage</option>
+            <option value="14">Letzte 14 Tage</option>
+            <option value="30">Letzte 30 Tage</option>
+            <option value="year">Dieses Jahr</option>
+          </select>
+        </label>
+
+        <label class="mapFilter" for="severityFilter">
+          <span>Belastung</span>
+
+          <select id="severityFilter">
+            <option value="all">Alle Meldungen</option>
+            <option value="4plus">Nur stark / sehr stark</option>
+            <option value="1">1 – sehr gering</option>
+            <option value="2">2 – gering</option>
+            <option value="3">3 – mittel</option>
+            <option value="4">4 – stark</option>
+            <option value="5">5 – sehr stark</option>
+          </select>
+        </label>
+      </div>
     </div>
 
     <div id="map" class="map"></div>
 
+    <p
+      id="mapResultCount"
+      class="mapResultCount"
+      aria-live="polite"
+    >
+      Meldungen werden geladen …
+    </p>
+
     <div class="legend">
       <strong>Belastung</strong>
-      <span><i class="dot s1"></i>1</span>
-      <span><i class="dot s2"></i>2</span>
-      <span><i class="dot s3"></i>3</span>
-      <span><i class="dot s4"></i>4</span>
-      <span><i class="dot s5"></i>5</span>
+
+      <span>
+        <i class="dot s1"></i>
+        1
+      </span>
+
+      <span>
+        <i class="dot s2"></i>
+        2
+      </span>
+
+      <span>
+        <i class="dot s3"></i>
+        3
+      </span>
+
+      <span>
+        <i class="dot s4"></i>
+        4
+      </span>
+
+      <span>
+        <i class="dot s5"></i>
+        5
+      </span>
     </div>
 
     <p class="mapHint">
       Die Zahl in einem Kreis zeigt, wie viele Meldungen in diesem
       Kartenausschnitt nah beieinanderliegen. Die Farbe zeigt die
       durchschnittliche Belastung. Beim Hineinzoomen werden die einzelnen
-      Meldungen wieder sichtbar.
+      Meldungen wieder sichtbar. Zeitraum und Belastung können miteinander
+      kombiniert werden.
     </p>
   </section>
 </main>
