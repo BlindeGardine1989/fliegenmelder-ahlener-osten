@@ -1,7 +1,9 @@
 import { supabase, escapeHtml } from "./app.js";
 
 const mapElement = document.querySelector("#map");
-const filter = document.querySelector("#severityFilter");
+const severityFilter = document.querySelector("#severityFilter");
+const timeFilter = document.querySelector("#timeFilter");
+const resultCount = document.querySelector("#mapResultCount");
 
 if (!mapElement) {
   throw new Error("Das Kartenelement #map wurde nicht gefunden.");
@@ -23,6 +25,9 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
   attribution: "&copy; OpenStreetMap-Mitwirkende"
 }).addTo(map);
+
+let isLoadingMap = false;
+let allReports = [];
 
 function color(severity) {
   const value = Number(severity);
@@ -202,8 +207,8 @@ function hasValidCoordinates(report) {
   );
 }
 
-function applyFilter(reports) {
-  const selectedValue = filter?.value || "all";
+function applySeverityFilter(reports) {
+  const selectedValue = severityFilter?.value || "all";
 
   if (selectedValue === "4plus") {
     return reports.filter(
@@ -218,6 +223,46 @@ function applyFilter(reports) {
   }
 
   return reports;
+}
+
+function applyTimeFilter(reports) {
+  const selectedValue = timeFilter?.value || "all";
+
+  if (selectedValue === "all") {
+    return reports;
+  }
+
+  const now = new Date();
+  let startDate;
+
+  if (selectedValue === "year") {
+    startDate = new Date(now.getFullYear(), 0, 1);
+  } else {
+    const numberOfDays = Number(selectedValue);
+
+    if (!Number.isFinite(numberOfDays)) {
+      return reports;
+    }
+
+    startDate = new Date(now);
+    startDate.setDate(startDate.getDate() - numberOfDays);
+    startDate.setHours(0, 0, 0, 0);
+  }
+
+  return reports.filter(report => {
+    const reportDate = new Date(report.created_at);
+
+    return (
+      !Number.isNaN(reportDate.getTime()) &&
+      reportDate >= startDate
+    );
+  });
+}
+
+function applyFilters(reports) {
+  const timeFilteredReports = applyTimeFilter(reports);
+
+  return applySeverityFilter(timeFilteredReports);
 }
 
 function popupContent(report, severity) {
@@ -242,6 +287,27 @@ function popupContent(report, severity) {
       </div>
     </div>
   `;
+}
+
+function updateResultCount(count) {
+  if (!resultCount) {
+    return;
+  }
+
+  if (count === 0) {
+    resultCount.textContent =
+      "Für diese Auswahl liegen keine Meldungen vor.";
+    return;
+  }
+
+  if (count === 1) {
+    resultCount.textContent =
+      "1 Meldung entspricht der aktuellen Auswahl.";
+    return;
+  }
+
+  resultCount.textContent =
+    `${count} Meldungen entsprechen der aktuellen Auswahl.`;
 }
 
 function renderMarkers(reports) {
@@ -292,34 +358,63 @@ function renderMarkers(reports) {
   });
 
   markerLayer.addLayers(markers);
+  updateResultCount(markers.length);
 
   window.setTimeout(() => {
     map.invalidateSize();
   }, 200);
 }
 
-async function loadMap() {
-  const { data, error } = await supabase
-    .from("reports_public")
-    .select("id, address, severity, created_at, lat, lng")
-    .order("created_at", { ascending: true });
-
-  if (error) {
-    console.error(
-      "Meldungen konnten nicht geladen werden:",
-      error
-    );
-    return;
-  }
-
-  const reports = applyFilter(data || []);
+function refreshMapDisplay() {
+  const reports = applyFilters(allReports);
 
   renderMarkers(reports);
 }
 
-filter?.addEventListener("change", loadMap);
+async function loadMap() {
+  if (isLoadingMap) {
+    return;
+  }
+
+  isLoadingMap = true;
+
+  try {
+    const { data, error } = await supabase
+      .from("reports_public")
+      .select("id, address, severity, created_at, lat, lng")
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error(
+        "Meldungen konnten nicht geladen werden:",
+        error
+      );
+
+      if (resultCount) {
+        resultCount.textContent =
+          "Die Meldungen konnten momentan nicht geladen werden.";
+      }
+
+      return;
+    }
+
+    allReports = data || [];
+    refreshMapDisplay();
+  } finally {
+    isLoadingMap = false;
+  }
+}
+
+severityFilter?.addEventListener("change", refreshMapDisplay);
+timeFilter?.addEventListener("change", refreshMapDisplay);
 
 window.addEventListener("focus", loadMap);
+
+window.addEventListener("pageshow", event => {
+  if (event.persisted) {
+    loadMap();
+  }
+});
 
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
@@ -328,7 +423,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 /*
- * Sicherheitshalber alle 60 Sekunden neu laden.
+ * Sicherheitshalber alle 60 Sekunden neue Meldungen laden.
  */
 window.setInterval(loadMap, 60000);
 
