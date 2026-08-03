@@ -6,6 +6,7 @@ if (topbar && nav) {
     { href: "index.html", label: "Startseite" },
     { href: "melden.html", label: "Fliegen melden" },
     { href: "karte.html", label: "Meldungskarte" },
+    { href: "statistik.html", label: "Aktuelle Lage" },
     { href: "wissenswertes.html", label: "Wissenswertes" },
     { href: "neuigkeiten.html", label: "Neuigkeiten" },
     { href: "chronik.html", label: "Chronik" },
