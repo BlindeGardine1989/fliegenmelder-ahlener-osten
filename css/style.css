@@ -704,3 +704,150 @@ input[type="file"]{background:#fff}
   .flyTrafficLight__text{font-size:16px}
 }
 
+/* Startseite – finaler Feinschliff */
+.hero{
+  grid-template-columns:minmax(0,1.15fr) minmax(290px,.85fr);
+  gap:16px;
+  margin:22px auto 30px;
+  padding:14px;
+  border-radius:30px;
+}
+.heroText{
+  min-height:300px;
+  padding:40px 46px;
+  border-radius:24px;
+}
+.heroText h1{
+  font-size:clamp(38px,3.7vw,52px);
+  margin-bottom:14px;
+}
+.heroText h2{
+  font-size:clamp(25px,2.5vw,36px);
+  margin-bottom:12px;
+}
+.heroText .lead{font-size:18px}
+.heroText .actions{margin-top:22px}
+.logoHero{
+  min-height:300px;
+  padding:22px;
+  border-radius:24px;
+}
+.logoHero img{width:min(365px,86%)}
+
+.flyTrafficLight{
+  margin:22px auto 24px;
+  padding:20px 24px;
+  gap:20px;
+  border-radius:24px;
+}
+.flyTrafficLight__visual{
+  width:64px;
+  padding:8px;
+  gap:6px;
+  border-radius:18px;
+}
+.flyTrafficLight__lamp{
+  width:48px;
+  height:48px;
+}
+.flyTrafficLight__headline h2{
+  font-size:clamp(25px,2.2vw,34px);
+}
+.flyTrafficLight__trend{
+  padding:6px 10px;
+  font-size:12px;
+}
+.flyTrafficLight__text{
+  margin:7px 0 5px;
+  font-size:17px;
+}
+.flyTrafficLight__details{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:8px 0 5px;
+}
+.flyTrafficLight__metric{
+  display:inline-flex;
+  align-items:center;
+  padding:7px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  color:var(--deep);
+  font-size:13px;
+  font-weight:900;
+}
+.flyTrafficLight__updated{
+  margin:4px 0 6px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.flyTrafficLight__link{font-size:14px}
+
+.homeProcess{
+  max-width:1220px;
+  margin:40px auto 0;
+}
+.homeProcess__head{text-align:center;margin-bottom:20px}
+.homeProcess__head h2{margin-bottom:0}
+.homeProcess__grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
+.homeProcess__step{
+  position:relative;
+  min-height:220px;
+  padding:28px 22px 22px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:linear-gradient(180deg,#fff,#f8fcf6);
+  box-shadow:var(--shadow);
+}
+.homeProcess__number{
+  position:absolute;
+  top:14px;
+  left:14px;
+  display:grid;
+  width:30px;
+  height:30px;
+  place-items:center;
+  border-radius:50%;
+  background:var(--deep);
+  color:#fff;
+  font-size:13px;
+  font-weight:950;
+}
+.homeProcess__icon{font-size:38px;line-height:1;margin:10px 0 16px}
+.homeProcess__step h3{margin:0 0 10px;color:var(--deep);font-size:20px}
+.homeProcess__step p{margin:0;color:var(--text)}
+
+.homeQuickLinks .card{
+  min-height:205px;
+  display:flex;
+  flex-direction:column;
+}
+.homeQuickLinks .card p{flex:1}
+.homeQuickLinks .card>a{align-self:flex-start;font-weight:950}
+
+@media(max-width:1000px){
+  .homeProcess__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:680px){
+  .heroText{padding:28px}
+  .heroText h1{font-size:36px}
+  .logoHero img{width:min(300px,82%)}
+  .flyTrafficLight{padding:18px;gap:14px}
+  .flyTrafficLight__details{display:grid;grid-template-columns:1fr 1fr}
+  .flyTrafficLight__metric{justify-content:center;text-align:center}
+  .homeProcess{margin-top:30px}
+  .homeProcess__grid{grid-template-columns:1fr}
+  .homeProcess__step{min-height:0}
+}
+
