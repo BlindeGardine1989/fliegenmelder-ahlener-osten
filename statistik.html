@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Aktuelle Lage | Fliegenmelder Ahlener Osten</title>
+  <meta
+    name="description"
+    content="Aktuelle Auswertung der freigegebenen Fliegenmeldungen im Ahlener Osten."
+  >
+
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .situationControls {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .situationFilters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .situationFilter {
+      min-width: 190px;
+      margin: 0;
+    }
+
+    .situationFilter span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .situationFilter select {
+      margin-top: 6px;
+    }
+
+    .situationUpdated {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 850;
+    }
+
+    .situationStats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .situationStat {
+      position: relative;
+      min-height: 145px;
+      padding: 24px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: linear-gradient(145deg, #fff, #f7fcf5);
+      box-shadow: var(--shadow);
+    }
+
+    .situationStat::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      bottom: -32px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(47, 129, 40, 0.07);
+    }
+
+    .situationStat__head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .situationStat__icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--soft);
+      font-size: 20px;
+    }
+
+    .situationStat strong {
+      position: relative;
+      z-index: 1;
+      display: block;
+      margin-top: 14px;
+      color: var(--green);
+      font-size: clamp(32px, 4vw, 48px);
+      line-height: 1;
+    }
+
+    .situationGrid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+
+    .analysisPanel {
+      min-width: 0;
+    }
+
+    .analysisPanel h2 {
+      margin-bottom: 6px;
+    }
+
+    .analysisIntro {
+      margin-top: 0;
+      color: var(--muted);
+    }
+
+    .monthlyChart {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(30px, 1fr));
+      gap: 8px;
+      min-height: 290px;
+      padding: 20px 8px 8px;
+      overflow-x: auto;
+      align-items: end;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #f8fcf6;
+    }
+
+    .monthlyColumn {
+      display: grid;
+      grid-template-rows: 1fr auto auto;
+      gap: 7px;
+      min-width: 34px;
+      height: 245px;
+      align-items: end;
+      text-align: center;
+    }
+
+    .monthlyBarWrap {
+      display: flex;
+      height: 190px;
+      align-items: end;
+      justify-content: center;
+    }
+
+    .monthlyBar {
+      width: min(34px, 80%);
+      min-height: 3px;
+      border-radius: 10px 10px 3px 3px;
+      background: linear-gradient(180deg, var(--green2), var(--green));
+      box-shadow: 0 6px 14px rgba(47, 129, 40, .18);
+      transition: height .35s ease;
+    }
+
+    .monthlyValue {
+      color: var(--deep);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .monthlyLabel {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .trendChart {
+      width: 100%;
+      min-height: 300px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #f8fcf6;
+    }
+
+    .trendChart svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 300px;
+    }
+
+    .hotspotList {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hotspotItem {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(135deg, #fff, #f8fcf6);
+    }
+
+    .hotspotHead {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .hotspotRank {
+      color: var(--green);
+      font-weight: 950;
+    }
+
+    .hotspotMeta {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+      text-align: right;
+    }
+
+    .hotspotBar {
+      height: 10px;
+      margin-top: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e7efe6;
+    }
+
+    .hotspotBar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green2), var(--green));
+    }
+
+    .currentSituation {
+      border-left: 7px solid var(--green);
+      background: linear-gradient(135deg, #fff, #f5fbf2);
+    }
+
+    .currentSituation p:last-child {
+      margin-bottom: 0;
+    }
+
+    .comparisonBadge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--deep);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .emptyAnalysis {
+      padding: 32px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    @media (max-width: 1050px) {
+      .situationStats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .situationGrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .situationStats {
+        gap: 10px;
+      }
+
+      .situationStat {
+        min-height: 125px;
+        padding: 17px;
+        border-radius: 20px;
+      }
+
+      .situationStat__head {
+        align-items: flex-start;
+        font-size: 13px;
+      }
+
+      .situationStat__icon {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        font-size: 17px;
+      }
+
+      .situationStat strong {
+        font-size: 32px;
+      }
+
+      .situationFilters,
+      .situationFilter {
+        width: 100%;
+      }
+
+      .monthlyChart {
+        grid-template-columns: repeat(12, 42px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+    <div>
+      <strong>Fliegenmelder<br>Ahlener Osten</strong>
+      <span>Melden. Dokumentieren. Transparent informieren.</span>
+    </div>
+  </a>
+
+  <nav class="nav">
+    <a href="index.html">Startseite</a>
+    <a href="melden.html">Fliegen melden</a>
+    <a href="karte.html">Meldungskarte</a>
+    <a href="statistik.html" aria-current="page">Aktuelle Lage</a>
+    <a href="wissenswertes.html">Wissenswertes</a>
+    <a href="neuigkeiten.html">Neuigkeiten</a>
+    <a href="chronik.html">Chronik</a>
+    <a href="dokumente.html">Dokumente</a>
+    <a href="termine.html">Termine</a>
+    <a href="ueber-uns.html">Über uns</a>
+    <a href="kontakt.html">Kontakt</a>
+    <a class="buttonLink" href="melden.html">+ Meldung einreichen</a>
+  </nav>
+</header>
+
+<main>
+  <section class="box pageHero">
+    <p class="eyebrow">Lagezentrum</p>
+    <h1>Aktuelle Lage</h1>
+    <p class="lead">
+      Die Auswertung basiert ausschließlich auf freigegebenen Meldungen.
+      Sie zeigt Anzahl, Belastungsentwicklung und räumliche Schwerpunkte
+      im ausgewählten Zeitraum.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="situationControls">
+      <div class="situationFilters">
+        <label class="situationFilter" for="analysisPeriod">
+          <span>Auswertungszeitraum</span>
+          <select id="analysisPeriod">
+            <option value="30">Letzte 30 Tage</option>
+            <option value="90">Letzte 90 Tage</option>
+            <option value="year">Dieses Jahr</option>
+            <option value="all">Gesamter Zeitraum</option>
+          </select>
+        </label>
+
+        <label class="situationFilter" for="analysisSeverity">
+          <span>Belastung</span>
+          <select id="analysisSeverity">
+            <option value="all">Alle Meldungen</option>
+            <option value="4plus">Nur stark / sehr stark</option>
+            <option value="1">1 – sehr gering</option>
+            <option value="2">2 – gering</option>
+            <option value="3">3 – mittel</option>
+            <option value="4">4 – stark</option>
+            <option value="5">5 – sehr stark</option>
+          </select>
+        </label>
+      </div>
+
+      <p id="analysisUpdated" class="situationUpdated">
+        Daten werden geladen …
+      </p>
+    </div>
+
+    <div class="situationStats" aria-label="Kennzahlen der aktuellen Auswahl">
+      <article class="situationStat">
+        <div class="situationStat__head">
+          <span class="situationStat__icon" aria-hidden="true">🪰</span>
+          <span>Meldungen</span>
+        </div>
+        <strong id="analysisTotal">–</strong>
+      </article>
+
+      <article class="situationStat">
+        <div class="situationStat__head">
+          <span class="situationStat__icon" aria-hidden="true">📍</span>
+          <span>Betroffene Straßen</span>
+        </div>
+        <strong id="analysisStreets">–</strong>
+      </article>
+
+      <article class="situationStat">
+        <div class="situationStat__head">
+          <span class="situationStat__icon" aria-hidden="true">📈</span>
+          <span>Ø Belastung</span>
+        </div>
+        <strong id="analysisAverage">–</strong>
+      </article>
+
+      <article class="situationStat">
+        <div class="situationStat__head">
+          <span class="situationStat__icon" aria-hidden="true">🔴</span>
+          <span>Starke Meldungen 4–5</span>
+        </div>
+        <strong id="analysisStrong">–</strong>
+      </article>
+    </div>
+  </section>
+
+  <section class="situationGrid">
+    <article class="panel analysisPanel">
+      <p class="eyebrow">Entwicklung</p>
+      <h2>Meldungen pro Monat</h2>
+      <p class="analysisIntro">
+        Anzahl der freigegebenen Meldungen in den letzten zwölf Monaten.
+      </p>
+      <div id="monthlyCountChart" class="monthlyChart"></div>
+    </article>
+
+    <article class="panel analysisPanel">
+      <p class="eyebrow">Schwerpunkte</p>
+      <h2>Top-Hotspots</h2>
+      <p class="analysisIntro">
+        Straßen mit den meisten Meldungen im ausgewählten Zeitraum.
+      </p>
+      <div id="hotspotRanking" class="hotspotList"></div>
+    </article>
+  </section>
+
+  <section class="situationGrid">
+    <article class="panel analysisPanel">
+      <p class="eyebrow">Belastungsentwicklung</p>
+      <h2>Durchschnittliche Belastung pro Monat</h2>
+      <p class="analysisIntro">
+        Monatlicher Mittelwert auf der Skala von 1 bis 5.
+      </p>
+      <div id="monthlyAverageChart" class="trendChart"></div>
+    </article>
+
+    <article class="panel currentSituation">
+      <p class="eyebrow">Automatische Zusammenfassung</p>
+      <h2>Aktuelle Lage</h2>
+      <div id="situationSummary">
+        <p>Daten werden ausgewertet …</p>
+      </div>
+    </article>
+  </section>
+</main>
+
+<footer class="siteFooter">
+  <h2>Fliegenmelder Ahlener Osten</h2>
+  <p><span data-setting="footer_line_1">Gemeinsam gegen die Fliegenplage.</span></p>
+  <p>
+    <strong>
+      <span data-setting="footer_line_2">
+        Die Informationsplattform für die Fliegenplage im Ahlener Osten.
+      </span>
+    </strong>
+  </p>
+  <p><em>Ein ehrenamtliches Projekt der Bürgerinitiative Ahlener Osten.</em></p>
+  <p><span data-setting="footer_line_3">Für eine lebenswerte Zukunft im Ahlener Osten.</span></p>
+  <nav>
+    <a href="faq.html">FAQ</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="kontakt.html">Kontakt</a>
+    <a href="admin.html">Interner Bereich</a>
+  </nav>
+</footer>
+
+<script src="js/menu.js"></script>
+<script type="module" src="js/statistik.js"></script>
+</body>
+</html>
