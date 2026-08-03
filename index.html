@@ -100,6 +100,56 @@
     </div>
   </section>
 
+  <section
+    id="flyTrafficLight"
+    class="flyTrafficLight"
+    aria-live="polite"
+    aria-label="Aktuelle Fliegenampel"
+  >
+    <div class="flyTrafficLight__visual" aria-hidden="true">
+      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--green"></span>
+      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--yellow"></span>
+      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--orange"></span>
+      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--red"></span>
+    </div>
+
+    <div class="flyTrafficLight__content">
+      <p class="eyebrow">Aktuelle Fliegenampel</p>
+
+      <div class="flyTrafficLight__headline">
+        <h2 id="flyTrafficLightLabel">
+          Lage wird berechnet …
+        </h2>
+
+        <span
+          id="flyTrafficLightTrend"
+          class="flyTrafficLight__trend"
+        >
+          –
+        </span>
+      </div>
+
+      <p
+        id="flyTrafficLightText"
+        class="flyTrafficLight__text"
+      >
+        Die freigegebenen Meldungen der letzten 14 Tage werden ausgewertet.
+      </p>
+
+      <p
+        id="flyTrafficLightDetails"
+        class="flyTrafficLight__details"
+      ></p>
+
+      <a
+        class="flyTrafficLight__link"
+        href="statistik.html"
+      >
+        Vollständige Auswertung ansehen →
+      </a>
+    </div>
+  </section>
+
   <section class="stats">
     <article class="stat">
       <strong id="statTotal">0</strong>
