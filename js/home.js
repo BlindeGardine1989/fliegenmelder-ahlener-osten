@@ -22,111 +22,197 @@ let isLoadingReports = false;
 
 
 /* =========================================================
-   Statusanzeige vorbereiten
+   Fliegenampel
    ========================================================= */
 
-function ensureStatusStyles() {
-  if (document.querySelector("#flyStatusStyles")) {
+const trafficLight = document.querySelector("#flyTrafficLight");
+const trafficLightLabel = document.querySelector("#flyTrafficLightLabel");
+const trafficLightTrend = document.querySelector("#flyTrafficLightTrend");
+const trafficLightText = document.querySelector("#flyTrafficLightText");
+const trafficLightDetails = document.querySelector("#flyTrafficLightDetails");
+
+function reportsBetween(start, end) {
+  return reports.filter(report => {
+    const timestamp = new Date(report.created_at).getTime();
+
+    return (
+      Number.isFinite(timestamp) &&
+      timestamp >= start &&
+      timestamp <= end
+    );
+  });
+}
+
+function trafficLightMetrics(selectedReports) {
+  const severities = selectedReports
+    .map(report => Number(report.severity))
+    .filter(value => Number.isFinite(value));
+
+  const average = severities.length
+    ? severities.reduce((sum, value) => sum + value, 0) /
+      severities.length
+    : 0;
+
+  const strongCount = severities.filter(
+    value => value >= 4
+  ).length;
+
+  const strongShare = severities.length
+    ? strongCount / severities.length
+    : 0;
+
+  const streets = new Set(
+    selectedReports.map(report => normalizeStreet(report.address))
+  ).size;
+
+  return {
+    count: selectedReports.length,
+    average,
+    strongCount,
+    strongShare,
+    streets
+  };
+}
+
+function calculateTrafficLight() {
+  const now = Date.now();
+  const day = 24 * 60 * 60 * 1000;
+
+  const currentReports = reportsBetween(
+    now - 14 * day,
+    now
+  );
+
+  const previousReports = reportsBetween(
+    now - 28 * day,
+    now - 14 * day
+  );
+
+  const current = trafficLightMetrics(currentReports);
+  const previous = trafficLightMetrics(previousReports);
+
+  if (current.count === 0) {
+    return {
+      level: "none",
+      label: "Keine aktuelle Einstufung",
+      text: "In den vergangenen 14 Tagen liegen keine freigegebenen Meldungen vor.",
+      details: "Grundlage: freigegebene Meldungen der letzten 14 Tage",
+      trendLabel: "➖ keine Daten"
+    };
+  }
+
+  /*
+   * Die durchschnittliche gemeldete Belastung ist die Hauptgrundlage.
+   * Ein hoher Anteil starker Meldungen kann die Ampel um eine Stufe anheben.
+   */
+  let levelIndex = 0;
+
+  if (current.average >= 4.15) {
+    levelIndex = 3;
+  } else if (current.average >= 3.35) {
+    levelIndex = 2;
+  } else if (current.average >= 2.35) {
+    levelIndex = 1;
+  }
+
+  if (
+    current.strongShare >= 0.7 &&
+    levelIndex < 3
+  ) {
+    levelIndex += 1;
+  }
+
+  const configurations = [
+    {
+      level: "green",
+      label: "Geringe Belastung",
+      text: "Die aktuell gemeldete Fliegenbelastung ist gering."
+    },
+    {
+      level: "yellow",
+      label: "Erhöhte Belastung",
+      text: "Derzeit wird eine erhöhte Fliegenbelastung gemeldet."
+    },
+    {
+      level: "orange",
+      label: "Hohe Belastung",
+      text: "Derzeit wird aus mehreren Meldungen eine hohe Belastung sichtbar."
+    },
+    {
+      level: "red",
+      label: "Sehr hohe Belastung",
+      text: "Derzeit wird eine sehr hohe Fliegenbelastung gemeldet."
+    }
+  ];
+
+  let trendLabel = "➖ stabil";
+
+  if (previous.count === 0) {
+    trendLabel = "● neuer Vergleich";
+  } else {
+    const change =
+      (current.count - previous.count) / previous.count;
+
+    if (change >= 0.2) {
+      trendLabel = "↗ steigend";
+    } else if (change <= -0.2) {
+      trendLabel = "↘ rückläufig";
+    }
+  }
+
+  const configuration = configurations[levelIndex];
+
+  return {
+    ...configuration,
+    trendLabel,
+    details:
+      `${current.count} ${
+        current.count === 1 ? "Meldung" : "Meldungen"
+      } aus ${current.streets} ${
+        current.streets === 1 ? "Straße" : "Straßen"
+      } · Ø Belastung ${
+        current.average.toFixed(1).replace(".", ",")
+      }/5 · ${current.strongCount} stark oder sehr stark`
+  };
+}
+
+function renderTrafficLight(loadError = false) {
+  if (
+    !trafficLight ||
+    !trafficLightLabel ||
+    !trafficLightTrend ||
+    !trafficLightText ||
+    !trafficLightDetails
+  ) {
     return;
   }
 
-  const style = document.createElement("style");
-  style.id = "flyStatusStyles";
+  trafficLight.classList.remove(
+    "is-green",
+    "is-yellow",
+    "is-orange",
+    "is-red",
+    "is-none"
+  );
 
-  style.textContent = `
-    .flyStatus {
-      margin: 0 0 18px;
-      padding: 18px 20px;
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      border-left: 7px solid var(--fly-status-color, #6b7280);
-      border-radius: 14px;
-      background: #ffffff;
-      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.07);
-    }
-
-    .flyStatus__top {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .flyStatus__light {
-      width: 18px;
-      height: 18px;
-      flex: 0 0 18px;
-      border-radius: 50%;
-      background: var(--fly-status-color, #6b7280);
-      box-shadow: 0 0 0 5px var(--fly-status-glow, rgba(107, 114, 128, 0.15));
-    }
-
-    .flyStatus__title {
-      margin: 0;
-      font-size: 1.05rem;
-      line-height: 1.35;
-    }
-
-    .flyStatus__value {
-      color: var(--fly-status-color, #6b7280);
-    }
-
-    .flyStatus__text {
-      margin: 8px 0 0 30px;
-      color: #4b5563;
-      line-height: 1.5;
-    }
-
-    .flyStatus__details {
-      margin: 8px 0 0 30px;
-      font-size: 0.9rem;
-      color: #6b7280;
-    }
-
-    @media (max-width: 640px) {
-      .flyStatus {
-        padding: 16px;
-      }
-
-      .flyStatus__text,
-      .flyStatus__details {
-        margin-left: 0;
-      }
-    }
-  `;
-
-  document.head.appendChild(style);
-}
-
-
-function ensureStatusElement() {
-  let statusElement = document.querySelector("#flyStatus");
-
-  if (statusElement) {
-    return statusElement;
+  if (loadError) {
+    trafficLight.classList.add("is-none");
+    trafficLightLabel.textContent =
+      "Aktuelle Einstufung nicht verfügbar";
+    trafficLightTrend.textContent = "⚠ nicht verfügbar";
+    trafficLightText.textContent =
+      "Die freigegebenen Meldungen konnten gerade nicht geladen werden.";
+    trafficLightDetails.textContent = "";
+    return;
   }
 
-  statusElement = document.createElement("section");
-  statusElement.id = "flyStatus";
-  statusElement.className = "flyStatus";
-  statusElement.setAttribute("aria-live", "polite");
+  const status = calculateTrafficLight();
 
-  /*
-   * Der Status wird direkt oberhalb der kleinen Startseitenkarte
-   * eingesetzt. Dadurch ist keine Änderung an index.html nötig.
-   */
-  if (mapElement?.parentElement) {
-    mapElement.parentElement.insertBefore(
-      statusElement,
-      mapElement
-    );
-  } else if (hotspotList?.parentElement) {
-    hotspotList.parentElement.insertBefore(
-      statusElement,
-      hotspotList
-    );
-  }
-
-  return statusElement;
+  trafficLight.classList.add(`is-${status.level}`);
+  trafficLightLabel.textContent = status.label;
+  trafficLightTrend.textContent = status.trendLabel;
+  trafficLightText.textContent = status.text;
+  trafficLightDetails.textContent = status.details;
 }
 
 
@@ -216,207 +302,19 @@ async function loadReports() {
         `;
       }
 
-      renderCurrentStatus(true);
+      renderTrafficLight(true);
       return;
     }
 
     reports = data || [];
 
     renderStatistics();
-    renderCurrentStatus();
+    renderTrafficLight();
     renderHotspots();
     renderMap();
   } finally {
     isLoadingReports = false;
   }
-}
-
-
-/* =========================================================
-   Aktueller Belastungsstatus
-   ========================================================= */
-
-function reportsFromLastDays(days) {
-  const now = Date.now();
-  const start = now - days * 24 * 60 * 60 * 1000;
-
-  return reports.filter(report => {
-    const timestamp = new Date(report.created_at).getTime();
-
-    return (
-      Number.isFinite(timestamp) &&
-      timestamp >= start &&
-      timestamp <= now
-    );
-  });
-}
-
-
-function calculateCurrentStatus() {
-  const recentReports = reportsFromLastDays(14);
-
-  if (recentReports.length === 0) {
-    return {
-      label: "Keine aktuelle Einstufung",
-      color: "#6b7280",
-      glow: "rgba(107, 114, 128, 0.16)",
-      text: "In den vergangenen 14 Tagen liegen keine freigegebenen Meldungen vor.",
-      details: "Grundlage: freigegebene Meldungen der letzten 14 Tage"
-    };
-  }
-
-  const severityValues = recentReports
-    .map(report => Number(report.severity))
-    .filter(value => Number.isFinite(value));
-
-  const average = severityValues.length
-    ? severityValues.reduce(
-        (sum, value) => sum + value,
-        0
-      ) / severityValues.length
-    : 0;
-
-  const strongCount = recentReports.filter(
-    report => Number(report.severity) >= 4
-  ).length;
-
-  const strongShare = recentReports.length
-    ? strongCount / recentReports.length
-    : 0;
-
-  /*
-   * Einfache, nachvollziehbare Einstufung:
-   * Durchschnittliche Belastung ist die Hauptgrundlage.
-   * Ein hoher Anteil starker Meldungen hebt die Stufe gegebenenfalls an.
-   */
-  let level = 1;
-
-  if (average >= 4.25 || strongShare >= 0.75) {
-    level = 5;
-  } else if (average >= 3.5 || strongShare >= 0.55) {
-    level = 4;
-  } else if (average >= 2.75 || strongShare >= 0.35) {
-    level = 3;
-  } else if (average >= 2 || strongShare >= 0.2) {
-    level = 2;
-  }
-
-  const configurations = {
-    1: {
-      label: "Gering",
-      color: "#2e7d32",
-      glow: "rgba(46, 125, 50, 0.18)",
-      text: "Die aktuell gemeldete Belastung ist gering."
-    },
-    2: {
-      label: "Erhöht",
-      color: "#79a83b",
-      glow: "rgba(121, 168, 59, 0.20)",
-      text: "Die aktuell gemeldete Belastung ist erhöht."
-    },
-    3: {
-      label: "Deutlich erhöht",
-      color: "#d39b00",
-      glow: "rgba(211, 155, 0, 0.20)",
-      text: "Die aktuell gemeldete Belastung ist deutlich erhöht."
-    },
-    4: {
-      label: "Hoch",
-      color: "#ef7d00",
-      glow: "rgba(239, 125, 0, 0.20)",
-      text: "Die aktuell gemeldete Belastung ist hoch."
-    },
-    5: {
-      label: "Akut",
-      color: "#d51f28",
-      glow: "rgba(213, 31, 40, 0.20)",
-      text: "Die aktuell gemeldete Belastung ist akut."
-    }
-  };
-
-  const status = configurations[level];
-
-  return {
-    ...status,
-    details:
-      `Grundlage: ${recentReports.length} ${
-        recentReports.length === 1 ? "Meldung" : "Meldungen"
-      } in den letzten 14 Tagen · Ø Belastung ${
-        average.toFixed(1).replace(".", ",")
-      }/5`
-  };
-}
-
-
-function renderCurrentStatus(loadError = false) {
-  ensureStatusStyles();
-
-  const statusElement = ensureStatusElement();
-
-  if (!statusElement) {
-    return;
-  }
-
-  if (loadError) {
-    statusElement.style.setProperty(
-      "--fly-status-color",
-      "#6b7280"
-    );
-    statusElement.style.setProperty(
-      "--fly-status-glow",
-      "rgba(107, 114, 128, 0.16)"
-    );
-
-    statusElement.innerHTML = `
-      <div class="flyStatus__top">
-        <span class="flyStatus__light" aria-hidden="true"></span>
-        <h2 class="flyStatus__title">
-          Aktuelle Fliegenbelastung:
-          <span class="flyStatus__value">
-            derzeit nicht verfügbar
-          </span>
-        </h2>
-      </div>
-
-      <p class="flyStatus__text">
-        Die aktuellen Meldungen konnten gerade nicht geladen werden.
-      </p>
-    `;
-
-    return;
-  }
-
-  const status = calculateCurrentStatus();
-
-  statusElement.style.setProperty(
-    "--fly-status-color",
-    status.color
-  );
-  statusElement.style.setProperty(
-    "--fly-status-glow",
-    status.glow
-  );
-
-  statusElement.innerHTML = `
-    <div class="flyStatus__top">
-      <span class="flyStatus__light" aria-hidden="true"></span>
-
-      <h2 class="flyStatus__title">
-        Aktuelle Fliegenbelastung:
-        <span class="flyStatus__value">
-          ${escapeHtml(status.label)}
-        </span>
-      </h2>
-    </div>
-
-    <p class="flyStatus__text">
-      ${escapeHtml(status.text)}
-    </p>
-
-    <p class="flyStatus__details">
-      ${escapeHtml(status.details)}
-    </p>
-  `;
 }
 
 
