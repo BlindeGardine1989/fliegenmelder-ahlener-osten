@@ -31,7 +31,7 @@ h2{margin:0 0 14px;letter-spacing:-.04em;color:#112718;font-size:clamp(24px,2.1v
 .brand strong{font-size:20px;line-height:.98;color:var(--deep);display:block;letter-spacing:-.035em;text-transform:uppercase}
 .brand span{display:inline-block;margin-top:5px;color:var(--green);background:var(--soft);font-weight:900;font-size:12px;padding:4px 9px;border-radius:999px}
 .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.nav a{color:var(--dark);font-weight:850;font-size:15px;padding:9px 10px;border-radius:13px;transition:.18s ease}
+.nav a{color:var(--dark);font-weight:850;font-size:14px;padding:8px;border-radius:13px;transition:.18s ease}
 .nav a:hover,.nav a[aria-current="page"]{color:var(--green);background:var(--soft);transform:translateY(-1px)}
 .menuToggle{display:none;width:48px;height:48px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 10px 24px rgba(14,76,27,.10);cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:6px;margin-left:auto}
 .menuToggle span{display:block;width:24px;height:3px;border-radius:99px;background:var(--deep);transition:.2s ease}
@@ -210,12 +210,16 @@ input[type="file"]{background:#fff}
 .quickTags .button{padding:9px 12px;font-size:13px}
 
 /* Responsive */
-@media (min-width:1281px){
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:24px}
+@media (min-width:1181px){
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
   .topbar .brand{flex:0 0 auto}
-  .topbar .nav{display:flex;align-items:center;justify-content:flex-end;flex-wrap:nowrap;gap:16px;font-size:14px}
+  .topbar .nav{display:flex;align-items:center;justify-content:flex-end;flex-wrap:nowrap;gap:8px;font-size:14px}
   .topbar .nav a{white-space:nowrap}
-  .topbar .nav .buttonLink{margin-left:4px}
+  .topbar .nav .buttonLink{
+    margin-left:2px;
+    padding:11px 14px;
+    font-size:14px;
+  }
 }
 @media (max-width:1120px){
   .topbar{align-items:flex-start;flex-direction:column}
@@ -238,7 +242,7 @@ input[type="file"]{background:#fff}
   .cmsTopbar{border-radius:20px}
   .coordGrid{grid-template-columns:1fr}
 }
-@media (max-width:1280px){
+@media (max-width:1180px){
   .topbar{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px}
   .brand{min-width:0}
   .menuToggle{display:flex}
