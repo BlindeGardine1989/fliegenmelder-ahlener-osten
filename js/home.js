@@ -168,7 +168,7 @@ function calculateTrafficLight() {
     ...configuration,
     trendLabel,
     metrics: [
-      `${current.count} ${current.count === 1 ? "Meldung" : "Meldungen"}`,
+      `${current.count} ${current.count === 1 ? "Meldung" : "Meldungen"} · letzte 14 Tage`,
       `${current.streets} ${current.streets === 1 ? "Straße" : "Straßen"}`,
       `Ø ${current.average.toFixed(1).replace(".", ",")}/5`,
       `${current.strongCount} stark / sehr stark`
