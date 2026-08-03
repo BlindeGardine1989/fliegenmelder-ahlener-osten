@@ -56,6 +56,62 @@
 
 <main>
 
+  <section
+    id="flyTrafficLight"
+    class="flyTrafficLight"
+    aria-live="polite"
+    aria-label="Aktuelle Fliegenampel"
+  >
+    <div class="flyTrafficLight__visual" aria-hidden="true">
+      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--green"></span>
+      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--yellow"></span>
+      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--orange"></span>
+      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--red"></span>
+    </div>
+
+    <div class="flyTrafficLight__content">
+      <p class="eyebrow">Aktuelle Fliegenampel</p>
+
+      <div class="flyTrafficLight__headline">
+        <h2 id="flyTrafficLightLabel">
+          Lage wird berechnet …
+        </h2>
+
+        <span
+          id="flyTrafficLightTrend"
+          class="flyTrafficLight__trend"
+        >
+          –
+        </span>
+      </div>
+
+      <p
+        id="flyTrafficLightText"
+        class="flyTrafficLight__text"
+      >
+        Die freigegebenen Meldungen der letzten 14 Tage werden ausgewertet.
+      </p>
+
+      <p
+        id="flyTrafficLightDetails"
+        class="flyTrafficLight__details"
+      ></p>
+
+      <p
+        id="flyTrafficLightUpdated"
+        class="flyTrafficLight__updated"
+      ></p>
+
+      <a
+        class="flyTrafficLight__link"
+        href="statistik.html"
+      >
+        Vollständige Auswertung ansehen →
+      </a>
+    </div>
+  </section>
+
+
   <section class="hero">
     <div class="box heroText">
       <h1 data-setting="home_headline">
@@ -100,56 +156,6 @@
     </div>
   </section>
 
-  <section
-    id="flyTrafficLight"
-    class="flyTrafficLight"
-    aria-live="polite"
-    aria-label="Aktuelle Fliegenampel"
-  >
-    <div class="flyTrafficLight__visual" aria-hidden="true">
-      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--green"></span>
-      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--yellow"></span>
-      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--orange"></span>
-      <span class="flyTrafficLight__lamp flyTrafficLight__lamp--red"></span>
-    </div>
-
-    <div class="flyTrafficLight__content">
-      <p class="eyebrow">Aktuelle Fliegenampel</p>
-
-      <div class="flyTrafficLight__headline">
-        <h2 id="flyTrafficLightLabel">
-          Lage wird berechnet …
-        </h2>
-
-        <span
-          id="flyTrafficLightTrend"
-          class="flyTrafficLight__trend"
-        >
-          –
-        </span>
-      </div>
-
-      <p
-        id="flyTrafficLightText"
-        class="flyTrafficLight__text"
-      >
-        Die freigegebenen Meldungen der letzten 14 Tage werden ausgewertet.
-      </p>
-
-      <p
-        id="flyTrafficLightDetails"
-        class="flyTrafficLight__details"
-      ></p>
-
-      <a
-        class="flyTrafficLight__link"
-        href="statistik.html"
-      >
-        Vollständige Auswertung ansehen →
-      </a>
-    </div>
-  </section>
-
   <section class="stats">
     <article class="stat">
       <strong id="statTotal">0</strong>
@@ -172,7 +178,44 @@
     </article>
   </section>
 
-  <section class="cards">
+  <section class="homeProcess" aria-labelledby="homeProcessTitle">
+    <div class="homeProcess__head">
+      <p class="eyebrow">Einfach und transparent</p>
+      <h2 id="homeProcessTitle">So funktioniert der Fliegenmelder</h2>
+    </div>
+
+    <div class="homeProcess__grid">
+      <article class="homeProcess__step">
+        <span class="homeProcess__number">1</span>
+        <span class="homeProcess__icon" aria-hidden="true">📝</span>
+        <h3>Meldung einreichen</h3>
+        <p>Standort und Belastung über das Onlineformular erfassen.</p>
+      </article>
+
+      <article class="homeProcess__step">
+        <span class="homeProcess__number">2</span>
+        <span class="homeProcess__icon" aria-hidden="true">🔍</span>
+        <h3>Prüfung</h3>
+        <p>Die Bürgerinitiative prüft die Angaben vor der Freigabe.</p>
+      </article>
+
+      <article class="homeProcess__step">
+        <span class="homeProcess__number">3</span>
+        <span class="homeProcess__icon" aria-hidden="true">🗺️</span>
+        <h3>Veröffentlichung</h3>
+        <p>Freigegebene Meldungen erscheinen datenschutzgerecht auf der Karte.</p>
+      </article>
+
+      <article class="homeProcess__step">
+        <span class="homeProcess__number">4</span>
+        <span class="homeProcess__icon" aria-hidden="true">📊</span>
+        <h3>Auswertung</h3>
+        <p>Die Meldungen fließen in die öffentliche Lageübersicht ein.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="cards homeQuickLinks">
     <article class="card">
       <h2>🪰 Fliegen melden</h2>
       <p>
