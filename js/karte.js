@@ -45,6 +45,7 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 let isLoadingMap = false;
 let allReports = [];
 let currentMapView = "cluster";
+let currentFilteredReports = [];
 
 function color(severity) {
   const value = Number(severity);
@@ -253,6 +254,34 @@ const heatLayer = L.heatLayer([], {
     1: "#d51f28"
   }
 });
+
+function heatOptionsForZoom(zoom) {
+  if (zoom >= 16) {
+    return { radius: 44, blur: 30, minOpacity: 0.36 };
+  }
+
+  if (zoom >= 14) {
+    return { radius: 36, blur: 25, minOpacity: 0.33 };
+  }
+
+  return { radius: 28, blur: 20, minOpacity: 0.3 };
+}
+
+function updateHeatAppearance() {
+  const options = heatOptionsForZoom(map.getZoom());
+
+  heatLayer.options.radius = options.radius;
+  heatLayer.options.blur = options.blur;
+  heatLayer.options.minOpacity = options.minOpacity;
+
+  if (
+    currentMapView === "heat" &&
+    typeof heatLayer.redraw === "function"
+  ) {
+    heatLayer.redraw();
+  }
+}
+
 
 clusterLayer.addTo(map);
 
@@ -556,7 +585,84 @@ function updateVisibleLayer() {
   }, 100);
 }
 
+
+function zoomToReports(reports, animated = true) {
+  const points = reports
+    .filter(hasValidCoordinates)
+    .map(report => [
+      Number(report.lat),
+      Number(report.lng)
+    ]);
+
+  if (!points.length) {
+    map.flyTo([51.763, 7.905], 13, {
+      animate: animated,
+      duration: 0.6
+    });
+    return;
+  }
+
+  if (points.length === 1) {
+    map.flyTo(points[0], 16, {
+      animate: animated,
+      duration: 0.65
+    });
+    return;
+  }
+
+  const bounds = L.latLngBounds(points);
+
+  map.flyToBounds(bounds, {
+    paddingTopLeft: [38, 38],
+    paddingBottomRight: [38, 38],
+    maxZoom: 16,
+    animate: animated,
+    duration: 0.75
+  });
+}
+
+const FocusControl = L.Control.extend({
+  options: {
+    position: "bottomright"
+  },
+
+  onAdd() {
+    const container = L.DomUtil.create(
+      "div",
+      "leaflet-bar map-focus-control"
+    );
+
+    const button = L.DomUtil.create(
+      "button",
+      "map-focus-button",
+      container
+    );
+
+    button.type = "button";
+    button.title = "Auf aktuelle Meldungen zoomen";
+    button.setAttribute(
+      "aria-label",
+      "Auf aktuell gefilterte Meldungen zoomen"
+    );
+    button.innerHTML = "🎯";
+
+    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.disableScrollPropagation(container);
+
+    L.DomEvent.on(button, "click", event => {
+      L.DomEvent.preventDefault(event);
+      zoomToReports(currentFilteredReports, true);
+    });
+
+    return container;
+  }
+});
+
+map.addControl(new FocusControl());
+
 function renderMarkers(reports) {
+  currentFilteredReports = reports.filter(hasValidCoordinates);
+
   clusterLayer.clearLayers();
   singleMarkerLayer.clearLayers();
 
@@ -599,10 +705,16 @@ function renderMarkers(reports) {
   updateVisibleLayer();
 }
 
-function refreshMapDisplay() {
+function refreshMapDisplay(autoZoom = false) {
   const reports = applyFilters(allReports);
 
   renderMarkers(reports);
+
+  if (autoZoom) {
+    window.setTimeout(() => {
+      zoomToReports(reports, true);
+    }, 80);
+  }
 }
 
 async function loadMap() {
@@ -633,7 +745,7 @@ async function loadMap() {
     }
 
     allReports = data || [];
-    refreshMapDisplay();
+    refreshMapDisplay(false);
   } finally {
     isLoadingMap = false;
   }
@@ -656,15 +768,13 @@ viewButtons.forEach(button => {
   });
 });
 
-severityFilter?.addEventListener(
-  "change",
-  refreshMapDisplay
-);
+severityFilter?.addEventListener("change", () => {
+  refreshMapDisplay(true);
+});
 
-timeFilter?.addEventListener(
-  "change",
-  refreshMapDisplay
-);
+timeFilter?.addEventListener("change", () => {
+  refreshMapDisplay(true);
+});
 
 window.addEventListener("focus", loadMap);
 
@@ -680,7 +790,10 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
+map.on("zoomend", updateHeatAppearance);
+
 window.setInterval(loadMap, 60000);
 
+updateHeatAppearance();
 updateViewButtons();
 loadMap();
