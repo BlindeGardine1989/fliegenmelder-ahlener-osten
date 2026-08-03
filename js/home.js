@@ -30,6 +30,7 @@ const trafficLightLabel = document.querySelector("#flyTrafficLightLabel");
 const trafficLightTrend = document.querySelector("#flyTrafficLightTrend");
 const trafficLightText = document.querySelector("#flyTrafficLightText");
 const trafficLightDetails = document.querySelector("#flyTrafficLightDetails");
+const trafficLightUpdated = document.querySelector("#flyTrafficLightUpdated");
 
 function reportsBetween(start, end) {
   return reports.filter(report => {
@@ -97,6 +98,7 @@ function calculateTrafficLight() {
       label: "Keine aktuelle Einstufung",
       text: "In den vergangenen 14 Tagen liegen keine freigegebenen Meldungen vor.",
       details: "Grundlage: freigegebene Meldungen der letzten 14 Tage",
+      metrics: [],
       trendLabel: "➖ keine Daten"
     };
   }
@@ -165,14 +167,12 @@ function calculateTrafficLight() {
   return {
     ...configuration,
     trendLabel,
-    details:
-      `${current.count} ${
-        current.count === 1 ? "Meldung" : "Meldungen"
-      } aus ${current.streets} ${
-        current.streets === 1 ? "Straße" : "Straßen"
-      } · Ø Belastung ${
-        current.average.toFixed(1).replace(".", ",")
-      }/5 · ${current.strongCount} stark oder sehr stark`
+    metrics: [
+      `${current.count} ${current.count === 1 ? "Meldung" : "Meldungen"}`,
+      `${current.streets} ${current.streets === 1 ? "Straße" : "Straßen"}`,
+      `Ø ${current.average.toFixed(1).replace(".", ",")}/5`,
+      `${current.strongCount} stark / sehr stark`
+    ]
   };
 }
 
@@ -182,7 +182,8 @@ function renderTrafficLight(loadError = false) {
     !trafficLightLabel ||
     !trafficLightTrend ||
     !trafficLightText ||
-    !trafficLightDetails
+    !trafficLightDetails ||
+    !trafficLightUpdated
   ) {
     return;
   }
@@ -203,6 +204,7 @@ function renderTrafficLight(loadError = false) {
     trafficLightText.textContent =
       "Die freigegebenen Meldungen konnten gerade nicht geladen werden.";
     trafficLightDetails.textContent = "";
+    trafficLightUpdated.textContent = "";
     return;
   }
 
@@ -212,7 +214,24 @@ function renderTrafficLight(loadError = false) {
   trafficLightLabel.textContent = status.label;
   trafficLightTrend.textContent = status.trendLabel;
   trafficLightText.textContent = status.text;
-  trafficLightDetails.textContent = status.details;
+
+  if (status.metrics) {
+    trafficLightDetails.innerHTML = status.metrics
+      .map(metric => `
+        <span class="flyTrafficLight__metric">
+          ${escapeHtml(metric)}
+        </span>
+      `)
+      .join("");
+  } else {
+    trafficLightDetails.textContent = status.details;
+  }
+
+  trafficLightUpdated.textContent =
+    `Stand der Auswertung: ${new Date().toLocaleString("de-DE", {
+      dateStyle: "short",
+      timeStyle: "short"
+    })}`;
 }
 
 
