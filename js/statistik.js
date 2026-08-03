@@ -1,16 +1,7 @@
 import {
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-} from "./config.js";
-
-import {
-  createClient
-} from "https://esm.sh/@supabase/supabase-js@2";
-
-const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+  supabase,
+  escapeHtml
+} from "./app.js";
 
 const periodFilter = document.querySelector("#analysisPeriod");
 const severityFilter = document.querySelector("#analysisSeverity");
@@ -29,14 +20,6 @@ const situationSummary = document.querySelector("#situationSummary");
 let allReports = [];
 let isLoading = false;
 
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
 
 function normalizeStreet(address) {
   let street = String(address || "")
