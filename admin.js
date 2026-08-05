@@ -864,7 +864,17 @@ function renderCmsList(type, rows) {
     let meta = row.date || row.created_at || "";
 
     if (isKnowledge) {
-      meta = `Reihenfolge: ${escapeHtml(row.sort_order ?? 0)}`;
+      const categoryLabels = {
+        plattform: "🪰 Der Fliegenmelder",
+        fachwissen: "🔬 Fachwissen",
+        dokumentation: "📊 Dokumentation & Transparenz"
+      };
+
+      const categoryLabel =
+        categoryLabels[row.category] ||
+        categoryLabels.plattform;
+
+      meta = `${categoryLabel} · Reihenfolge: ${escapeHtml(row.sort_order ?? 0)}`;
     } else if (meta) {
       meta = String(meta).slice(0, 10);
     }
