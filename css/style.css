@@ -785,3 +785,78 @@ input[type="file"]{background:#fff}
 }
 
 \n\n/* Meldeseite – Ablauf, Standort und Datenschutz */\n.reportCard{padding:28px}\n.reportIntro{margin-bottom:26px;padding:24px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,#f8fcf6,#fff)}\n.reportIntro h2{margin-bottom:8px}\n.reportIntro>p:last-of-type{margin-bottom:0}\n.reportSteps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}\n.reportStep{display:flex;flex-direction:column;gap:5px;padding:16px;border:1px solid var(--line);border-radius:16px;background:#fff;line-height:1.45}\n.reportStep strong{color:var(--green)}\n.locationPicker{margin:22px 0;padding:22px;border:1px solid var(--line);border-radius:22px;background:#f8fcf6}\n.locationPicker h2{margin-bottom:8px}\n.locationPicker p{margin-top:0}\n.reportMap{height:420px;margin-top:18px;border-radius:18px;overflow:hidden}\n.photoHint{margin:-7px 0 14px;color:var(--muted);font-size:14px;font-weight:700}\n.privacyInfo{margin-top:24px;padding:20px;border:1px solid #c8e3c2;border-left:6px solid var(--green);border-radius:20px;background:linear-gradient(135deg,#f2faef,#fff)}\n.privacyInfo h2{margin-bottom:8px;font-size:24px}\n.privacyInfo p{margin:0}\n.privacyExplanation{margin:10px 0 20px;color:var(--muted);font-weight:800;line-height:1.6}\n.reportSuccessNotice{max-width:1220px;margin:0 auto 24px;padding:18px 22px;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;border:1px solid #b9dbb5;border-left:6px solid var(--green);border-radius:18px;background:#f1faef;box-shadow:var(--shadow)}\n.reportSuccessNotice strong{color:var(--green)}\n@media(max-width:820px){.reportSteps{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:560px){.reportCard{padding:18px}.reportIntro,.locationPicker,.privacyInfo{padding:18px;border-radius:18px}.reportSteps{grid-template-columns:1fr}.reportMap{height:340px}#useGps,#submitReport{width:100%}.privacyCheck{align-items:flex-start}.reportSuccessNotice{margin:0 16px 20px}}\n
+/* ===== Wissenswertes Desktop Feinschliff ===== */
+
+.knowledgeCategory__header{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:22px 28px;
+    margin-bottom:24px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.04);
+}
+
+.knowledgeCategory__icon{
+    width:58px;
+    height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    font-size:30px;
+    border-radius:16px;
+    background:#eef8eb;
+}
+
+.knowledgeCategory__header h2{
+    margin:0 0 6px;
+    font-size:2rem;
+}
+
+.knowledgeCategory__header p{
+    margin:0;
+    max-width:760px;
+    line-height:1.6;
+    color:var(--muted);
+}
+
+.knowledgeItem{
+    max-width:900px;
+    margin:0 auto 28px;
+}
+
+.knowledgeItem h2,
+.knowledgeItem h3{
+    margin-bottom:18px;
+}
+
+.knowledgeItem p{
+    line-height:1.8;
+    margin-bottom:22px;
+}
+
+@media (max-width:768px){
+
+    .knowledgeCategory__header{
+        padding:18px;
+        gap:14px;
+    }
+
+    .knowledgeCategory__icon{
+        width:52px;
+        height:52px;
+        font-size:26px;
+    }
+
+    .knowledgeCategory__header h2{
+        font-size:1.7rem;
+    }
+
+    .knowledgeItem{
+        max-width:100%;
+    }
+
+}
