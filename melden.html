@@ -8,7 +8,7 @@
 
   <meta
     name="description"
-    content="Fliegenbelastung im Ahlener Osten melden."
+    content="Fliegenbelastung im Ahlener Osten einfach online melden und die transparente Dokumentation der Situation unterstützen."
   >
 
   <link rel="icon" href="assets/logo.png" type="image/png">
@@ -18,6 +18,119 @@
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   >
+
+  <style>
+    .reportIntro {
+      margin-bottom: 24px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: linear-gradient(135deg, #f8fcf6, #ffffff);
+    }
+
+    .reportIntro h2 {
+      margin-bottom: 10px;
+    }
+
+    .reportSteps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .reportStep {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #ffffff;
+      color: var(--text);
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
+    .reportStep strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--green);
+    }
+
+    .locationPicker {
+      margin: 22px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #f8fcf6;
+    }
+
+    .locationPicker h2 {
+      margin-bottom: 8px;
+    }
+
+    .locationPicker p {
+      margin-top: 0;
+    }
+
+    .photoHint {
+      margin: -7px 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .privacyInfo {
+      margin-top: 24px;
+      padding: 20px;
+      border: 1px solid #c8e3c2;
+      border-left: 6px solid var(--green);
+      border-radius: 20px;
+      background: linear-gradient(135deg, #f2faef, #ffffff);
+    }
+
+    .privacyInfo h2 {
+      margin-bottom: 8px;
+      font-size: 24px;
+    }
+
+    .privacyInfo p {
+      margin: 0;
+      color: var(--text);
+    }
+
+    .privacyExplanation {
+      margin: 10px 0 20px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    #submitReport {
+      margin-top: 4px;
+    }
+
+    @media (max-width: 820px) {
+      .reportSteps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .reportIntro,
+      .locationPicker,
+      .privacyInfo {
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .reportSteps {
+        grid-template-columns: 1fr;
+      }
+
+      #useGps,
+      #submitReport {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -52,12 +165,46 @@
     <h1>Fliegenbelastung melden</h1>
 
     <p class="lead">
-      Jede Meldung hilft dabei, die Entwicklung der Fliegenbelastung
-      nachvollziehbar zu dokumentieren.
+      Mit Ihrer Meldung unterstützen Sie die nachvollziehbare und
+      transparente Dokumentation der Fliegenbelastung im Ahlener Osten.
     </p>
   </section>
 
   <section class="card">
+
+    <div class="reportIntro">
+      <p class="eyebrow">So funktioniert Ihre Meldung</p>
+
+      <h2>In vier Schritten zur Dokumentation</h2>
+
+      <p>
+        Nach einer kurzen Prüfung wird die Meldung – sofern sie den
+        Veröffentlichungsrichtlinien entspricht – datenschutzgerecht auf
+        der öffentlichen Meldungskarte dargestellt.
+      </p>
+
+      <div class="reportSteps">
+        <div class="reportStep">
+          <strong>1. Angaben eintragen</strong>
+          Beobachtung im Formular erfassen.
+        </div>
+
+        <div class="reportStep">
+          <strong>2. Standort auswählen</strong>
+          Karte antippen oder GPS verwenden.
+        </div>
+
+        <div class="reportStep">
+          <strong>3. Prüfung</strong>
+          Die Bürgerinitiative prüft die Meldung.
+        </div>
+
+        <div class="reportStep">
+          <strong>4. Veröffentlichung</strong>
+          Freigegebene Meldungen erscheinen auf der Karte.
+        </div>
+      </div>
+    </div>
 
     <form id="reportForm">
 
@@ -69,9 +216,35 @@
           name="address"
           type="text"
           required
+          autocomplete="street-address"
           placeholder="z. B. Bergstraße 148"
         >
       </label>
+
+      <section class="locationPicker">
+        <h2>Standort auswählen</h2>
+
+        <p>
+          Tippen oder klicken Sie auf die Karte oder verwenden Sie den
+          aktuellen Standort Ihres Geräts.
+        </p>
+
+        <button
+          id="useGps"
+          class="button secondary"
+          type="button"
+        >
+          📍 Aktuellen Standort verwenden
+        </button>
+
+        <div
+          id="map"
+          style="height: 420px; margin-top: 18px; border-radius: 18px;"
+        ></div>
+
+        <input id="lat" name="lat" type="hidden">
+        <input id="lng" name="lng" type="hidden">
+      </section>
 
       <label>
         Wie stark ist die Fliegenbelastung?
@@ -97,36 +270,14 @@
       </label>
 
       <label>
-        Tageszeit
-
-        <input
-          id="time_of_day"
-          name="time_of_day"
-          type="text"
-          placeholder="z. B. morgens, mittags oder abends"
-        >
-      </label>
-
-      <label>
         Weitere Hinweise
 
         <textarea
           id="note"
           name="note"
           rows="5"
-          placeholder="z. B. besonders stark im Garten, an Fenstern oder auf der Terrasse"
+          placeholder="Weitere Beobachtungen oder Hinweise zur Fliegenbelastung"
         ></textarea>
-      </label>
-
-      <label>
-        Kontakt für Rückfragen – freiwillig
-
-        <input
-          id="contact"
-          name="contact_private"
-          type="text"
-          placeholder="E-Mail-Adresse oder Telefonnummer"
-        >
       </label>
 
       <label>
@@ -140,29 +291,31 @@
         >
       </label>
 
-      <section class="locationPicker">
-        <h2>Standort auswählen</h2>
+      <p class="photoHint">
+        Das Hochladen eines Fotos ist freiwillig und kann die Einordnung
+        Ihrer Meldung erleichtern.
+      </p>
+
+      <label>
+        Kontakt für Rückfragen – freiwillig
+
+        <input
+          id="contact"
+          name="contact_private"
+          type="text"
+          autocomplete="email"
+          placeholder="E-Mail-Adresse oder Telefonnummer"
+        >
+      </label>
+
+      <section class="privacyInfo" aria-labelledby="privacyHeading">
+        <h2 id="privacyHeading">🔒 Datenschutz</h2>
 
         <p>
-          Klicken Sie auf die Karte oder verwenden Sie den aktuellen
-          Standort Ihres Geräts.
+          Ihre Angaben werden ausschließlich zur Bearbeitung und
+          Dokumentation Ihrer Meldung verarbeitet. Öffentliche Darstellungen
+          erfolgen datenschutzgerecht.
         </p>
-
-        <button
-          id="useGps"
-          class="button secondary"
-          type="button"
-        >
-          📍 Aktuellen Standort verwenden
-        </button>
-
-        <div
-          id="map"
-          style="height: 420px; margin-top: 18px; border-radius: 18px;"
-        ></div>
-
-        <input id="lat" name="lat" type="hidden">
-        <input id="lng" name="lng" type="hidden">
       </section>
 
       <label class="privacyCheck">
@@ -182,13 +335,16 @@
           >
             Datenschutzerklärung
           </a>
-          zur Kenntnis genommen.
+          gelesen und bin mit der Verarbeitung meiner Angaben zur
+          Bearbeitung und Dokumentation meiner Meldung einverstanden.
         </span>
       </label>
 
-      <p class="muted">
-        Personenbezogene Kontaktangaben werden ausschließlich intern
-        für Rückfragen verwendet und nicht veröffentlicht.
+      <p class="privacyExplanation">
+        Personenbezogene Kontaktdaten werden ausschließlich intern für
+        Rückfragen verwendet und nicht veröffentlicht. Hochgeladene Fotos
+        werden vor einer Veröffentlichung geprüft. Fotos mit
+        personenbezogenen Inhalten werden nicht veröffentlicht.
       </p>
 
       <button
@@ -197,7 +353,7 @@
         type="submit"
         disabled
       >
-        Meldung absenden
+        🪰 Meldung einreichen
       </button>
 
       <p id="status" aria-live="polite"></p>
