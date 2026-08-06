@@ -783,57 +783,234 @@ input[type="file"]{background:#fff}
     gap:16px;
   }
 }
-@media (max-width: 680px){
 
-  .knowledgeCategory{
+
+/* =========================================================
+   Mobile-Feinschliff – 06.08.2026
+   Nur responsive Darstellungsanpassungen, keine Funktionslogik
+   ========================================================= */
+
+@media (max-width:680px){
+  /* Grundlayout */
+  body{
+    font-size:15px;
+  }
+
+  main{
+    width:100%;
+    padding:14px;
+  }
+
+  .container{
+    width:100%;
+    max-width:none;
+  }
+
+  h1{
+    font-size:clamp(2rem,10vw,2.45rem);
+    line-height:1.08;
+    letter-spacing:-.045em;
+  }
+
+  h2{
+    font-size:clamp(1.45rem,7vw,1.85rem);
+    line-height:1.16;
+  }
+
+  .lead{
+    font-size:1rem;
+    line-height:1.58;
+  }
+
+  .pageHero{
+    padding:28px 22px;
     margin-bottom:24px;
+    border-radius:22px;
+  }
+
+  .panel,
+  .card{
+    padding:22px;
+    border-radius:22px;
+  }
+
+  .sectionGrid{
+    gap:18px;
+  }
+
+  .sectionGrid>.card,
+  .sectionGrid>article,
+  .timelineItem{
+    padding:22px 20px;
+    border-radius:22px;
+  }
+
+  /* Buttons und Formulare */
+  .button,
+  button.button,
+  .nav .buttonLink{
+    min-height:46px;
+    padding:13px 17px;
+    font-size:15px;
+  }
+
+  input,
+  select,
+  textarea{
+    min-height:46px;
+    padding:13px 14px;
+  }
+
+  textarea{
+    min-height:130px;
+  }
+
+  /* Wissenswertes */
+  .knowledgeCategory{
+    margin-bottom:26px;
   }
 
   .knowledgeCategory__header{
-    padding:20px;
+    align-items:flex-start;
+    gap:13px;
+    margin-bottom:16px;
+    padding:18px;
     border-radius:20px;
-    gap:14px;
   }
 
   .knowledgeCategory__icon{
-    width:46px;
-    height:46px;
-    flex:0 0 46px;
-    font-size:24px;
+    width:44px;
+    height:44px;
+    flex:0 0 44px;
+    border-radius:14px;
+    font-size:22px;
   }
 
   .knowledgeCategory__header h2{
-    font-size:1.9rem;
-    line-height:1.15;
+    margin:1px 0 5px;
+    font-size:1.72rem;
+    line-height:1.16;
+    letter-spacing:-.035em;
   }
 
   .knowledgeCategory__header p{
-    font-size:1rem;
+    font-size:.98rem;
     line-height:1.5;
   }
 
+  .knowledgeCategory__list{
+    gap:16px;
+  }
+
   .knowledgeItem{
-    padding:22px;
-    border-radius:20px;
+    padding:21px 20px!important;
   }
 
   .knowledgeItem h3{
-    font-size:1.7rem;
+    margin:0 0 12px;
+    font-size:1.55rem;
     line-height:1.2;
-    margin-bottom:14px;
+    letter-spacing:-.035em;
+    overflow-wrap:anywhere;
   }
 
   .knowledgeSummary{
-    font-size:1.05rem;
-    font-weight:700;
-    line-height:1.55;
-    margin-bottom:20px;
-    padding-bottom:14px;
+    margin:0 0 18px;
+    padding-bottom:15px;
+    font-size:1rem;
+    font-weight:750;
+    line-height:1.52;
+  }
+
+  .knowledgeContent{
+    margin-top:0;
   }
 
   .knowledgeContent p{
+    margin:0 0 16px;
+    color:#3f4842;
     font-size:1rem;
-    line-height:1.75;
+    line-height:1.66;
+    overflow-wrap:anywhere;
   }
 
+  /* Fliegenampel */
+  .flyTrafficLight{
+    padding:18px;
+    border-left-width:5px;
+  }
+
+  .flyTrafficLight__headline{
+    align-items:flex-start;
+  }
+
+  .flyTrafficLight__headline h2{
+    font-size:1.75rem;
+  }
+
+  .flyTrafficLight__trend{
+    padding:6px 10px;
+    font-size:12px;
+  }
+
+  .flyTrafficLight__details{
+    line-height:1.55;
+  }
+
+  /* Karten und Statistik */
+  .map{
+    height:440px;
+    border-radius:20px;
+  }
+
+  .mapDashboard,
+  .situationStats{
+    gap:10px;
+  }
+
+  .dashboardCard,
+  .situationStat{
+    padding:14px;
+  }
+
+  /* Footer */
+  .siteFooter{
+    padding-left:18px;
+    padding-right:18px;
+  }
+}
+
+@media (max-width:420px){
+  main{
+    padding:12px;
+  }
+
+  .pageHero{
+    padding:24px 18px;
+  }
+
+  .knowledgeCategory__header{
+    padding:16px;
+  }
+
+  .knowledgeCategory__header h2{
+    font-size:1.52rem;
+  }
+
+  .knowledgeItem{
+    padding:19px 17px!important;
+  }
+
+  .knowledgeItem h3{
+    font-size:1.38rem;
+  }
+
+  .knowledgeSummary,
+  .knowledgeContent p{
+    font-size:.97rem;
+  }
+
+  .flyTrafficLight__visual{
+    gap:6px;
+  }
 }
