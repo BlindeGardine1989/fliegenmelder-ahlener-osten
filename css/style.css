@@ -783,4 +783,57 @@ input[type="file"]{background:#fff}
     gap:16px;
   }
 }
+@media (max-width: 680px){
 
+  .knowledgeCategory{
+    margin-bottom:24px;
+  }
+
+  .knowledgeCategory__header{
+    padding:20px;
+    border-radius:20px;
+    gap:14px;
+  }
+
+  .knowledgeCategory__icon{
+    width:46px;
+    height:46px;
+    flex:0 0 46px;
+    font-size:24px;
+  }
+
+  .knowledgeCategory__header h2{
+    font-size:1.9rem;
+    line-height:1.15;
+  }
+
+  .knowledgeCategory__header p{
+    font-size:1rem;
+    line-height:1.5;
+  }
+
+  .knowledgeItem{
+    padding:22px;
+    border-radius:20px;
+  }
+
+  .knowledgeItem h3{
+    font-size:1.7rem;
+    line-height:1.2;
+    margin-bottom:14px;
+  }
+
+  .knowledgeSummary{
+    font-size:1.05rem;
+    font-weight:700;
+    line-height:1.55;
+    margin-bottom:20px;
+    padding-bottom:14px;
+  }
+
+  .knowledgeContent p{
+    font-size:1rem;
+    line-height:1.75;
+  }
+
+}
