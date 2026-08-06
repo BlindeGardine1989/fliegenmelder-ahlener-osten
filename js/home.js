@@ -632,3 +632,30 @@ window.setInterval(loadReports, 30000);
 ensureStatusStyles();
 ensureStatusElement();
 loadReports();
+
+
+/* Erfolgsbestätigung nach einer eingereichten Meldung */
+function showReportSuccessMessage() {
+  const params = new URLSearchParams(window.location.search);
+  const message = sessionStorage.getItem("reportSuccess");
+
+  if (params.get("meldung") !== "erfolgreich" || !message) {
+    return;
+  }
+
+  const main = document.querySelector("main");
+  if (!main) {
+    return;
+  }
+
+  const notice = document.createElement("div");
+  notice.className = "reportSuccessNotice";
+  notice.setAttribute("role", "status");
+  notice.innerHTML = `<strong>✅ Meldung eingereicht</strong><span>${escapeHtml(message)}</span>`;
+  main.prepend(notice);
+
+  sessionStorage.removeItem("reportSuccess");
+  window.history.replaceState({}, document.title, "index.html");
+}
+
+showReportSuccessMessage();

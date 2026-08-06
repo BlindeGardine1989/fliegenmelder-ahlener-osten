@@ -20,7 +20,6 @@ const statusElement = document.querySelector("#status");
 const addressInput = document.querySelector("#address");
 const severityInput = document.querySelector("#severity");
 const sinceInput = document.querySelector("#since");
-const timeOfDayInput = document.querySelector("#time_of_day");
 const noteInput = document.querySelector("#note");
 const contactInput = document.querySelector("#contact");
 const photoInput = document.querySelector("#photo");
@@ -235,7 +234,6 @@ form?.addEventListener("submit", async event => {
   const address = addressInput?.value.trim() || "";
   const severity = Number(severityInput?.value || 3);
   const since = sinceInput?.value.trim() || "";
-  const timeOfDay = timeOfDayInput?.value.trim() || "";
   const note = noteInput?.value.trim() || "";
   const contactPrivate = contactInput?.value.trim() || "";
 
@@ -272,6 +270,7 @@ form?.addEventListener("submit", async event => {
   }
 
   submitButton.disabled = true;
+  submitButton.textContent = "Meldung wird gespeichert …";
 
   const publicId = crypto.randomUUID();
   let photoPath = null;
@@ -316,7 +315,7 @@ form?.addEventListener("submit", async event => {
       address,
       severity,
       since,
-      time_of_day: timeOfDay,
+      time_of_day: "",
       note,
       contact_private: contactPrivate,
       lat,
@@ -351,9 +350,12 @@ form?.addEventListener("submit", async event => {
       lngInput.value = "";
     }
 
-    setStatus(
-      `Vielen Dank. Ihre Meldung ${publicId.slice(0, 8)} wurde gespeichert und wird geprüft.`
+    sessionStorage.setItem(
+      "reportSuccess",
+      "Vielen Dank! Ihre Meldung wurde erfolgreich eingereicht und wird geprüft."
     );
+
+    window.location.replace("index.html?meldung=erfolgreich");
   } catch (error) {
     console.error(
       "Meldung konnte nicht gespeichert werden:",
@@ -364,6 +366,7 @@ form?.addEventListener("submit", async event => {
       "Die Meldung konnte leider nicht gespeichert werden. Bitte versuchen Sie es später erneut."
     );
 
+    submitButton.textContent = "🪰 Meldung einreichen";
     updateSubmitButton();
   }
 });
