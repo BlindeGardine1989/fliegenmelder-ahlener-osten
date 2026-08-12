@@ -10,6 +10,15 @@ function emptyText(text) {
   return `<article class="card"><p>${escapeHtml(text)}</p></article>`;
 }
 
+function formatParagraphs(value) {
+  return String(value || "")
+    .split(/\n\s*\n/)
+    .map(part => part.trim())
+    .filter(Boolean)
+    .map(part => `<p>${escapeHtml(part).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
+
 async function loadNews() {
   const list = document.querySelector("#cmsNewsList");
   const home = document.querySelector("#cmsLatestNews");
@@ -39,8 +48,8 @@ async function loadNews() {
           ${item.image_url ? `<img class="newsImage" src="${escapeHtml(item.image_url)}" alt="">` : ""}
           <p class="docMeta">📅 ${formatDate(item.date)}</p>
           <h2>${escapeHtml(item.title)}</h2>
-          <p>${escapeHtml(item.summary || item.body || "")}</p>
-          ${item.body ? `<details><summary>Weiterlesen</summary><p>${escapeHtml(item.body)}</p></details>` : ""}
+          ${formatParagraphs(item.summary || item.body || "")}
+          ${item.body ? `<details><summary>Weiterlesen</summary><div class="cmsRichText">${formatParagraphs(item.body)}</div></details>` : ""}
         </article>
       `).join("");
     }
@@ -89,7 +98,7 @@ async function loadTimeline() {
     <article class="timelineItem">
       <strong>${formatDate(item.date)}</strong>
       <h2>${escapeHtml(item.title)}</h2>
-      <p>${escapeHtml(item.description || "")}</p>
+      ${formatParagraphs(item.description || "")}
     </article>
   `).join("") : emptyText("Noch keine Chronik-Einträge vorhanden.");
 }
@@ -115,7 +124,7 @@ async function loadFaq() {
   list.innerHTML = rows.length ? rows.map((item, index) => `
     <details ${index === 0 ? "open" : ""}>
       <summary>${escapeHtml(item.question)}</summary>
-      <p>${escapeHtml(item.answer || "")}</p>
+      <div class="cmsRichText">${formatParagraphs(item.answer || "")}</div>
     </details>
   `).join("") : emptyText("Noch keine FAQ vorhanden.");
 }
@@ -143,7 +152,7 @@ async function loadEvents() {
       <p class="docMeta">📅 ${formatDate(item.event_date)}</p>
       <h2>${escapeHtml(item.title)}</h2>
       ${item.location ? `<p><strong>Ort:</strong> ${escapeHtml(item.location)}</p>` : ""}
-      <p>${escapeHtml(item.description || "")}</p>
+      ${formatParagraphs(item.description || "")}
     </article>
   `).join("") : `
     <article class="card">
@@ -176,7 +185,7 @@ async function loadDocuments() {
     <article class="card">
       <h2>${escapeHtml(item.title)}</h2>
       <p class="docMeta">📅 ${formatDate(item.document_date)}</p>
-      <p>${escapeHtml(item.description || "")}</p>
+      ${formatParagraphs(item.description || "")}
       ${item.file_url ? `<a class="button secondary" href="${escapeHtml(item.file_url)}" target="_blank" rel="noopener">PDF öffnen</a>` : ""}
     </article>
   `).join("") : `
