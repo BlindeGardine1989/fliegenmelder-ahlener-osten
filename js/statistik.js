@@ -517,12 +517,38 @@ function trendDescription(currentCount, previousCount) {
   if (!previousCount) {
     return {
       label: "Neu aufgetreten",
-      text: "Im vorherigen Vergleichszeitraum lagen keine entsprechenden Meldungen vor."
+      text: `Im aktuellen Zeitraum liegen ${currentCount} ${currentCount === 1 ? "Meldung" : "Meldungen"} vor; im vorherigen Vergleichszeitraum gab es keine.`
     };
   }
 
-  const change = (currentCount - previousCount) / previousCount * 100;
+  const difference = currentCount - previousCount;
+  const change = difference / previousCount * 100;
   const absoluteChange = Math.abs(change);
+
+  /*
+   * Sehr große Prozentwerte wirken bei kleinen Ausgangszahlen irreführend.
+   * Dann zeigen wir stattdessen die absoluten Zahlen.
+   */
+  if (previousCount <= 5 || absoluteChange >= 200) {
+    if (difference > 0) {
+      return {
+        label: "Deutliche Zunahme",
+        text: `Im vorherigen Vergleichszeitraum wurden ${previousCount} ${previousCount === 1 ? "Meldung" : "Meldungen"} erfasst, aktuell sind es ${currentCount}.`
+      };
+    }
+
+    if (difference < 0) {
+      return {
+        label: "Deutlicher Rückgang",
+        text: `Im vorherigen Vergleichszeitraum wurden ${previousCount} ${previousCount === 1 ? "Meldung" : "Meldungen"} erfasst, aktuell sind es ${currentCount}.`
+      };
+    }
+
+    return {
+      label: "Unverändert",
+      text: `In beiden Vergleichszeiträumen wurden jeweils ${currentCount} ${currentCount === 1 ? "Meldung" : "Meldungen"} erfasst.`
+    };
+  }
 
   if (absoluteChange < 10) {
     return {
