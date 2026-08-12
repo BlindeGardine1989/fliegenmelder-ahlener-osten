@@ -1059,3 +1059,16 @@ input[type="file"]{background:#fff}
   }
 }
 
+
+
+/* Abschluss-Feinschliff */
+.cmsRichText p { margin: 0 0 0.85rem; }
+.cmsRichText p:last-child { margin-bottom: 0; }
+.newsImage { width: 100%; height: auto; max-height: 460px; object-fit: cover; border-radius: 16px; }
+.contactPage a[href^="mailto:"] { overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .siteFooter { padding-left: 18px; padding-right: 18px; }
+  .siteFooter nav { gap: 10px 14px; }
+  .timelineItem { padding-block: 16px; }
+  .cmsRichText p { margin-bottom: 0.7rem; }
+}
