@@ -33,7 +33,11 @@ async function loadNews() {
 
   if (error) {
     console.error(error);
-    if (list) list.innerHTML = emptyText("Neuigkeiten konnten nicht geladen werden.");
+    if (list) {
+      list.innerHTML = emptyText(
+        "Neuigkeiten konnten nicht geladen werden."
+      );
+    }
     return;
   }
 
@@ -41,36 +45,129 @@ async function loadNews() {
 
   if (list) {
     if (!rows.length) {
-      list.innerHTML = emptyText("Noch keine Neuigkeiten vorhanden.");
+      list.innerHTML = emptyText(
+        "Noch keine Neuigkeiten vorhanden."
+      );
     } else {
-      list.innerHTML = rows.map(item => `
-        <article class="card">
-          ${item.image_url ? `<img class="newsImage" src="${escapeHtml(item.image_url)}" alt="">` : ""}
-          <p class="docMeta">📅 ${formatDate(item.date)}</p>
-          <h2>${escapeHtml(item.title)}</h2>
-          ${formatParagraphs(item.summary || item.body || "")}
-          ${item.body ? `<details><summary>Weiterlesen</summary><div class="cmsRichText">${formatParagraphs(item.body)}</div></details>` : ""}
-        </article>
-      `).join("");
+      list.innerHTML = rows.map(item => {
+
+        const summary = String(item.summary || "").trim();
+        const body = String(item.body || "").trim();
+
+        const summaryNormalized = summary
+          .replace(/\s+/g, " ")
+          .toLowerCase();
+
+        const bodyNormalized = body
+          .replace(/\s+/g, " ")
+          .toLowerCase();
+
+        const sameContent =
+          summaryNormalized &&
+          bodyNormalized &&
+          summaryNormalized === bodyNormalized;
+
+        return `
+          <article class="card">
+
+            ${
+              item.image_url
+                ? `<img class="newsImage"
+                     src="${escapeHtml(item.image_url)}"
+                     alt="">`
+                : ""
+            }
+
+            <p class="docMeta">
+              📅 ${formatDate(item.date)}
+            </p>
+
+            <h2>
+              ${escapeHtml(item.title)}
+            </h2>
+
+            ${
+              summary
+                ? formatParagraphs(summary)
+                : body
+                  ? formatParagraphs(body)
+                  : ""
+            }
+
+            ${
+              body && summary && !sameContent
+                ? `
+                  <details>
+                    <summary>Weiterlesen</summary>
+                    <div class="cmsRichText">
+                      ${formatParagraphs(body)}
+                    </div>
+                  </details>
+                `
+                : ""
+            }
+
+          </article>
+        `;
+      }).join("");
     }
   }
 
   if (home) {
     const latest = rows[0];
+
     home.innerHTML = latest ? `
       <article class="card">
-        ${latest.image_url ? `<img class="newsImage" src="${escapeHtml(latest.image_url)}" alt="">` : ""}
-        <p class="eyebrow">Neueste Entwicklung</p>
-        <h2>${escapeHtml(latest.title)}</h2>
-        <p>${escapeHtml(latest.summary || latest.body || "")}</p>
-        <a href="neuigkeiten.html">Aktuelle Informationen ansehen →</a>
+
+        ${
+          latest.image_url
+            ? `<img class="newsImage"
+                 src="${escapeHtml(latest.image_url)}"
+                 alt="">`
+            : ""
+        }
+
+        <p class="eyebrow">
+          Neueste Entwicklung
+        </p>
+
+        <h2>
+          ${escapeHtml(latest.title)}
+        </h2>
+
+        <p>
+          ${escapeHtml(
+            latest.summary ||
+            latest.body ||
+            ""
+          )}
+        </p>
+
+        <a href="neuigkeiten.html">
+          Aktuelle Informationen ansehen →
+        </a>
+
       </article>
     ` : `
       <article class="card">
-        <p class="eyebrow">Neueste Entwicklung</p>
-        <h2>Aktuelle Entwicklung</h2>
-        <p>Neue Informationen und Entwicklungen werden hier veröffentlicht.</p>
-        <a href="neuigkeiten.html">Aktuelle Informationen ansehen →</a>
+
+        <p class="eyebrow">
+          Neueste Entwicklung
+        </p>
+
+        <h2>
+          Aktuelle Entwicklung
+        </h2>
+
+        <p>
+          Neue Informationen und Entwicklungen
+          werden hier veröffentlicht.
+        </p>
+
+        <a href="neuigkeiten.html">
+          Aktuelle Informationen ansehen →
+        </a>
+
       </article>
     `;
   }
