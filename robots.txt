@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin.html
+
+Sitemap: https://fliegenmelder-ahlen.de/sitemap.xml
