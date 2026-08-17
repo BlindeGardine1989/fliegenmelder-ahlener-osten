@@ -629,10 +629,11 @@ window.setInterval(loadReports, 30000);
    Start
    ========================================================= */
 
-ensureStatusStyles();
-ensureStatusElement();
-loadReports();
+/* =========================================================
+   Start
+   ========================================================= */
 
+loadReports();
 
 /* Erfolgsbestätigung nach einer eingereichten Meldung */
 function showReportSuccessMessage() {
