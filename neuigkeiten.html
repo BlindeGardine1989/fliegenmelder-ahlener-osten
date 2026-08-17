@@ -3,20 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Neuigkeiten | Fliegenmelder Ahlener Osten</title>
+  <meta
+    name="description"
+    content="Aktuelle Neuigkeiten und Entwicklungen rund um die Fliegenbelastung und die Bürgerinitiative im Ahlener Osten."
+  >
+
   <link rel="icon" href="assets/logo.png" type="image/png">
   <link rel="stylesheet" href="css/style.css">
-  
 </head>
+
 <body>
 <header class="topbar">
   <a class="brand" href="index.html">
-    <img src="assets/logo.png" alt="Logo Fliegenmelder Ahlener Osten">
+    <img
+      src="assets/logo.webp"
+      alt="Logo Fliegenmelder Ahlener Osten"
+      width="600"
+      height="600"
+    >
     <div>
       <strong>Fliegenmelder<br>Ahlener Osten</strong>
-      <span>Melden. Dokumentieren. Transparent informieren.</span>
+      <span style="color:#1b5e20">Melden. Dokumentieren. Transparent informieren.</span>
     </div>
   </a>
+
   <nav class="nav">
     <a href="index.html">Startseite</a>
     <a href="melden.html">Fliegen melden</a>
@@ -33,11 +45,33 @@
 </header>
 
 <main class="container">
-  <section class="box pageHero"><p class="eyebrow">Neuigkeiten</p><h1>Aktuelle Entwicklungen</h1><p class="lead">Neuigkeiten werden fortlaufend veröffentlicht.</p></section>
-  <section id="cmsNewsList" class="sectionGrid"></section>
+  <section class="box pageHero">
+    <p class="eyebrow">Neuigkeiten</p>
+    <h1>Aktuelle Entwicklungen</h1>
+    <p class="lead">Neuigkeiten werden fortlaufend veröffentlicht.</p>
+  </section>
+
+  <section
+    id="cmsNewsList"
+    class="sectionGrid"
+    aria-live="polite"
+    style="min-height: 760px"
+  >
+    <article class="card" aria-hidden="true" style="min-height: 320px">
+      <p class="docMeta">Neuigkeiten werden geladen …</p>
+      <h2>Aktuelle Informationen</h2>
+      <p>Die veröffentlichten Meldungen werden geladen.</p>
+    </article>
+
+    <article class="card" aria-hidden="true" style="min-height: 320px">
+      <p class="docMeta">Neuigkeiten werden geladen …</p>
+      <h2>Weitere Entwicklungen</h2>
+      <p>Bitte einen kurzen Moment warten.</p>
+    </article>
+  </section>
 </main>
 
-  <footer class="siteFooter">
+<footer class="siteFooter">
   <h2>Fliegenmelder Ahlener Osten</h2>
 
   <p>
