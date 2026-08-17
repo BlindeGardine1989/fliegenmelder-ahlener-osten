@@ -8,10 +8,19 @@
 
   <link rel="icon" href="assets/logo.png" type="image/png">
   <link rel="stylesheet" href="css/style.css?v=20260812-5">
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
   <link
-    rel="stylesheet"
+    rel="preload"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
   >
+  <noscript>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+  </noscript>
 </head>
 
 <body>
