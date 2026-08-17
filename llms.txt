@@ -1,0 +1,35 @@
+# Fliegenmelder Ahlen
+
+> Der Fliegenmelder Ahlen ist eine ehrenamtliche Informationsplattform der Bürgerinitiative Ahlener Osten zur Dokumentation der wahrgenommenen Fliegenbelastung.
+
+## Wichtige Seiten
+
+- [Startseite](https://fliegenmelder-ahlen.de/)
+- [Fliegen melden](https://fliegenmelder-ahlen.de/melden.html)
+- [Meldungskarte](https://fliegenmelder-ahlen.de/karte.html)
+- [Aktuelle Lage](https://fliegenmelder-ahlen.de/statistik.html)
+- [Wissenswertes](https://fliegenmelder-ahlen.de/wissenswertes.html)
+- [Neuigkeiten](https://fliegenmelder-ahlen.de/neuigkeiten.html)
+- [Chronik](https://fliegenmelder-ahlen.de/chronik.html)
+- [Dokumente](https://fliegenmelder-ahlen.de/dokumente.html)
+- [Termine](https://fliegenmelder-ahlen.de/termine.html)
+- [Über uns](https://fliegenmelder-ahlen.de/ueber-uns.html)
+- [FAQ](https://fliegenmelder-ahlen.de/faq.html)
+- [Kontakt](https://fliegenmelder-ahlen.de/kontakt.html)
+- [Datenschutz](https://fliegenmelder-ahlen.de/datenschutz.html)
+- [Impressum](https://fliegenmelder-ahlen.de/impressum.html)
+
+## Zweck
+
+Die Plattform sammelt Meldungen von Bürgerinnen und Bürgern zur wahrgenommenen Fliegenbelastung im Ahlener Osten. Freigegebene Meldungen werden datenschutzgerecht auf einer Karte und in statistischen Auswertungen dargestellt.
+
+## Einordnung
+
+Der Fliegenmelder ist keine behördliche oder wissenschaftliche Messstelle. Aus einzelnen Meldungen oder räumlichen Häufungen lässt sich nicht automatisch auf eine konkrete Ursache oder einen bestimmten Verursacher schließen.
+
+## Datenschutz
+
+Personenbezogene Kontaktdaten werden nicht öffentlich dargestellt. Standorte können zum Schutz meldender Personen oder betroffener Haushalte gekürzt, verallgemeinert oder nur näherungsweise dargestellt werden.
+
+- [Datenschutzerklärung](https://fliegenmelder-ahlen.de/datenschutz.html)
+- [Impressum](https://fliegenmelder-ahlen.de/impressum.html)
